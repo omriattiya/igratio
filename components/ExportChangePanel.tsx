@@ -38,7 +38,7 @@ export function ExportTrackingToggle({
         <div className="flex min-w-0 flex-1 flex-col gap-1">
           <Label
             htmlFor="export-tracking-toggle"
-            className="cursor-pointer font-medium text-foreground"
+            className="font-medium text-foreground"
           >
             {copy.toggle}
           </Label>

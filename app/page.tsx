@@ -8,6 +8,7 @@ export default function Home() {
       <SiteHeader
         title={messages.home.headerTitle}
         description={messages.home.headerDescription}
+        privacyNote={messages.home.headerPrivacy}
       />
       <main className="flex flex-1 flex-col px-6 py-10">
         <InstagramAnalyzer />

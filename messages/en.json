@@ -5,7 +5,8 @@
   },
   "home": {
     "headerTitle": "IG Ratio",
-    "headerDescription": "Compare Instagram following and followers export files locally in your browser."
+    "headerDescription": "Compare Instagram following and followers export files locally in your browser",
+    "headerPrivacy": "We don't collect any data - everything is stored in your browser's <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API\" target=\"_blank\" rel=\"noopener noreferrer\">IndexedDB</a> and <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage\" target=\"_blank\" rel=\"noopener noreferrer\">localStorage</a>"
   },
   "analyzer": {
     "errors": {
@@ -22,12 +23,15 @@
     "followersHint": "followers_1.json, followers_2.json, …",
     "analyzing": "Analyzing…",
     "analyze": "Analyze",
+    "resetAnalysis": "Reset analysis",
+    "resetAnalysisTooltip": "This will delete all site data stored in this browser: saved export snapshots, unfollower OK marks, and tracking settings.",
+    "resetAnalysisAriaLabel": "Reset analysis. This will delete all site data stored in this browser.",
     "lists": {
       "dontFollowBack": "Don't follow back",
       "onlyTheyFollow": "Only they follow you",
       "mutual": "Mutual"
     },
-    "indexedDbPrivacy": "Manage unfollowers and export tracking use IndexedDB in this browser. Data stays on your device and is not uploaded.",
+    "indexedDbPrivacy": "Your last analysis (summary and lists) is saved in IndexedDB on this device so it can load again after refresh. Unfollower marks and export tracking use the same storage. Nothing is uploaded.",
     "indexedDbFailed": "Could not use IndexedDB (storage may be blocked in private mode).",
     "exportTracking": {
       "toggle": "Track changes between exports",
@@ -38,7 +42,8 @@
       "followersAdded": "New followers",
       "followersRemoved": "No longer followers",
       "baselineOnly": "No previous snapshot yet. This analysis is saved as the baseline for your next run.",
-      "emptyList": "None"
+      "emptyList": "None",
+      "lastSaved": "Last saved: {date}"
     },
     "unfollowers": {
       "okCheckbox": "OK",
@@ -58,6 +63,7 @@
     "emDash": "—"
   },
   "userList": {
-    "empty": "No accounts in this category."
+    "empty": "No accounts in this category.",
+    "newBadge": "New"
   }
 }

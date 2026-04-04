@@ -95,4 +95,13 @@
   html {
     @apply font-sans;
   }
+  a[href] {
+    @apply cursor-pointer;
+  }
+  button:not(:disabled) {
+    @apply cursor-pointer;
+  }
+  button:disabled {
+    @apply cursor-not-allowed;
+  }
 }

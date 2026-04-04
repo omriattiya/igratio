@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   analyzeFollowingFollowers,
   diffSets,
@@ -9,6 +9,7 @@ import {
   type InstagramAnalysis,
 } from "@/lib/instagram";
 import {
+  clearAllSiteData,
   getLatestSnapshot,
   getTrackSnapshots,
   setLatestSnapshot,
@@ -25,9 +26,23 @@ import { UnfollowerReviewList } from "@/components/UnfollowerReviewList";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Tooltip, TooltipPopup } from "@/components/ui/tooltip";
 import { Label } from "@/components/ui/label";
 import { AnalyzerLoadStatus } from "@/lib/analyzerLoadStatus";
-import { messages } from "@/lib/i18n";
+import { messages, t } from "@/lib/i18n";
+
+function formatSnapshotSavedAt(iso: string): string {
+  try {
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return iso;
+    return d.toLocaleString(undefined, {
+      dateStyle: "medium",
+      timeStyle: "short",
+    });
+  } catch {
+    return iso;
+  }
+}
 
 type LoadState =
   | { status: typeof AnalyzerLoadStatus.Idle }
@@ -41,11 +56,38 @@ export function InstagramAnalyzer() {
   const [state, setState] = useState<LoadState>({ status: AnalyzerLoadStatus.Idle });
   const [trackSnapshots, setTrackSnapshotsState] = useState(false);
   const [lastExportDiff, setLastExportDiff] = useState<ExportDiff | null>(null);
+  const [lastSnapshotSavedAt, setLastSnapshotSavedAt] = useState<string | null>(null);
   const [indexedDbError, setIndexedDbError] = useState<string | null>(null);
+  const [fileInputKey, setFileInputKey] = useState(0);
 
   useEffect(() => {
-    void getTrackSnapshots().then(setTrackSnapshotsState);
+    void (async () => {
+      const enabled = await getTrackSnapshots();
+      setTrackSnapshotsState(enabled);
+      const snap = await getLatestSnapshot();
+      if (enabled) {
+        setLastSnapshotSavedAt(snap?.savedAt ?? null);
+      }
+      if (snap) {
+        const analysis =
+          snap.analysis ??
+          (snap.following.length > 0 && snap.followers.length > 0
+            ? analyzeFollowingFollowers(snap.following, snap.followers)
+            : null);
+        if (analysis) {
+          setState({ status: AnalyzerLoadStatus.Ready, analysis });
+        }
+      }
+    })();
   }, []);
+
+  const markNewFromDiff = useMemo(() => {
+    if (!trackSnapshots || !lastExportDiff?.hadBaseline) return null;
+    const next = new Set<string>();
+    for (const u of lastExportDiff.followingAdded) next.add(u);
+    for (const u of lastExportDiff.followersAdded) next.add(u);
+    return next;
+  }, [trackSnapshots, lastExportDiff]);
 
   const handleTrackToggle = useCallback(async (enabled: boolean) => {
     const previous = trackSnapshots;
@@ -53,6 +95,12 @@ export function InstagramAnalyzer() {
     try {
       await setTrackSnapshots(enabled);
       setIndexedDbError(null);
+      if (enabled) {
+        const snap = await getLatestSnapshot();
+        setLastSnapshotSavedAt(snap?.savedAt ?? null);
+      } else {
+        setLastSnapshotSavedAt(null);
+      }
     } catch {
       setTrackSnapshotsState(previous);
       setIndexedDbError(messages.analyzer.indexedDbFailed);
@@ -97,14 +145,16 @@ export function InstagramAnalyzer() {
 
       const analysis = analyzeFollowingFollowers(followingRaw, followersRaw);
 
-      if (trackSnapshots) {
-        try {
-          const followingSet = new Set(followingRaw);
-          const followersSet = new Set(followersRaw);
-          const uniqueFollowing = [...followingSet].sort();
-          const uniqueFollowers = [...followersSet].sort();
+      const followingSet = new Set(followingRaw);
+      const followersSet = new Set(followersRaw);
+      const uniqueFollowing = [...followingSet].sort();
+      const uniqueFollowers = [...followersSet].sort();
+      const savedAt = new Date().toISOString();
+
+      try {
+        let diff: ExportDiff | null = null;
+        if (trackSnapshots) {
           const prev = await getLatestSnapshot();
-          let diff: ExportDiff;
           if (prev) {
             const f = diffSets(new Set(prev.following), followingSet);
             const g = diffSets(new Set(prev.followers), followersSet);
@@ -124,18 +174,25 @@ export function InstagramAnalyzer() {
               hadBaseline: false,
             };
           }
-          await setLatestSnapshot({
-            following: uniqueFollowing,
-            followers: uniqueFollowers,
-            savedAt: new Date().toISOString(),
-          });
-          setIndexedDbError(null);
-          setLastExportDiff(diff);
-        } catch {
-          setIndexedDbError(messages.analyzer.indexedDbFailed);
-          setLastExportDiff(null);
         }
-      } else {
+
+        await setLatestSnapshot({
+          following: uniqueFollowing,
+          followers: uniqueFollowers,
+          savedAt,
+          analysis,
+        });
+
+        setIndexedDbError(null);
+        if (trackSnapshots && diff) {
+          setLastExportDiff(diff);
+          setLastSnapshotSavedAt(savedAt);
+        } else {
+          setLastExportDiff(null);
+          setLastSnapshotSavedAt(null);
+        }
+      } catch {
+        setIndexedDbError(messages.analyzer.indexedDbFailed);
         setLastExportDiff(null);
       }
 
@@ -148,6 +205,22 @@ export function InstagramAnalyzer() {
   }, [followingFiles, followerFiles, trackSnapshots]);
 
   const canAnalyze = Boolean(followingFiles?.length && followerFiles?.length);
+
+  const handleResetAnalysis = useCallback(async () => {
+    try {
+      await clearAllSiteData();
+      setIndexedDbError(null);
+    } catch {
+      setIndexedDbError(messages.analyzer.indexedDbFailed);
+    }
+    setFollowingFiles(null);
+    setFollowerFiles(null);
+    setFileInputKey((k) => k + 1);
+    setState({ status: AnalyzerLoadStatus.Idle });
+    setTrackSnapshotsState(false);
+    setLastExportDiff(null);
+    setLastSnapshotSavedAt(null);
+  }, []);
 
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-8">
@@ -166,6 +239,7 @@ export function InstagramAnalyzer() {
               {messages.analyzer.followingLabel}
             </Label>
             <Input
+              key={`following-${fileInputKey}`}
               id="analyzer-following"
               type="file"
               accept=".json,application/json"
@@ -179,6 +253,7 @@ export function InstagramAnalyzer() {
               {messages.analyzer.followersLabel}
             </Label>
             <Input
+              key={`followers-${fileInputKey}`}
               id="analyzer-followers"
               type="file"
               accept=".json,application/json"
@@ -195,17 +270,59 @@ export function InstagramAnalyzer() {
           disabled={state.status === AnalyzerLoadStatus.Loading}
         />
 
-        <Button
-          type="button"
-          size="lg"
-          disabled={!canAnalyze || state.status === AnalyzerLoadStatus.Loading}
-          onClick={() => void runAnalysis()}
-          className="mt-6 w-full sm:w-auto"
-        >
-          {state.status === AnalyzerLoadStatus.Loading
-            ? messages.analyzer.analyzing
-            : messages.analyzer.analyze}
-        </Button>
+        {trackSnapshots && lastSnapshotSavedAt ? (
+          <p className="mt-3 text-xs tabular-nums text-blue-200/65">
+            {t(messages.analyzer.exportTracking.lastSaved, {
+              date: formatSnapshotSavedAt(lastSnapshotSavedAt),
+            })}
+          </p>
+        ) : null}
+
+        <Tooltip.Provider delay={0}>
+          <div className="mt-6 flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <Button
+              type="button"
+              size="lg"
+              disabled={!canAnalyze || state.status === AnalyzerLoadStatus.Loading}
+              onClick={() => void runAnalysis()}
+              className="w-full sm:w-auto"
+            >
+              {state.status === AnalyzerLoadStatus.Loading
+                ? messages.analyzer.analyzing
+                : messages.analyzer.analyze}
+            </Button>
+            <div className="self-end sm:self-auto">
+              <Tooltip.Root>
+                <Tooltip.Trigger
+                  type="button"
+                  delay={0}
+                  disabled={state.status === AnalyzerLoadStatus.Loading}
+                  render={(props) => (
+                    <Button
+                      {...props}
+                      type="button"
+                      variant="outline"
+                      size="lg"
+                      className="w-auto border-destructive/45 text-destructive hover:bg-destructive/15"
+                      aria-label={messages.analyzer.resetAnalysisAriaLabel}
+                      onClick={(e) => {
+                        props.onClick?.(e);
+                        if (!e.defaultPrevented) void handleResetAnalysis();
+                      }}
+                    >
+                      {messages.analyzer.resetAnalysis}
+                    </Button>
+                  )}
+                />
+                <Tooltip.Portal>
+                  <Tooltip.Positioner side="top" sideOffset={8}>
+                    <TooltipPopup>{messages.analyzer.resetAnalysisTooltip}</TooltipPopup>
+                  </Tooltip.Positioner>
+                </Tooltip.Portal>
+              </Tooltip.Root>
+            </div>
+          </div>
+        </Tooltip.Provider>
 
         {state.status === AnalyzerLoadStatus.Error && (
           <Alert variant="destructive" className="mt-4">
@@ -248,16 +365,19 @@ export function InstagramAnalyzer() {
               usernames={state.analysis.youFollowTheyDont}
               accent="text-amber-400"
               onPersistError={(msg) => setIndexedDbError(msg)}
+              markNew={markNewFromDiff}
             />
             <InstagramUserList
               title={messages.analyzer.lists.onlyTheyFollow}
               usernames={state.analysis.theyFollowYouDont}
               accent="text-sky-400"
+              markNew={markNewFromDiff}
             />
             <InstagramUserList
               title={messages.analyzer.lists.mutual}
               usernames={state.analysis.mutuals}
               accent="text-emerald-400"
+              markNew={markNewFromDiff}
             />
           </div>
         </>

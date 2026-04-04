@@ -14,6 +14,7 @@ type UnfollowerReviewListProps = {
   accent: string;
   title: string;
   onPersistError?: (message: string) => void;
+  markNew?: Set<string> | null;
 };
 
 export function UnfollowerReviewList({
@@ -21,6 +22,7 @@ export function UnfollowerReviewList({
   accent,
   title,
   onPersistError,
+  markNew,
 }: UnfollowerReviewListProps) {
   const [okSet, setOkSet] = useState<Set<string>>(new Set());
   const onPersistErrorRef = useRef(onPersistError);
@@ -105,10 +107,18 @@ export function UnfollowerReviewList({
               href={`https://www.instagram.com/${u}/`}
               target="_blank"
               rel="noopener noreferrer"
-              className={`text-blue-300 underline-offset-2 hover:underline ${okSet.has(u) ? "opacity-70" : ""}`}
+              className={`min-w-0 text-blue-300 underline-offset-2 hover:underline ${okSet.has(u) ? "opacity-70" : ""}`}
             >
               {u}
             </a>
+            {markNew?.has(u) ? (
+              <span
+                className="shrink-0 rounded-full border border-emerald-500/40 bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-300"
+                aria-label={messages.userList.newBadge}
+              >
+                {messages.userList.newBadge}
+              </span>
+            ) : null}
           </li>
         ))}
       </ul>

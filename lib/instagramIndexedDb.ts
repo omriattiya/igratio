@@ -1,3 +1,5 @@
+import type { InstagramAnalysis } from "@/lib/instagram";
+
 const DB_NAME = "igratio";
 const DB_VERSION = 1;
 
@@ -12,10 +14,12 @@ export type TrackSnapshotsMeta = { enabled: boolean };
 
 export type UnfollowerOkRecord = { markedAt: string };
 
+/** Stored after each successful analyze; lists drive export diffs; analysis restores UI after refresh. */
 export type ListsSnapshot = {
   following: string[];
   followers: string[];
   savedAt: string;
+  analysis?: InstagramAnalysis;
 };
 
 function idbAvailable(): boolean {
@@ -178,5 +182,23 @@ export async function setLatestSnapshot(snapshot: ListsSnapshot): Promise<void> 
     tx.objectStore(STORE_SNAPSHOT).put(snapshot, KEY_LATEST_SNAPSHOT);
     tx.oncomplete = () => resolve();
     tx.onerror = () => reject(tx.error ?? new Error("Failed to save snapshot"));
+  });
+}
+
+/** Clears all app data in IndexedDB (export snapshots, OK marks, tracking preference). */
+export async function clearAllSiteData(): Promise<void> {
+  if (!idbAvailable()) return;
+  const db = await openDb();
+  await new Promise<void>((resolve, reject) => {
+    const tx = db.transaction(
+      [STORE_META, STORE_UNFOLLOWER_OK, STORE_SNAPSHOT],
+      "readwrite",
+    );
+    tx.objectStore(STORE_META).clear();
+    tx.objectStore(STORE_UNFOLLOWER_OK).clear();
+    tx.objectStore(STORE_SNAPSHOT).clear();
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error ?? new Error("Failed to clear storage"));
+    tx.onabort = () => reject(tx.error ?? new Error("Transaction aborted"));
   });
 }
