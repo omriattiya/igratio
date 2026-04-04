@@ -3,6 +3,10 @@ export type InstagramAnalysis = {
   followersCount: number;
   followingUnique: number;
   followersUnique: number;
+  /** Unique following minus unique followers. */
+  netDifference: number;
+  /** Unique followers ÷ unique following; null if following is 0. */
+  followersRatio: number | null;
   mutuals: string[];
   youFollowTheyDont: string[];
   theyFollowYouDont: string[];
@@ -13,9 +17,33 @@ export function normalizeUsername(raw: string): string {
   return s;
 }
 
+/** Instagram uses this prefix for removed accounts in some exports. */
+function isDeletedPlaceholderUsername(normalized: string): boolean {
+  return normalized.startsWith("__deleted__");
+}
+
+/** Profile URLs like /_u/handle or /handle — not /p/, /reel/, etc. */
+function usernameFromInstagramHref(href: string): string | null {
+  try {
+    const parts = new URL(href).pathname.split("/").filter(Boolean);
+    if (parts.length === 0) return null;
+    if (parts[0] === "_u" && parts[1]) return normalizeUsername(parts[1]);
+    if (parts[0] === "p" || parts[0] === "reel" || parts[0] === "stories") return null;
+    return normalizeUsername(parts[parts.length - 1]!) || null;
+  } catch {
+    return null;
+  }
+}
+
 /**
- * Walks Instagram "Download your information" JSON and collects usernames from
- * every `string_list_data[].value` field (followers, following, close friends, etc.).
+ * Walks Instagram "Download your information" JSON and collects usernames.
+ *
+ * Shapes seen in exports:
+ * - **Followers** (`followers_*.json`): array of blocks with `string_list_data[].value` (and often empty `title`).
+ * - **Following** (`following.json`): `relationships_following` array; handle is in each block's `title`, while
+ *   `string_list_data` may only have `href` + `timestamp` (no `value`).
+ *
+ * Usernames starting with `__deleted__` (after normalization) are omitted.
  */
 export function extractUsernamesFromInstagramJson(data: unknown): string[] {
   const found: string[] = [];
@@ -33,12 +61,31 @@ export function extractUsernamesFromInstagramJson(data: unknown): string[] {
     const o = node as Record<string, unknown>;
     const list = o.string_list_data;
     if (Array.isArray(list)) {
+      const fromValues: string[] = [];
       for (const entry of list) {
         if (!entry || typeof entry !== "object") continue;
         const v = (entry as { value?: unknown }).value;
         if (typeof v === "string") {
           const u = normalizeUsername(v);
-          if (u) found.push(u);
+          if (u) fromValues.push(u);
+        }
+      }
+
+      if (fromValues.length > 0) {
+        found.push(...fromValues);
+      } else {
+        const title = typeof o.title === "string" ? normalizeUsername(o.title) : "";
+        if (title) {
+          found.push(title);
+        } else {
+          for (const entry of list) {
+            if (!entry || typeof entry !== "object") continue;
+            const href = (entry as { href?: unknown }).href;
+            if (typeof href === "string") {
+              const u = usernameFromInstagramHref(href);
+              if (u) found.push(u);
+            }
+          }
         }
       }
     }
@@ -47,7 +94,7 @@ export function extractUsernamesFromInstagramJson(data: unknown): string[] {
   }
 
   visit(data);
-  return found;
+  return found.filter((u) => !isDeletedPlaceholderUsername(u));
 }
 
 export function analyzeFollowingFollowers(
@@ -74,11 +121,16 @@ export function analyzeFollowingFollowers(
   youFollowTheyDont.sort();
   theyFollowYouDont.sort();
 
+  const followingUnique = followingSet.size;
+  const followersUnique = followersSet.size;
+
   return {
     followingCount: followingUsernames.length,
     followersCount: followerUsernames.length,
-    followingUnique: followingSet.size,
-    followersUnique: followersSet.size,
+    followingUnique,
+    followersUnique,
+    netDifference: followingUnique - followersUnique,
+    followersRatio: followingUnique === 0 ? null : followersUnique / followingUnique,
     mutuals,
     youFollowTheyDont,
     theyFollowYouDont,

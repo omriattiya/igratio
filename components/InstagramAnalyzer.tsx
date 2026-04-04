@@ -14,26 +14,36 @@ type LoadState =
   | { status: "error"; message: string }
   | { status: "ready"; analysis: InstagramAnalysis };
 
+const summaryStatCardClass =
+  "rounded-xl border border-blue-200/80 bg-white p-4 transition duration-200 ease-out hover:-translate-y-0.5 hover:border-blue-400 hover:shadow-md hover:shadow-blue-900/10 dark:border-blue-800/60 dark:bg-blue-950/70 dark:hover:border-blue-500/80 dark:hover:bg-blue-900/90 dark:hover:shadow-lg dark:hover:shadow-black/30";
+
 function UserList({ title, usernames, accent }: { title: string; usernames: string[]; accent: string }) {
   if (usernames.length === 0) {
     return (
-      <section className="rounded-xl border border-zinc-200/80 bg-zinc-50/80 p-4 dark:border-zinc-800 dark:bg-zinc-900/40">
+      <section className="rounded-xl border border-blue-200/70 bg-white/60 p-4 dark:border-blue-800/50 dark:bg-blue-950/40">
         <h3 className={`text-sm font-semibold ${accent}`}>{title}</h3>
-        <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">No accounts in this category.</p>
+        <p className="mt-2 text-sm text-slate-500 dark:text-blue-200/60">No accounts in this category.</p>
       </section>
     );
   }
 
   return (
-    <section className="rounded-xl border border-zinc-200/80 bg-zinc-50/80 p-4 dark:border-zinc-800 dark:bg-zinc-900/40">
+    <section className="rounded-xl border border-blue-200/70 bg-white/60 p-4 dark:border-blue-800/50 dark:bg-blue-950/40">
       <h3 className={`text-sm font-semibold ${accent}`}>
         {title}{" "}
-        <span className="font-normal text-zinc-500 dark:text-zinc-400">({usernames.length})</span>
+        <span className="font-normal text-slate-500 dark:text-blue-200/60">({usernames.length})</span>
       </h3>
-      <ul className="mt-3 max-h-64 list-inside list-disc overflow-y-auto text-sm text-zinc-800 dark:text-zinc-200">
+      <ul className="mt-3 max-h-64 list-inside list-disc overflow-y-auto text-sm text-slate-800 dark:text-blue-100/90">
         {usernames.map((u) => (
           <li key={u} className="break-all">
-            @{u}
+            <a
+              href={`https://www.instagram.com/${u}/`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-700 underline-offset-2 hover:underline dark:text-blue-300"
+            >
+              {u}
+            </a>
           </li>
         ))}
       </ul>
@@ -95,10 +105,15 @@ export function InstagramAnalyzer() {
   const summary = useMemo(() => {
     if (state.status !== "ready") return null;
     const a = state.analysis;
+    const ratioLabel =
+      a.followersRatio === null
+        ? "—"
+        : a.followersRatio.toLocaleString(undefined, { maximumFractionDigits: 3, minimumFractionDigits: 0 });
+
     return (
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
-          <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">Following</p>
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+        <div className={summaryStatCardClass}>
+          <p className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-blue-200/65">Following</p>
           <p className="mt-1 text-2xl font-semibold tabular-nums">{a.followingUnique}</p>
           {a.followingCount !== a.followingUnique && (
             <p className="mt-1 text-xs text-amber-600 dark:text-amber-400">
@@ -107,8 +122,8 @@ export function InstagramAnalyzer() {
             </p>
           )}
         </div>
-        <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
-          <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">Followers</p>
+        <div className={summaryStatCardClass}>
+          <p className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-blue-200/65">Followers</p>
           <p className="mt-1 text-2xl font-semibold tabular-nums">{a.followersUnique}</p>
           {a.followersCount !== a.followersUnique && (
             <p className="mt-1 text-xs text-amber-600 dark:text-amber-400">
@@ -117,17 +132,22 @@ export function InstagramAnalyzer() {
             </p>
           )}
         </div>
-        <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
-          <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">Mutual</p>
+        <div className={summaryStatCardClass}>
+          <p className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-blue-200/65">Mutual</p>
           <p className="mt-1 text-2xl font-semibold tabular-nums">{a.mutuals.length}</p>
         </div>
-        <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
-          <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">Net difference</p>
+        <div className={summaryStatCardClass}>
+          <p className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-blue-200/65">Net difference</p>
           <p className="mt-1 text-2xl font-semibold tabular-nums">
-            {a.youFollowTheyDont.length - a.theyFollowYouDont.length >= 0 ? "+" : ""}
-            {a.youFollowTheyDont.length - a.theyFollowYouDont.length}
+            {a.netDifference > 0 ? "+" : ""}
+            {a.netDifference}
           </p>
-          <p className="mt-1 text-xs text-zinc-500">Following minus one-way followers</p>
+          <p className="mt-1 text-xs text-slate-500 dark:text-blue-200/55">Following minus followers (unique)</p>
+        </div>
+        <div className={summaryStatCardClass}>
+          <p className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-blue-200/65">Followers ratio</p>
+          <p className="mt-1 text-2xl font-semibold tabular-nums">{ratioLabel}</p>
+          <p className="mt-1 text-xs text-slate-500 dark:text-blue-200/55">Followers / following (unique)</p>
         </div>
       </div>
     );
@@ -135,11 +155,11 @@ export function InstagramAnalyzer() {
 
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-8">
-      <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
-        <p className="text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+      <div className="rounded-2xl border border-blue-200/80 bg-white p-6 shadow-sm shadow-blue-950/5 dark:border-blue-800/60 dark:bg-blue-950/50 dark:shadow-none">
+        <p className="text-sm leading-relaxed text-slate-600 dark:text-blue-200/75">
           Export your data from the Instagram app or website (Settings → Accounts Center → Your information and
           permissions → Download your information). Unzip the archive and choose the JSON files under{" "}
-          <code className="rounded bg-zinc-100 px-1.5 py-0.5 font-mono text-xs dark:bg-zinc-900">
+          <code className="rounded bg-blue-100 px-1.5 py-0.5 font-mono text-xs text-blue-950 dark:bg-blue-900/50 dark:text-blue-100">
             connections/followers_and_following/
           </code>
           . Everything below runs in your browser; files are not uploaded.
@@ -147,26 +167,26 @@ export function InstagramAnalyzer() {
 
         <div className="mt-6 grid gap-6 sm:grid-cols-2">
           <label className="flex flex-col gap-2">
-            <span className="text-sm font-medium text-zinc-800 dark:text-zinc-200">Following JSON</span>
+            <span className="text-sm font-medium text-blue-950 dark:text-blue-100">Following JSON</span>
             <input
               type="file"
               accept=".json,application/json"
               multiple
-              className="text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-zinc-900 file:px-3 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-zinc-800 dark:file:bg-zinc-100 dark:file:text-zinc-900"
+              className="text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-blue-900 file:px-3 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-blue-800 dark:file:bg-blue-300 dark:file:text-blue-950 dark:hover:file:bg-blue-200"
               onChange={(e) => setFollowingFiles(e.target.files)}
             />
-            <span className="text-xs text-zinc-500">Usually following.json. Multiple files are merged.</span>
+            <span className="text-xs text-slate-500 dark:text-blue-200/55">Usually following.json. Multiple files are merged.</span>
           </label>
           <label className="flex flex-col gap-2">
-            <span className="text-sm font-medium text-zinc-800 dark:text-zinc-200">Followers JSON</span>
+            <span className="text-sm font-medium text-blue-950 dark:text-blue-100">Followers JSON</span>
             <input
               type="file"
               accept=".json,application/json"
               multiple
-              className="text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-zinc-900 file:px-3 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-zinc-800 dark:file:bg-zinc-100 dark:file:text-zinc-900"
+              className="text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-blue-900 file:px-3 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-blue-800 dark:file:bg-blue-300 dark:file:text-blue-950 dark:hover:file:bg-blue-200"
               onChange={(e) => setFollowerFiles(e.target.files)}
             />
-            <span className="text-xs text-zinc-500">followers_1.json, followers_2.json, …</span>
+            <span className="text-xs text-slate-500 dark:text-blue-200/55">followers_1.json, followers_2.json, …</span>
           </label>
         </div>
 
@@ -174,7 +194,7 @@ export function InstagramAnalyzer() {
           type="button"
           disabled={!canAnalyze || state.status === "loading"}
           onClick={() => void runAnalysis()}
-          className="mt-6 w-full rounded-xl bg-zinc-900 px-4 py-3 text-sm font-semibold text-white transition enabled:hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900 dark:enabled:hover:bg-zinc-200 sm:w-auto"
+          className="mt-6 w-full rounded-xl bg-blue-900 px-4 py-3 text-sm font-semibold text-white transition enabled:hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-blue-600 dark:enabled:hover:bg-blue-500 sm:w-auto"
         >
           {state.status === "loading" ? "Analyzing…" : "Analyze"}
         </button>
@@ -191,12 +211,12 @@ export function InstagramAnalyzer() {
       {state.status === "ready" && (
         <div className="grid gap-4 lg:grid-cols-3">
           <UserList
-            title="You follow, they don’t follow back"
+            title="Don’t follow back"
             usernames={state.analysis.youFollowTheyDont}
             accent="text-amber-700 dark:text-amber-400"
           />
           <UserList
-            title="They follow you, you don’t follow back"
+            title="Only they follow you"
             usernames={state.analysis.theyFollowYouDont}
             accent="text-sky-700 dark:text-sky-400"
           />

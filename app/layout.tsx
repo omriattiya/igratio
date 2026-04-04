@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "IgRatio — Instagram following & followers",
+  title: "IG Ratio — Instagram following & followers ratio",
   description: "Analyze Instagram following and followers JSON exports in the browser.",
 };
 
