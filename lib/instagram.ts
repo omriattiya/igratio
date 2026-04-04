@@ -141,3 +141,20 @@ export async function readJsonFile(file: File): Promise<unknown> {
   const text = await file.text();
   return JSON.parse(text) as unknown;
 }
+
+export function diffSets(
+  previous: ReadonlySet<string>,
+  next: ReadonlySet<string>,
+): { added: string[]; removed: string[] } {
+  const added: string[] = [];
+  const removed: string[] = [];
+  for (const u of next) {
+    if (!previous.has(u)) added.push(u);
+  }
+  for (const u of previous) {
+    if (!next.has(u)) removed.push(u);
+  }
+  added.sort();
+  removed.sort();
+  return { added, removed };
+}

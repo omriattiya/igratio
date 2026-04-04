@@ -26,6 +26,23 @@
       "dontFollowBack": "Don't follow back",
       "onlyTheyFollow": "Only they follow you",
       "mutual": "Mutual"
+    },
+    "indexedDbPrivacy": "Manage unfollowers and export tracking use IndexedDB in this browser. Data stays on your device and is not uploaded.",
+    "indexedDbFailed": "Could not use IndexedDB (storage may be blocked in private mode).",
+    "exportTracking": {
+      "toggle": "Track changes between exports",
+      "toggleHint": "When on, each analysis saves your unique following and follower lists. The next time you analyze new export files, you will see who was added or removed.",
+      "sectionTitle": "Changes since last saved export",
+      "followingAdded": "New in following",
+      "followingRemoved": "Removed from following",
+      "followersAdded": "New followers",
+      "followersRemoved": "No longer followers",
+      "baselineOnly": "No previous snapshot yet. This analysis is saved as the baseline for your next run.",
+      "emptyList": "None"
+    },
+    "unfollowers": {
+      "okCheckbox": "OK",
+      "manageHint": "Mark accounts you are fine with (celebrities, brands, etc.). OK choices are stored in IndexedDB on this device."
     }
   },
   "summary": {

@@ -1,0 +1,17 @@
+---
+description: Use const object status maps instead of string literals for load/UI state
+globs: "**/*.{ts,tsx}"
+alwaysApply: false
+---
+
+# Status values: enum map (not string literals)
+
+For React state machines and discriminated unions keyed on `status` (idle, loading, error, ready, etc.):
+
+1. **Define a single const object** with `as const` whose values are the runtime strings (e.g. `AnalyzerLoadStatus.Idle` → `"idle"`).
+2. **Type the union** with `status: typeof AnalyzerLoadStatus.Idle` (and similar) so TypeScript narrows correctly.
+3. **Compare using the map**: `state.status === AnalyzerLoadStatus.Ready`, never `state.status === "ready"` scattered in JSX or handlers.
+
+Benefits: rename-safe, grep-friendly, one place for allowed values, matches discriminated unions cleanly.
+
+Example in this repo: [`lib/analyzerLoadStatus.ts`](lib/analyzerLoadStatus.ts) and [`components/InstagramAnalyzer.tsx`](components/InstagramAnalyzer.tsx).
