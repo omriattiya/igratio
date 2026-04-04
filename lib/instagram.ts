@@ -129,7 +129,7 @@ export function analyzeFollowingFollowers(
     followersCount: followerUsernames.length,
     followingUnique,
     followersUnique,
-    netDifference: followingUnique - followersUnique,
+    netDifference: followersUnique - followingUnique,
     followersRatio: followingUnique === 0 ? null : followersUnique / followingUnique,
     mutuals,
     youFollowTheyDont,
