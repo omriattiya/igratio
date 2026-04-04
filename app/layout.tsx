@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { messages } from "@/lib/i18n";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -13,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "IG Ratio — Instagram following & followers ratio",
-  description: "Analyze Instagram following and followers JSON exports in the browser.",
+  title: messages.metadata.title,
+  description: messages.metadata.description,
 };
 
 export default function RootLayout({

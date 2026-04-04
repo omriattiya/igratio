@@ -1,0 +1,46 @@
+{
+  "metadata": {
+    "title": "IG Ratio — Instagram following & followers ratio",
+    "description": "Analyze Instagram following and followers JSON exports in the browser."
+  },
+  "home": {
+    "headerTitle": "IG Ratio",
+    "headerDescription": "Compare Instagram following and followers export files locally in your browser."
+  },
+  "analyzer": {
+    "errors": {
+      "selectFiles": "Select at least one following JSON and one followers JSON file.",
+      "noUsernames": "No usernames were found. Use the JSON files from Instagram → Settings → Download your information → followers_*.json and following.json (or equivalent).",
+      "parseFailed": "Failed to read or parse JSON."
+    },
+    "introBeforeCode": "Export your data from the Instagram app or website (Settings → Accounts Center → Your information and permissions → Download your information). Unzip the archive and choose the JSON files under",
+    "pathCode": "connections/followers_and_following/",
+    "introAfterCode": ". Everything below runs in your browser; files are not uploaded.",
+    "followingLabel": "Following JSON",
+    "followingHint": "Usually following.json. Multiple files are merged.",
+    "followersLabel": "Followers JSON",
+    "followersHint": "followers_1.json, followers_2.json, …",
+    "analyzing": "Analyzing…",
+    "analyze": "Analyze",
+    "lists": {
+      "dontFollowBack": "Don't follow back",
+      "onlyTheyFollow": "Only they follow you",
+      "mutual": "Mutual"
+    }
+  },
+  "summary": {
+    "following": "Following",
+    "followers": "Followers",
+    "mutual": "Mutual",
+    "netDifference": "Net difference",
+    "netDifferenceHint": "Following minus followers (unique)",
+    "followersRatio": "Followers ratio",
+    "followersRatioHint": "Followers / following (unique)",
+    "duplicateRowsOne": "{total} rows ({dupCount} duplicate)",
+    "duplicateRowsMany": "{total} rows ({dupCount} duplicates)",
+    "emDash": "—"
+  },
+  "userList": {
+    "empty": "No accounts in this category."
+  }
+}
