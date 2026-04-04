@@ -6,6 +6,7 @@ import {
   pruneUnfollowerOk,
   setUnfollowerOk,
 } from "@/lib/instagramIndexedDb";
+import { Checkbox } from "@/components/ui/checkbox";
 import { messages } from "@/lib/i18n";
 
 type UnfollowerReviewListProps = {
@@ -73,9 +74,9 @@ export function UnfollowerReviewList({
 
   if (usernames.length === 0) {
     return (
-      <section className="rounded-xl border border-blue-200/70 bg-white/60 p-4 dark:border-blue-800/50 dark:bg-blue-950/40">
+      <section className="rounded-xl border border-blue-800/50 bg-blue-950/40 p-4">
         <h3 className={`text-sm font-semibold ${accent}`}>{title}</h3>
-        <p className="mt-2 text-sm text-slate-500 dark:text-blue-200/60">
+        <p className="mt-2 text-sm text-blue-200/60">
           {messages.userList.empty}
         </p>
       </section>
@@ -83,31 +84,28 @@ export function UnfollowerReviewList({
   }
 
   return (
-    <section className="rounded-xl border border-blue-200/70 bg-white/60 p-4 dark:border-blue-800/50 dark:bg-blue-950/40">
+    <section className="rounded-xl border border-blue-800/50 bg-blue-950/40 p-4">
       <h3 className={`text-sm font-semibold ${accent}`}>
         {title}{" "}
-        <span className="font-normal text-slate-500 dark:text-blue-200/60">({usernames.length})</span>
+        <span className="font-normal text-blue-200/60">({usernames.length})</span>
       </h3>
-      <p className="mt-2 text-xs leading-relaxed text-slate-500 dark:text-blue-200/55">
+      <p className="mt-2 text-xs leading-relaxed text-blue-200/55">
         {copy.manageHint}
       </p>
-      <ul className="mt-3 max-h-64 list-none space-y-2 overflow-y-auto text-sm text-slate-800 dark:text-blue-100/90">
+      <ul className="mt-3 max-h-64 list-none space-y-2 overflow-y-auto text-sm text-blue-100/90">
         {usernames.map((u) => (
           <li key={u} className="flex items-start gap-2 break-all">
-            <label className="flex cursor-pointer items-start gap-2">
-              <input
-                type="checkbox"
-                checked={okSet.has(u)}
-                onChange={(e) => void toggleOk(u, e.target.checked)}
-                aria-label={`${copy.okCheckbox}: ${u}`}
-                className="mt-1 size-4 shrink-0 rounded border-slate-300 text-blue-900 focus:ring-blue-900 dark:border-blue-600 dark:bg-blue-950 dark:text-blue-300"
-              />
-            </label>
+            <Checkbox
+              checked={okSet.has(u)}
+              onCheckedChange={(checked) => void toggleOk(u, checked === true)}
+              aria-label={`${copy.okCheckbox}: ${u}`}
+              className="mt-1"
+            />
             <a
               href={`https://www.instagram.com/${u}/`}
               target="_blank"
               rel="noopener noreferrer"
-              className={`text-blue-700 underline-offset-2 hover:underline dark:text-blue-300 ${okSet.has(u) ? "opacity-70" : ""}`}
+              className={`text-blue-300 underline-offset-2 hover:underline ${okSet.has(u) ? "opacity-70" : ""}`}
             >
               {u}
             </a>

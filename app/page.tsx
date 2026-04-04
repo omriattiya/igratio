@@ -4,7 +4,7 @@ import { messages } from "@/lib/i18n";
 
 export default function Home() {
   return (
-    <div className="flex min-h-full flex-1 flex-col bg-slate-100/80 dark:bg-[#0c1929]">
+    <div className="flex min-h-full flex-1 flex-col bg-background">
       <SiteHeader
         title={messages.home.headerTitle}
         description={messages.home.headerDescription}
