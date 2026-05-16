@@ -108,7 +108,7 @@ export function InstagramUserList({
         </div>
       </div>
 
-      <ul className="mt-3 min-h-0 flex-1 basis-0 list-none space-y-2 overflow-y-auto">
+      <ul className="custom-scrollbar mt-3 min-h-0 flex-1 basis-0 list-none space-y-2 overflow-y-auto pr-2">
         {sorted.map((u) => (
           <li key={u}>
             <UserLinkCard

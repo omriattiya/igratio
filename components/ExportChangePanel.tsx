@@ -69,7 +69,7 @@ function UsernameMiniList({ label, usernames, userStatus }: UsernameListProps) {
       {usernames.length === 0 ? (
         <p className="mt-2 text-sm text-blue-200/55">{empty}</p>
       ) : (
-        <ul className="mt-2 max-h-40 list-none space-y-1.5 overflow-y-auto">
+        <ul className="custom-scrollbar mt-2 max-h-40 list-none space-y-1.5 overflow-y-auto pr-2">
           {usernames.map((u) => (
             <li key={u}>
               <UserLinkCard username={u} status={userStatus} />
