@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState, type ChangeEvent } from "react";
-import { CircleCheck } from "lucide-react";
+import { CircleCheck, Trash2, WandSparkles } from "lucide-react";
 import {
   analyzeFollowingFollowers,
   diffSets,
@@ -24,6 +24,7 @@ import {
   ExportChangeDiff,
   ExportTrackingToggle,
   type ExportDiff,
+  type SummaryDiffs,
 } from "@/components/ExportChangePanel";
 import { UnfollowerReviewList } from "@/components/UnfollowerReviewList";
 import { FollowActivityChart } from "@/components/FollowActivityChart";
@@ -174,6 +175,11 @@ export function InstagramAnalyzer() {
             const f = diffSets(new Set(prev.following), followingSet);
             const g = diffSets(new Set(prev.followers), followersSet);
             const newUnfollowers = g.removed.filter((u) => followingSet.has(u));
+            const summaryDiffs: SummaryDiffs = {
+              followingDiff: analysis.followingUnique - (prev.analysis?.followingUnique ?? new Set(prev.following).size),
+              followersDiff: analysis.followersUnique - (prev.analysis?.followersUnique ?? new Set(prev.followers).size),
+              mutualDiff: analysis.mutuals.length - (prev.analysis?.mutuals.length ?? 0),
+            };
             diff = {
               followingAdded: f.added,
               followingRemoved: f.removed,
@@ -181,6 +187,7 @@ export function InstagramAnalyzer() {
               followersRemoved: g.removed,
               newUnfollowers,
               hadBaseline: true,
+              summaryDiffs,
             };
           } else {
             diff = {
@@ -300,6 +307,7 @@ export function InstagramAnalyzer() {
               onClick={() => void runAnalysis()}
               className="w-full sm:w-auto"
             >
+              <WandSparkles className="size-4" />
               {state.status === AnalyzerLoadStatus.Loading
                 ? messages.analyzer.analyzing
                 : messages.analyzer.analyze}
@@ -323,6 +331,7 @@ export function InstagramAnalyzer() {
                         if (!e.defaultPrevented) void handleResetAnalysis();
                       }}
                     >
+                      <Trash2 className="size-4" />
                       {messages.analyzer.resetAnalysis}
                     </Button>
                   )}
@@ -357,7 +366,7 @@ export function InstagramAnalyzer() {
 
       {state.status === AnalyzerLoadStatus.Ready && (
         <>
-          <InstagramAnalysisSummary analysis={state.analysis} />
+          <InstagramAnalysisSummary analysis={state.analysis} summaryDiffs={lastExportDiff?.summaryDiffs} />
           <FollowActivityChart
             followerTimestamps={followerTimestamps}
             followingTimestamps={followingTimestamps}

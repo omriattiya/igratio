@@ -5,6 +5,12 @@ import { Switch } from "@/components/ui/switch";
 import { UserLinkCard, type UserStatus } from "@/components/UserLinkCard";
 import { messages } from "@/lib/i18n";
 
+export type SummaryDiffs = {
+  followingDiff: number;
+  followersDiff: number;
+  mutualDiff: number;
+};
+
 export type ExportDiff = {
   followingAdded: string[];
   followingRemoved: string[];
@@ -13,6 +19,7 @@ export type ExportDiff = {
   /** Still in your following but no longer in your followers since last export. */
   newUnfollowers: string[];
   hadBaseline: boolean;
+  summaryDiffs?: SummaryDiffs;
 };
 
 type ExportTrackingToggleProps = {
@@ -30,7 +37,7 @@ export function ExportTrackingToggle({
 
   return (
     <div className="mt-6 rounded-xl border border-blue-800/50 bg-blue-950/30 p-4">
-      <div className="flex items-start gap-4">
+      <div className="flex items-center gap-4">
         <Switch
           id="export-tracking-toggle"
           checked={enabled}
