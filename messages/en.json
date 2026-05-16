@@ -104,7 +104,7 @@
     },
     "unfollowers": {
       "okCheckbox": "OK",
-      "manageHint": "Mark accounts you are fine with (celebrities, brands, etc.). OK choices are stored in IndexedDB on this device"
+      "manageHint": "Mark accounts you are fine with (celebrities, brands, etc.). Checks are stored in IndexedDB locally on your device"
     }
   },
   "summary": {
