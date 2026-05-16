@@ -16,7 +16,7 @@ export function InstagramUserList({
 }: InstagramUserListProps) {
   if (usernames.length === 0) {
     return (
-      <section className="rounded-xl border border-blue-800/50 bg-blue-950/40 p-4">
+      <section className="flex h-full flex-col rounded-xl border border-blue-800/50 bg-blue-950/40 p-4">
         <h3 className={`text-sm font-semibold ${accent}`}>{title}</h3>
         <p className="mt-2 text-sm text-blue-200/60">
           {messages.userList.empty}
@@ -26,12 +26,12 @@ export function InstagramUserList({
   }
 
   return (
-    <section className="rounded-xl border border-blue-800/50 bg-blue-950/40 p-4">
+    <section className="flex h-full flex-col rounded-xl border border-blue-800/50 bg-blue-950/40 p-4">
       <h3 className={`text-sm font-semibold ${accent}`}>
         {title}{" "}
         <span className="font-normal text-blue-200/60">({usernames.length})</span>
       </h3>
-      <ul className="mt-3 max-h-64 list-none space-y-1.5 overflow-y-auto text-sm text-blue-100/90">
+      <ul className="mt-3 max-h-[28rem] min-h-0 flex-1 list-none space-y-1.5 overflow-y-auto text-sm text-blue-100/90">
         {usernames.map((u) => (
           <li key={u} className="flex flex-wrap items-center gap-2 break-all">
             <a
