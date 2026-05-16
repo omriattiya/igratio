@@ -127,6 +127,9 @@
     "title": "Follow activity over time",
     "followersLine": "New followers",
     "followingLine": "New following",
+    "followersAccum": "Total followers",
+    "followingAccum": "Total following",
+    "accumulated": "Accumulated",
     "dragToZoom": "Drag to zoom",
     "resetZoom": "Reset zoom",
     "allHidden": "All series hidden — click a legend item to show"

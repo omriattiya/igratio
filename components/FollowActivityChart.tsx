@@ -10,7 +10,7 @@ import {
 } from "react";
 import { Chart } from "react-charts";
 import type { AxisOptions } from "react-charts";
-import { ZoomIn, ZoomOut } from "lucide-react";
+import { TrendingUp, ZoomIn, ZoomOut } from "lucide-react";
 import type { TimestampedUser } from "@/lib/instagram";
 import { messages } from "@/lib/i18n";
 
@@ -43,6 +43,14 @@ function aggregateByMonth(users: TimestampedUser[]): DateDatum[] {
     });
 }
 
+function accumulate(data: DateDatum[]): DateDatum[] {
+  let total = 0;
+  return data.map((d) => {
+    total += d.count;
+    return { date: d.date, count: total };
+  });
+}
+
 function lerp(t: number, min: Date, max: Date): Date {
   return new Date(min.getTime() + t * (max.getTime() - min.getTime()));
 }
@@ -55,6 +63,7 @@ export function FollowActivityChart({
 }: FollowActivityChartProps) {
   const [zoomRange, setZoomRange] = useState<DateRange>(null);
   const [hiddenSeries, setHiddenSeries] = useState<Set<string>>(new Set());
+  const [cumulative, setCumulative] = useState(false);
 
   const [dragStart, setDragStart] = useState<number | null>(null);
   const [dragEnd, setDragEnd] = useState<number | null>(null);
@@ -63,11 +72,19 @@ export function FollowActivityChart({
   const allData = useMemo(() => {
     const followersAgg = aggregateByMonth(followerTimestamps);
     const followingAgg = aggregateByMonth(followingTimestamps);
+    const followersLabel = cumulative ? copy.followersAccum : copy.followersLine;
+    const followingLabel = cumulative ? copy.followingAccum : copy.followingLine;
     return [
-      { label: copy.followersLine, data: followersAgg },
-      { label: copy.followingLine, data: followingAgg },
+      {
+        label: followersLabel,
+        data: cumulative ? accumulate(followersAgg) : followersAgg,
+      },
+      {
+        label: followingLabel,
+        data: cumulative ? accumulate(followingAgg) : followingAgg,
+      },
     ];
-  }, [followerTimestamps, followingTimestamps]);
+  }, [followerTimestamps, followingTimestamps, cumulative]);
 
   const fullTimeRange = useMemo(() => {
     let min = Infinity;
@@ -120,6 +137,8 @@ export function FollowActivityChart({
     () => ({
       [copy.followersLine]: "#38bdf8",
       [copy.followingLine]: "#a78bfa",
+      [copy.followersAccum]: "#38bdf8",
+      [copy.followingAccum]: "#a78bfa",
     }),
     [],
   );
@@ -134,6 +153,11 @@ export function FollowActivityChart({
   }, []);
 
   const handleResetZoom = useCallback(() => setZoomRange(null), []);
+
+  const toggleCumulative = useCallback(() => {
+    setCumulative((v) => !v);
+    setHiddenSeries(new Set());
+  }, []);
 
   const xFraction = useCallback(
     (clientX: number): number => {
@@ -212,6 +236,17 @@ export function FollowActivityChart({
           {copy.title}
         </h3>
         <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={toggleCumulative}
+            className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs transition-colors hover:bg-blue-800/40 hover:text-blue-100 ${
+              cumulative ? "bg-blue-800/50 text-blue-100" : "text-blue-300/60"
+            }`}
+          >
+            <TrendingUp className="size-3.5" />
+            {copy.accumulated}
+          </button>
+          <span className="text-blue-700/60">|</span>
           {zoomRange ? (
             <button
               type="button"
