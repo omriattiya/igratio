@@ -82,6 +82,13 @@
     "resetAnalysis": "Reset analysis",
     "resetAnalysisTooltip": "This will delete all site data stored in this browser: saved export snapshots, unfollower OK marks, and tracking settings",
     "resetAnalysisAriaLabel": "Reset analysis. This will delete all site data stored in this browser",
+    "resetConfirm": {
+      "title": "Are you sure?",
+      "description": "This will delete all analysis data from your local machine — saved export snapshots, unfollower marks, and tracking settings.",
+      "privacy": "We never send or save any of your information on our servers. Everything is stored locally on your device.",
+      "confirm": "Yes, delete everything",
+      "cancel": "Cancel"
+    },
     "lists": {
       "dontFollowBack": "Don't follow back",
       "onlyTheyFollow": "Only they follow you",
