@@ -2,11 +2,14 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import Image from "next/image";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { messages, t } from "@/lib/i18n";
-import { TUTORIAL_IMAGES } from "@/lib/tutorialImages";
+import {
+  TUTORIAL_IMAGES,
+  getCachedSrc,
+  preloadAllTutorialImages,
+} from "@/lib/tutorialImages";
 import { cn } from "@/lib/utils";
 
 const copy = messages.analyzer.exportTutorial;
@@ -26,6 +29,7 @@ export function InstagramExportTutorial() {
 
   useEffect(() => {
     setMounted(true);
+    preloadAllTutorialImages();
   }, []);
 
   const open = useCallback(() => {
@@ -141,15 +145,14 @@ export function InstagramExportTutorial() {
 
           <div className="flex justify-center px-4 pt-4">
             <div className="overflow-hidden rounded-xl border border-blue-800/50 bg-blue-900/30">
-              <Image
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
                 key={image.src}
-                src={image.src}
+                src={getCachedSrc(image.src)}
                 alt={current.title}
                 width={image.width}
                 height={image.height}
                 className="block h-auto w-auto max-h-[min(60dvh,calc(100dvh-14rem))] max-w-[min(100%,calc(100vw-2rem))] object-contain"
-                sizes={`${image.width}px`}
-                loading="eager"
               />
             </div>
           </div>
