@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ArrowDownAZ, ArrowUpDown, Info, Sparkles } from "lucide-react";
+import { ArrowDownAZ, ArrowUpDown, ChevronDown, Info, Sparkles } from "lucide-react";
 import {
   getUnfollowerOkSet,
   pruneUnfollowerOk,
@@ -11,6 +11,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipPopup } from "@/components/ui/tooltip";
 import { UserLinkCard } from "@/components/UserLinkCard";
 import { messages } from "@/lib/i18n";
+import { useIsSmallScreen } from "@/lib/useIsSmallScreen";
 
 type SortMode = "new-first" | "a-z";
 
@@ -32,8 +33,10 @@ export function UnfollowerReviewList({
   const [okSet, setOkSet] = useState<Set<string>>(new Set());
   const [sort, setSort] = useState<SortMode>("new-first");
   const [menuOpen, setMenuOpen] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const onPersistErrorRef = useRef(onPersistError);
+  const isSmallScreen = useIsSmallScreen();
 
   useEffect(() => {
     onPersistErrorRef.current = onPersistError;
@@ -120,14 +123,25 @@ export function UnfollowerReviewList({
     );
   }
 
+  const collapsed = isSmallScreen && !expanded;
+
   return (
     <section className="flex h-full flex-col rounded-xl border border-blue-800/50 bg-blue-950/40 p-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <h3 className={`text-sm font-semibold ${accent}`}>
-            {title}{" "}
-            <span className="font-normal text-blue-200/60">({usernames.length})</span>
-          </h3>
+          <button
+            type="button"
+            className="flex items-center gap-2 lg:pointer-events-none"
+            onClick={() => isSmallScreen && setExpanded((v) => !v)}
+          >
+            <h3 className={`text-sm font-semibold ${accent}`}>
+              {title}{" "}
+              <span className="font-normal text-blue-200/60">({usernames.length})</span>
+            </h3>
+            <ChevronDown
+              className={`size-4 text-blue-300/70 transition-transform lg:hidden ${expanded ? "rotate-180" : ""}`}
+            />
+          </button>
           <Tooltip.Provider delay={0}>
             <Tooltip.Root>
               <Tooltip.Trigger
@@ -176,29 +190,32 @@ export function UnfollowerReviewList({
           )}
         </div>
       </div>
-      <ul className="custom-scrollbar mt-3 min-h-0 flex-1 basis-0 list-none space-y-2 overflow-y-auto pr-2">
-        {sorted.map((u) => {
-          const isOk = okSet.has(u);
-          return (
-            <li key={u}>
-              <UserLinkCard
-                username={u}
-                status={isOk ? "checked" : "unfollower"}
-                isNew={markNew?.has(u)}
-                dimmed={isOk}
-              >
-                <Checkbox
-                  checked={isOk}
-                  onCheckedChange={(checked) =>
-                    void toggleOk(u, checked === true)
-                  }
-                  aria-label={`${copy.okCheckbox}: ${u}`}
-                />
-              </UserLinkCard>
-            </li>
-          );
-        })}
-      </ul>
+
+      {!collapsed && (
+        <ul className="custom-scrollbar mt-3 max-h-[70vh] list-none space-y-2 overflow-y-auto pr-2 lg:max-h-none lg:min-h-0 lg:flex-1 lg:basis-0">
+          {sorted.map((u) => {
+            const isOk = okSet.has(u);
+            return (
+              <li key={u}>
+                <UserLinkCard
+                  username={u}
+                  status={isOk ? "checked" : "unfollower"}
+                  isNew={markNew?.has(u)}
+                  dimmed={isOk}
+                >
+                  <Checkbox
+                    checked={isOk}
+                    onCheckedChange={(checked) =>
+                      void toggleOk(u, checked === true)
+                    }
+                    aria-label={`${copy.okCheckbox}: ${u}`}
+                  />
+                </UserLinkCard>
+              </li>
+            );
+          })}
+        </ul>
+      )}
     </section>
   );
 }

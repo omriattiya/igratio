@@ -1,8 +1,9 @@
 "use client";
 
 import { useMemo, useRef, useState, useEffect } from "react";
-import { ArrowDownAZ, Sparkles, ArrowUpDown } from "lucide-react";
+import { ArrowDownAZ, Sparkles, ArrowUpDown, ChevronDown } from "lucide-react";
 import { messages } from "@/lib/i18n";
+import { useIsSmallScreen } from "@/lib/useIsSmallScreen";
 import { UserLinkCard, type UserStatus } from "@/components/UserLinkCard";
 
 type SortMode = "new-first" | "a-z";
@@ -25,7 +26,9 @@ export function InstagramUserList({
 }: InstagramUserListProps) {
   const [sort, setSort] = useState<SortMode>("new-first");
   const [menuOpen, setMenuOpen] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const isSmallScreen = useIsSmallScreen();
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -65,15 +68,26 @@ export function InstagramUserList({
     );
   }
 
+  const collapsed = isSmallScreen && !expanded;
+
   return (
     <section className="flex h-full flex-col rounded-xl border border-blue-800/50 bg-blue-950/40 p-4">
       <div className="flex items-center justify-between">
-        <h3 className={`text-sm font-semibold ${accent}`}>
-          {title}{" "}
-          <span className="font-normal text-blue-200/60">
-            ({usernames.length})
-          </span>
-        </h3>
+        <button
+          type="button"
+          className="flex items-center gap-2 lg:pointer-events-none"
+          onClick={() => isSmallScreen && setExpanded((v) => !v)}
+        >
+          <h3 className={`text-sm font-semibold ${accent}`}>
+            {title}{" "}
+            <span className="font-normal text-blue-200/60">
+              ({usernames.length})
+            </span>
+          </h3>
+          <ChevronDown
+            className={`size-4 text-blue-300/70 transition-transform lg:hidden ${expanded ? "rotate-180" : ""}`}
+          />
+        </button>
 
         <div className="relative" ref={menuRef}>
           <button
@@ -108,17 +122,19 @@ export function InstagramUserList({
         </div>
       </div>
 
-      <ul className="custom-scrollbar mt-3 min-h-0 flex-1 basis-0 list-none space-y-2 overflow-y-auto pr-2">
-        {sorted.map((u) => (
-          <li key={u}>
-            <UserLinkCard
-              username={u}
-              status={userStatus}
-              isNew={markNew?.has(u)}
-            />
-          </li>
-        ))}
-      </ul>
+      {!collapsed && (
+        <ul className="custom-scrollbar mt-3 max-h-[70vh] list-none space-y-2 overflow-y-auto pr-2 lg:max-h-none lg:min-h-0 lg:flex-1 lg:basis-0">
+          {sorted.map((u) => (
+            <li key={u}>
+              <UserLinkCard
+                username={u}
+                status={userStatus}
+                isNew={markNew?.has(u)}
+              />
+            </li>
+          ))}
+        </ul>
+      )}
     </section>
   );
 }
