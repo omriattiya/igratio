@@ -1,7 +1,13 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { preload } from "react-dom";
 import { messages } from "@/lib/i18n";
+import { TUTORIAL_IMAGES } from "@/lib/tutorialImages";
 import "./globals.css";
+
+for (const { src } of TUTORIAL_IMAGES) {
+  preload(src, { as: "image" });
+}
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
