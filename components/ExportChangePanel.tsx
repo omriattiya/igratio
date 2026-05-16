@@ -2,6 +2,7 @@
 
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { UserLinkCard, type UserStatus } from "@/components/UserLinkCard";
 import { messages } from "@/lib/i18n";
 
 export type ExportDiff = {
@@ -54,9 +55,10 @@ export function ExportTrackingToggle({
 type UsernameListProps = {
   label: string;
   usernames: string[];
+  userStatus: UserStatus;
 };
 
-function UsernameMiniList({ label, usernames }: UsernameListProps) {
+function UsernameMiniList({ label, usernames, userStatus }: UsernameListProps) {
   const empty = messages.analyzer.exportTracking.emptyList;
   return (
     <div className="rounded-lg border border-blue-800/40 bg-blue-950/50 p-3">
@@ -67,17 +69,10 @@ function UsernameMiniList({ label, usernames }: UsernameListProps) {
       {usernames.length === 0 ? (
         <p className="mt-2 text-sm text-blue-200/55">{empty}</p>
       ) : (
-        <ul className="mt-2 max-h-32 list-inside list-disc overflow-y-auto text-sm text-blue-100/90">
+        <ul className="mt-2 max-h-40 list-none space-y-1.5 overflow-y-auto">
           {usernames.map((u) => (
-            <li key={u} className="break-all">
-              <a
-                href={`https://www.instagram.com/${u}/`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-300 underline-offset-2 hover:underline"
-              >
-                {u}
-              </a>
+            <li key={u}>
+              <UserLinkCard username={u} status={userStatus} />
             </li>
           ))}
         </ul>
@@ -109,12 +104,12 @@ export function ExportChangeDiff({ diff }: ExportChangeDiffProps) {
       <h3 className="text-sm font-semibold text-blue-100">{copy.sectionTitle}</h3>
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
         <div className="sm:col-span-2">
-          <UsernameMiniList label={copy.newUnfollowers} usernames={diff.newUnfollowers} />
+          <UsernameMiniList label={copy.newUnfollowers} usernames={diff.newUnfollowers} userStatus="unfollower" />
         </div>
-        <UsernameMiniList label={copy.followingAdded} usernames={diff.followingAdded} />
-        <UsernameMiniList label={copy.followingRemoved} usernames={diff.followingRemoved} />
-        <UsernameMiniList label={copy.followersAdded} usernames={diff.followersAdded} />
-        <UsernameMiniList label={copy.followersRemoved} usernames={diff.followersRemoved} />
+        <UsernameMiniList label={copy.followingAdded} usernames={diff.followingAdded} userStatus="new-follow" />
+        <UsernameMiniList label={copy.followingRemoved} usernames={diff.followingRemoved} userStatus="removed" />
+        <UsernameMiniList label={copy.followersAdded} usernames={diff.followersAdded} userStatus="new-follow" />
+        <UsernameMiniList label={copy.followersRemoved} usernames={diff.followersRemoved} userStatus="removed" />
       </div>
     </div>
   );

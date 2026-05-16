@@ -7,6 +7,7 @@ import {
   setUnfollowerOk,
 } from "@/lib/instagramIndexedDb";
 import { Checkbox } from "@/components/ui/checkbox";
+import { UserLinkCard } from "@/components/UserLinkCard";
 import { messages } from "@/lib/i18n";
 
 type UnfollowerReviewListProps = {
@@ -94,33 +95,28 @@ export function UnfollowerReviewList({
       <p className="mt-2 text-xs leading-relaxed text-blue-200/55">
         {copy.manageHint}
       </p>
-      <ul className="mt-3 max-h-[28rem] min-h-0 flex-1 list-none space-y-2 overflow-y-auto text-sm text-blue-100/90">
-        {usernames.map((u) => (
-          <li key={u} className="flex items-start gap-2 break-all">
-            <Checkbox
-              checked={okSet.has(u)}
-              onCheckedChange={(checked) => void toggleOk(u, checked === true)}
-              aria-label={`${copy.okCheckbox}: ${u}`}
-              className="mt-1"
-            />
-            <a
-              href={`https://www.instagram.com/${u}/`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`min-w-0 text-blue-300 underline-offset-2 hover:underline ${okSet.has(u) ? "opacity-70" : ""}`}
-            >
-              {u}
-            </a>
-            {markNew?.has(u) ? (
-              <span
-                className="shrink-0 rounded-full border border-emerald-500/40 bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-300"
-                aria-label={messages.userList.newBadge}
+      <ul className="mt-3 min-h-0 flex-1 basis-0 list-none space-y-2 overflow-y-auto">
+        {usernames.map((u) => {
+          const isOk = okSet.has(u);
+          return (
+            <li key={u}>
+              <UserLinkCard
+                username={u}
+                status={isOk ? "checked" : "unfollower"}
+                isNew={markNew?.has(u)}
+                dimmed={isOk}
               >
-                {messages.userList.newBadge}
-              </span>
-            ) : null}
-          </li>
-        ))}
+                <Checkbox
+                  checked={isOk}
+                  onCheckedChange={(checked) =>
+                    void toggleOk(u, checked === true)
+                  }
+                  aria-label={`${copy.okCheckbox}: ${u}`}
+                />
+              </UserLinkCard>
+            </li>
+          );
+        })}
       </ul>
     </section>
   );

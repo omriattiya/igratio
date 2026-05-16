@@ -355,7 +355,7 @@ export function InstagramAnalyzer() {
               </AlertDescription>
             </Alert>
           )}
-          <div className="grid gap-4 lg:grid-cols-3">
+          <div className="grid gap-4 lg:grid-cols-3 lg:h-[32rem]">
             <UnfollowerReviewList
               title={messages.analyzer.lists.dontFollowBack}
               usernames={state.analysis.youFollowTheyDont}
@@ -367,12 +367,14 @@ export function InstagramAnalyzer() {
               title={messages.analyzer.lists.onlyTheyFollow}
               usernames={state.analysis.theyFollowYouDont}
               accent="text-sky-400"
+              userStatus="follower"
               markNew={markNewFromDiff}
             />
             <InstagramUserList
               title={messages.analyzer.lists.mutual}
               usernames={state.analysis.mutuals}
               accent="text-emerald-400"
+              userStatus="mutual"
               markNew={markNewFromDiff}
             />
           </div>
