@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, type ChangeEvent } from "react";
+import { CircleCheck } from "lucide-react";
 import {
   analyzeFollowingFollowers,
   diffSets,
@@ -31,6 +32,7 @@ import { Tooltip, TooltipPopup } from "@/components/ui/tooltip";
 import { Label } from "@/components/ui/label";
 import { AnalyzerLoadStatus } from "@/lib/analyzerLoadStatus";
 import { messages, t } from "@/lib/i18n";
+import { cn } from "@/lib/utils";
 
 function formatSnapshotSavedAt(iso: string): string {
   try {
@@ -236,34 +238,22 @@ export function InstagramAnalyzer() {
         </div>
 
         <div className="mt-6 grid gap-6 sm:grid-cols-2">
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="analyzer-following" className="text-foreground">
-              {messages.analyzer.followingLabel}
-            </Label>
-            <Input
-              key={`following-${fileInputKey}`}
-              id="analyzer-following"
-              type="file"
-              accept=".json,application/json"
-              multiple
-              onChange={(e) => setFollowingFiles(e.target.files)}
-            />
-            <span className="text-xs text-muted-foreground">{messages.analyzer.followingHint}</span>
-          </div>
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="analyzer-followers" className="text-foreground">
-              {messages.analyzer.followersLabel}
-            </Label>
-            <Input
-              key={`followers-${fileInputKey}`}
-              id="analyzer-followers"
-              type="file"
-              accept=".json,application/json"
-              multiple
-              onChange={(e) => setFollowerFiles(e.target.files)}
-            />
-            <span className="text-xs text-muted-foreground">{messages.analyzer.followersHint}</span>
-          </div>
+          <JsonFileUploadField
+            id="analyzer-following"
+            inputKey={fileInputKey}
+            label={messages.analyzer.followingLabel}
+            hint={messages.analyzer.followingHint}
+            hasFiles={Boolean(followingFiles?.length)}
+            onChange={(e) => setFollowingFiles(e.target.files)}
+          />
+          <JsonFileUploadField
+            id="analyzer-followers"
+            inputKey={fileInputKey}
+            label={messages.analyzer.followersLabel}
+            hint={messages.analyzer.followersHint}
+            hasFiles={Boolean(followerFiles?.length)}
+            onChange={(e) => setFollowerFiles(e.target.files)}
+          />
         </div>
 
         <ExportTrackingToggle
@@ -384,6 +374,53 @@ export function InstagramAnalyzer() {
           </div>
         </>
       )}
+    </div>
+  );
+}
+
+type JsonFileUploadFieldProps = {
+  id: string;
+  inputKey: number;
+  label: string;
+  hint: string;
+  hasFiles: boolean;
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+};
+
+function JsonFileUploadField({
+  id,
+  inputKey,
+  label,
+  hint,
+  hasFiles,
+  onChange,
+}: JsonFileUploadFieldProps) {
+  return (
+    <div className="flex flex-col gap-2">
+      <Label htmlFor={id} className="text-foreground">
+        {label}
+      </Label>
+      <div className="relative">
+        <Input
+          key={`${id}-${inputKey}`}
+          id={id}
+          type="file"
+          accept=".json,application/json"
+          multiple
+          onChange={onChange}
+          className={cn(
+            hasFiles &&
+              "border-emerald-500/80 pr-10 outline outline-2 outline-emerald-500/70 -outline-offset-1 focus-visible:border-emerald-500 focus-visible:ring-emerald-500/30",
+          )}
+        />
+        {hasFiles ? (
+          <CircleCheck
+            className="pointer-events-none absolute top-1/2 right-3 size-5 -translate-y-1/2 text-emerald-400"
+            aria-hidden
+          />
+        ) : null}
+      </div>
+      <span className="text-xs text-muted-foreground">{hint}</span>
     </div>
   );
 }
