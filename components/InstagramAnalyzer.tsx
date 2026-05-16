@@ -89,6 +89,7 @@ export function InstagramAnalyzer() {
     const next = new Set<string>();
     for (const u of lastExportDiff.followingAdded) next.add(u);
     for (const u of lastExportDiff.followersAdded) next.add(u);
+    for (const u of lastExportDiff.newUnfollowers) next.add(u);
     return next;
   }, [trackSnapshots, lastExportDiff]);
 
@@ -161,11 +162,13 @@ export function InstagramAnalyzer() {
           if (prev) {
             const f = diffSets(new Set(prev.following), followingSet);
             const g = diffSets(new Set(prev.followers), followersSet);
+            const newUnfollowers = g.removed.filter((u) => followingSet.has(u));
             diff = {
               followingAdded: f.added,
               followingRemoved: f.removed,
               followersAdded: g.added,
               followersRemoved: g.removed,
+              newUnfollowers,
               hadBaseline: true,
             };
           } else {
@@ -174,6 +177,7 @@ export function InstagramAnalyzer() {
               followingRemoved: [],
               followersAdded: [],
               followersRemoved: [],
+              newUnfollowers: [],
               hadBaseline: false,
             };
           }

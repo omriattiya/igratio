@@ -97,6 +97,7 @@
       "followingRemoved": "Removed from following",
       "followersAdded": "New followers",
       "followersRemoved": "No longer followers",
+      "newUnfollowers": "New unfollowers",
       "baselineOnly": "No previous snapshot yet. This analysis is saved as the baseline for your next run",
       "emptyList": "None",
       "lastSaved": "Last saved: {date}"

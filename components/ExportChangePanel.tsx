@@ -9,6 +9,8 @@ export type ExportDiff = {
   followingRemoved: string[];
   followersAdded: string[];
   followersRemoved: string[];
+  /** Still in your following but no longer in your followers since last export. */
+  newUnfollowers: string[];
   hadBaseline: boolean;
 };
 
@@ -106,6 +108,9 @@ export function ExportChangeDiff({ diff }: ExportChangeDiffProps) {
     <div className="rounded-xl border border-blue-800/50 bg-blue-950/40 p-4">
       <h3 className="text-sm font-semibold text-blue-100">{copy.sectionTitle}</h3>
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <div className="sm:col-span-2">
+          <UsernameMiniList label={copy.newUnfollowers} usernames={diff.newUnfollowers} />
+        </div>
         <UsernameMiniList label={copy.followingAdded} usernames={diff.followingAdded} />
         <UsernameMiniList label={copy.followingRemoved} usernames={diff.followingRemoved} />
         <UsernameMiniList label={copy.followersAdded} usernames={diff.followersAdded} />
