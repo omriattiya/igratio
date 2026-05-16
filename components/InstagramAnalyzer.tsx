@@ -6,8 +6,10 @@ import {
   analyzeFollowingFollowers,
   diffSets,
   extractUsernamesFromInstagramJson,
+  extractTimestampedUsersFromInstagramJson,
   readJsonFile,
   type InstagramAnalysis,
+  type TimestampedUser,
 } from "@/lib/instagram";
 import {
   clearAllSiteData,
@@ -24,6 +26,7 @@ import {
   type ExportDiff,
 } from "@/components/ExportChangePanel";
 import { UnfollowerReviewList } from "@/components/UnfollowerReviewList";
+import { FollowActivityChart } from "@/components/FollowActivityChart";
 import { InstagramExportTutorial } from "@/components/InstagramExportTutorial";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -62,6 +65,8 @@ export function InstagramAnalyzer() {
   const [lastSnapshotSavedAt, setLastSnapshotSavedAt] = useState<string | null>(null);
   const [indexedDbError, setIndexedDbError] = useState<string | null>(null);
   const [fileInputKey, setFileInputKey] = useState(0);
+  const [followerTimestamps, setFollowerTimestamps] = useState<TimestampedUser[]>([]);
+  const [followingTimestamps, setFollowingTimestamps] = useState<TimestampedUser[]>([]);
 
   useEffect(() => {
     void (async () => {
@@ -124,19 +129,23 @@ export function InstagramAnalyzer() {
     setLastExportDiff(null);
     try {
       const followingRaw: string[] = [];
+      const followingTs: TimestampedUser[] = [];
       for (let i = 0; i < followingFiles.length; i++) {
         const file = followingFiles.item(i);
         if (!file) continue;
         const json = await readJsonFile(file);
         followingRaw.push(...extractUsernamesFromInstagramJson(json));
+        followingTs.push(...extractTimestampedUsersFromInstagramJson(json));
       }
 
       const followersRaw: string[] = [];
+      const followersTs: TimestampedUser[] = [];
       for (let i = 0; i < followerFiles.length; i++) {
         const file = followerFiles.item(i);
         if (!file) continue;
         const json = await readJsonFile(file);
         followersRaw.push(...extractUsernamesFromInstagramJson(json));
+        followersTs.push(...extractTimestampedUsersFromInstagramJson(json));
       }
 
       if (followingRaw.length === 0 || followersRaw.length === 0) {
@@ -203,6 +212,8 @@ export function InstagramAnalyzer() {
         setLastExportDiff(null);
       }
 
+      setFollowerTimestamps(followersTs);
+      setFollowingTimestamps(followingTs);
       setState({ status: AnalyzerLoadStatus.Ready, analysis });
     } catch (e) {
       const message =
@@ -222,6 +233,8 @@ export function InstagramAnalyzer() {
     }
     setFollowingFiles(null);
     setFollowerFiles(null);
+    setFollowerTimestamps([]);
+    setFollowingTimestamps([]);
     setFileInputKey((k) => k + 1);
     setState({ status: AnalyzerLoadStatus.Idle });
     setTrackSnapshotsState(false);
@@ -299,7 +312,7 @@ export function InstagramAnalyzer() {
                       type="button"
                       variant="outline"
                       size="lg"
-                      className="w-auto border-destructive/45 text-destructive hover:bg-destructive/15"
+                      className="w-auto border-destructive/90 text-destructive hover:bg-destructive/15"
                       aria-label={messages.analyzer.resetAnalysisAriaLabel}
                       onClick={(e) => {
                         props.onClick?.(e);
@@ -341,6 +354,10 @@ export function InstagramAnalyzer() {
       {state.status === AnalyzerLoadStatus.Ready && (
         <>
           <InstagramAnalysisSummary analysis={state.analysis} />
+          <FollowActivityChart
+            followerTimestamps={followerTimestamps}
+            followingTimestamps={followingTimestamps}
+          />
           <p className="rounded-xl border border-blue-800/50 bg-blue-950/35 px-4 py-3 text-sm text-blue-200/70">
             {messages.analyzer.indexedDbPrivacy}
           </p>

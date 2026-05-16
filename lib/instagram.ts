@@ -142,6 +142,64 @@ export async function readJsonFile(file: File): Promise<unknown> {
   return JSON.parse(text) as unknown;
 }
 
+export type TimestampedUser = {
+  username: string;
+  timestamp: number;
+};
+
+/**
+ * Extracts usernames with their associated timestamps from Instagram JSON exports.
+ * The timestamp represents when the follow action occurred.
+ */
+export function extractTimestampedUsersFromInstagramJson(
+  data: unknown,
+): TimestampedUser[] {
+  const found: TimestampedUser[] = [];
+
+  function visit(node: unknown): void {
+    if (node === null || node === undefined) return;
+    const t = typeof node;
+    if (t === "string" || t === "number" || t === "boolean") return;
+
+    if (Array.isArray(node)) {
+      for (const item of node) visit(item);
+      return;
+    }
+
+    const o = node as Record<string, unknown>;
+    const list = o.string_list_data;
+    if (Array.isArray(list)) {
+      for (const entry of list) {
+        if (!entry || typeof entry !== "object") continue;
+        const e = entry as Record<string, unknown>;
+        const ts = typeof e.timestamp === "number" ? e.timestamp : 0;
+        if (ts === 0) continue;
+
+        let username = "";
+        if (typeof e.value === "string") {
+          username = normalizeUsername(e.value);
+        }
+        if (!username && typeof o.title === "string") {
+          username = normalizeUsername(o.title);
+        }
+        if (!username && typeof e.href === "string") {
+          const u = usernameFromInstagramHref(e.href);
+          if (u) username = u;
+        }
+
+        if (username && !isDeletedPlaceholderUsername(username)) {
+          found.push({ username, timestamp: ts });
+        }
+      }
+    }
+
+    for (const v of Object.values(o)) visit(v);
+  }
+
+  visit(data);
+  return found;
+}
+
 export function diffSets(
   previous: ReadonlySet<string>,
   next: ReadonlySet<string>,

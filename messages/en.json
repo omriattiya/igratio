@@ -119,6 +119,11 @@
     "duplicateRowsMany": "{total} rows ({dupCount} duplicates)",
     "emDash": "—"
   },
+  "chart": {
+    "title": "Follow activity over time",
+    "followersLine": "New followers",
+    "followingLine": "New following"
+  },
   "userList": {
     "empty": "No accounts in this category",
     "newBadge": "New"
