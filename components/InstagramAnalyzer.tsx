@@ -23,6 +23,7 @@ import {
   type ExportDiff,
 } from "@/components/ExportChangePanel";
 import { UnfollowerReviewList } from "@/components/UnfollowerReviewList";
+import { InstagramExportTutorial } from "@/components/InstagramExportTutorial";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -225,13 +226,14 @@ export function InstagramAnalyzer() {
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-8">
       <div className="rounded-2xl border border-blue-800/60 bg-blue-950/50 p-6">
-        <p className="text-sm leading-relaxed text-blue-200/75">
-          {messages.analyzer.introBeforeCode}{" "}
+        <div className="text-sm leading-relaxed text-blue-200/75">
+          <InstagramExportTutorial />
+          {messages.analyzer.introAfterLink}{" "}
           <code className="rounded bg-blue-900/50 px-1.5 py-0.5 font-mono text-xs text-blue-100">
             {messages.analyzer.pathCode}
           </code>
           {messages.analyzer.introAfterCode}
-        </p>
+        </div>
 
         <div className="mt-6 grid gap-6 sm:grid-cols-2">
           <div className="flex flex-col gap-2">

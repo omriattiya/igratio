@@ -1,7 +1,7 @@
 {
   "metadata": {
     "title": "IG Ratio — Instagram following & followers ratio",
-    "description": "Analyze Instagram following and followers JSON exports in the browser."
+    "description": "Analyze Instagram following and followers JSON exports in the browser"
   },
   "home": {
     "headerTitle": "IG Ratio",
@@ -10,44 +10,100 @@
   },
   "analyzer": {
     "errors": {
-      "selectFiles": "Select at least one following JSON and one followers JSON file.",
-      "noUsernames": "No usernames were found. Use the JSON files from Instagram → Settings → Download your information → followers_*.json and following.json (or equivalent).",
-      "parseFailed": "Failed to read or parse JSON."
+      "selectFiles": "Select at least one following JSON and one followers JSON file",
+      "noUsernames": "No usernames were found. Use the JSON files from Instagram → Settings → Download your information → followers_*.json and following.json (or equivalent)",
+      "parseFailed": "Failed to read or parse JSON"
     },
-    "introBeforeCode": "Export your data from the Instagram app or website (Settings → Accounts Center → Your information and permissions → Download your information). Unzip the archive and choose the JSON files under",
+    "introAfterLink": ". Unzip the archive and choose the JSON files under",
     "pathCode": "connections/followers_and_following/",
-    "introAfterCode": ". Everything below runs in your browser; files are not uploaded.",
+    "introAfterCode": ". Everything below runs in your browser; files are not uploaded",
+    "exportTutorial": {
+      "trigger": "Export your data from the Instagram app or website",
+      "stepOf": "Step {current} of {total}",
+      "previous": "Previous",
+      "next": "Next",
+      "finish": "Done",
+      "close": "Close tutorial",
+      "goToStep": "Go to step {step}",
+      "stepDotsLabel": "Tutorial steps",
+      "steps": [
+        {
+          "title": "Open Accounts Centre",
+          "description": "In Instagram, go to Settings → Accounts Centre, then tap “See more in Accounts Centre”. Or start at Accounts Centre on the web",
+          "quickStart": {
+            "startPrefix": "Or open",
+            "startLink": {
+              "href": "https://accountscenter.instagram.com/",
+              "label": "accountscenter.instagram.com"
+            },
+            "skipToStep": 4,
+            "skipLink": {
+              "href": "https://accountscenter.instagram.com/info_and_permissions/dyi/",
+              "label": "Open this link and skip to step 4 directly"
+            }
+          }
+        },
+        {
+          "title": "Your information and permissions",
+          "description": "Under Account settings, choose “Your information and permissions”"
+        },
+        {
+          "title": "Export your information",
+          "description": "Tap “Export your information”"
+        },
+        {
+          "title": "Create export",
+          "description": "Tap “Create export” to start a new download. This is also where you will find the files to download once export is complete",
+          "shortcut": {
+            "href": "https://accountscenter.instagram.com/info_and_permissions/dyi/",
+            "label": "Open export page directly"
+          }
+        },
+        {
+          "title": "Choose your Instagram profile",
+          "description": "Select the Instagram profile you want to export"
+        },
+        {
+          "title": "Export to device",
+          "description": "Choose “Export to device” (not an external service)"
+        },
+        {
+          "title": "Followers and following (JSON)",
+          "description": "Customise information: select “Followers and following”. Set Format to JSON, then tap “Start export”. When the file is ready, download and unzip it"
+        }
+      ]
+    },
     "followingLabel": "Following JSON",
-    "followingHint": "Usually following.json. Multiple files are merged.",
+    "followingHint": "Usually following.json. Multiple files are merged",
     "followersLabel": "Followers JSON",
     "followersHint": "followers_1.json, followers_2.json, …",
     "analyzing": "Analyzing…",
     "analyze": "Analyze",
     "resetAnalysis": "Reset analysis",
-    "resetAnalysisTooltip": "This will delete all site data stored in this browser: saved export snapshots, unfollower OK marks, and tracking settings.",
-    "resetAnalysisAriaLabel": "Reset analysis. This will delete all site data stored in this browser.",
+    "resetAnalysisTooltip": "This will delete all site data stored in this browser: saved export snapshots, unfollower OK marks, and tracking settings",
+    "resetAnalysisAriaLabel": "Reset analysis. This will delete all site data stored in this browser",
     "lists": {
       "dontFollowBack": "Don't follow back",
       "onlyTheyFollow": "Only they follow you",
       "mutual": "Mutual"
     },
-    "indexedDbPrivacy": "Your last analysis (summary and lists) is saved in IndexedDB on this device so it can load again after refresh. Unfollower marks and export tracking use the same storage. Nothing is uploaded.",
-    "indexedDbFailed": "Could not use IndexedDB (storage may be blocked in private mode).",
+    "indexedDbPrivacy": "Your last analysis (summary and lists) is saved in IndexedDB on this device so it can load again after refresh. Unfollower marks and export tracking use the same storage. Nothing is uploaded",
+    "indexedDbFailed": "Could not use IndexedDB (storage may be blocked in private mode)",
     "exportTracking": {
       "toggle": "Track changes between exports",
-      "toggleHint": "When on, each analysis saves your unique following and follower lists. The next time you analyze new export files, you will see who was added or removed.",
+      "toggleHint": "When on, each analysis saves your unique following and follower lists. The next time you analyze new export files, you will see who was added or removed",
       "sectionTitle": "Changes since last saved export",
       "followingAdded": "New in following",
       "followingRemoved": "Removed from following",
       "followersAdded": "New followers",
       "followersRemoved": "No longer followers",
-      "baselineOnly": "No previous snapshot yet. This analysis is saved as the baseline for your next run.",
+      "baselineOnly": "No previous snapshot yet. This analysis is saved as the baseline for your next run",
       "emptyList": "None",
       "lastSaved": "Last saved: {date}"
     },
     "unfollowers": {
       "okCheckbox": "OK",
-      "manageHint": "Mark accounts you are fine with (celebrities, brands, etc.). OK choices are stored in IndexedDB on this device."
+      "manageHint": "Mark accounts you are fine with (celebrities, brands, etc.). OK choices are stored in IndexedDB on this device"
     }
   },
   "summary": {
@@ -63,7 +119,7 @@
     "emDash": "—"
   },
   "userList": {
-    "empty": "No accounts in this category.",
+    "empty": "No accounts in this category",
     "newBadge": "New"
   }
 }
