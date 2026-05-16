@@ -362,9 +362,11 @@ export function InstagramAnalyzer() {
             followerTimestamps={followerTimestamps}
             followingTimestamps={followingTimestamps}
           />
-          <p className="rounded-xl border border-blue-800/50 bg-blue-950/35 px-4 py-3 text-sm text-blue-200/70">
-            {messages.analyzer.indexedDbPrivacy}
-          </p>
+          <ul className="list-disc rounded-xl border border-blue-800/50 bg-blue-950/35 px-4 py-3 pl-8 text-sm text-blue-200/70 space-y-1">
+            {messages.analyzer.indexedDbPrivacy.map((line: string) => (
+              <li key={line}>{line}</li>
+            ))}
+          </ul>
           {trackSnapshots && <ExportChangeDiff diff={lastExportDiff} />}
           {indexedDbError && (
             <Alert

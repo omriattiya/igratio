@@ -1,6 +1,13 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import {
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+  type MouseEvent as ReactMouseEvent,
+  type PointerEvent as ReactPointerEvent,
+} from "react";
 import { Chart } from "react-charts";
 import type { AxisOptions } from "react-charts";
 import { ZoomIn, ZoomOut } from "lucide-react";
@@ -36,6 +43,10 @@ function aggregateByMonth(users: TimestampedUser[]): DateDatum[] {
     });
 }
 
+function lerp(t: number, min: Date, max: Date): Date {
+  return new Date(min.getTime() + t * (max.getTime() - min.getTime()));
+}
+
 const copy = messages.chart;
 
 export function FollowActivityChart({
@@ -45,6 +56,10 @@ export function FollowActivityChart({
   const [zoomRange, setZoomRange] = useState<DateRange>(null);
   const [hiddenSeries, setHiddenSeries] = useState<Set<string>>(new Set());
 
+  const [dragStart, setDragStart] = useState<number | null>(null);
+  const [dragEnd, setDragEnd] = useState<number | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
   const allData = useMemo(() => {
     const followersAgg = aggregateByMonth(followerTimestamps);
     const followingAgg = aggregateByMonth(followingTimestamps);
@@ -53,6 +68,22 @@ export function FollowActivityChart({
       { label: copy.followingLine, data: followingAgg },
     ];
   }, [followerTimestamps, followingTimestamps]);
+
+  const fullTimeRange = useMemo(() => {
+    let min = Infinity;
+    let max = -Infinity;
+    for (const series of allData) {
+      for (const d of series.data) {
+        const t = d.date.getTime();
+        if (t < min) min = t;
+        if (t > max) max = t;
+      }
+    }
+    if (!isFinite(min) || !isFinite(max)) return null;
+    return { min: new Date(min), max: new Date(max) };
+  }, [allData]);
+
+  const activeRange = zoomRange ?? fullTimeRange;
 
   const data = useMemo(() => {
     const visible = allData.filter((s) => !hiddenSeries.has(s.label));
@@ -102,20 +133,74 @@ export function FollowActivityChart({
     });
   }, []);
 
-  const handleBrushSelect = useCallback(
-    (selection: { start: unknown; end: unknown }) => {
-      const start = selection.start as Date;
-      const end = selection.end as Date;
-      if (!start || !end) return;
-      const min = start < end ? start : end;
-      const max = start < end ? end : start;
-      if (max.getTime() - min.getTime() < 1000 * 60 * 60 * 24 * 7) return;
-      setZoomRange({ min, max });
+  const handleResetZoom = useCallback(() => setZoomRange(null), []);
+
+  const xFraction = useCallback(
+    (clientX: number): number => {
+      const el = containerRef.current;
+      if (!el) return 0;
+      const rect = el.getBoundingClientRect();
+      return Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
     },
     [],
   );
 
-  const handleResetZoom = useCallback(() => setZoomRange(null), []);
+  const handlePointerDown = useCallback(
+    (e: ReactPointerEvent) => {
+      if (e.button !== 0) return;
+      e.currentTarget.setPointerCapture(e.pointerId);
+      const frac = xFraction(e.clientX);
+      setDragStart(frac);
+      setDragEnd(frac);
+    },
+    [xFraction],
+  );
+
+  const handlePointerMove = useCallback(
+    (e: ReactPointerEvent) => {
+      if (dragStart === null) return;
+      setDragEnd(xFraction(e.clientX));
+    },
+    [dragStart, xFraction],
+  );
+
+  const handlePointerUp = useCallback(
+    (e: ReactPointerEvent) => {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+      if (dragStart === null || dragEnd === null || !activeRange) {
+        setDragStart(null);
+        setDragEnd(null);
+        return;
+      }
+      const left = Math.min(dragStart, dragEnd);
+      const right = Math.max(dragStart, dragEnd);
+      setDragStart(null);
+      setDragEnd(null);
+
+      if (right - left < 0.03) return;
+
+      const min = lerp(left, activeRange.min, activeRange.max);
+      const max = lerp(right, activeRange.min, activeRange.max);
+      if (max.getTime() - min.getTime() < 1000 * 60 * 60 * 24 * 7) return;
+      setZoomRange({ min, max });
+    },
+    [dragStart, dragEnd, activeRange],
+  );
+
+  const handleClick = useCallback((e: ReactMouseEvent) => {
+    e.stopPropagation();
+  }, []);
+
+  const selectionStyle = useMemo(() => {
+    if (dragStart === null || dragEnd === null) return null;
+    const left = Math.min(dragStart, dragEnd);
+    const right = Math.max(dragStart, dragEnd);
+    if (right - left < 0.005) return null;
+    return {
+      left: `${left * 100}%`,
+      width: `${(right - left) * 100}%`,
+    };
+  }, [dragStart, dragEnd]);
 
   const hasData = allData[0]!.data.length > 0 || allData[1]!.data.length > 0;
   if (!hasData) return null;
@@ -145,27 +230,35 @@ export function FollowActivityChart({
         </div>
       </div>
       {data.length > 0 ? (
-        <div className="h-72 w-full">
+        <div
+          ref={containerRef}
+          className="relative h-72 w-full select-none"
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onClick={handleClick}
+          style={{ touchAction: "none" }}
+        >
           <Chart
             options={{
               data,
               primaryAxis,
               secondaryAxes,
               dark: true,
-              defaultColors: data.map((s) => seriesColors[s.label] ?? "#38bdf8"),
+              defaultColors: data.map(
+                (s) => seriesColors[s.label] ?? "#38bdf8",
+              ),
               tooltip: {
                 groupingMode: "primary",
               },
-              brush: {
-                onSelect: handleBrushSelect,
-                style: {
-                  fill: "rgba(56, 189, 248, 0.12)",
-                  stroke: "rgba(56, 189, 248, 0.4)",
-                  strokeWidth: 1,
-                },
-              },
             }}
           />
+          {selectionStyle && (
+            <div
+              className="pointer-events-none absolute inset-y-0 rounded-sm border border-sky-400/50 bg-sky-400/10"
+              style={selectionStyle}
+            />
+          )}
         </div>
       ) : (
         <div className="flex h-72 items-center justify-center text-sm text-blue-300/50">

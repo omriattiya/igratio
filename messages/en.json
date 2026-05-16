@@ -87,7 +87,11 @@
       "onlyTheyFollow": "Only they follow you",
       "mutual": "Mutual"
     },
-    "indexedDbPrivacy": "Your last analysis (summary and lists) is saved in IndexedDB on this device so it can load again after refresh. Unfollower marks and export tracking use the same storage. Nothing is uploaded",
+    "indexedDbPrivacy": [
+      "Your last analysis (summary and lists) is saved in IndexedDB on this device so it can load again after refresh",
+      "Unfollower marks and export tracking use the same storage",
+      "Everything is stored locally on your device"
+    ],
     "indexedDbFailed": "Could not use IndexedDB (storage may be blocked in private mode)",
     "exportTracking": {
       "toggle": "Track changes between exports",
