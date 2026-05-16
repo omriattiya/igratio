@@ -143,21 +143,7 @@ export function InstagramExportTutorial() {
             </div>
           ) : null}
 
-          <div className="flex justify-center px-4 pt-4">
-            <div className="overflow-hidden rounded-xl border border-blue-800/50 bg-blue-900/30">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                key={image.src}
-                src={getCachedSrc(image.src)}
-                alt={current.title}
-                width={image.width}
-                height={image.height}
-                className="block h-auto w-auto max-h-[min(60dvh,calc(100dvh-14rem))] max-w-[min(100%,calc(100vw-2rem))] object-contain"
-              />
-            </div>
-          </div>
-
-          <div className="px-4 py-4">
+          <div className="px-4 pt-4">
             <p className="text-sm leading-relaxed text-blue-200/75">{current.description}</p>
             {"shortcut" in current && current.shortcut ? (
               <p className="mt-2 text-sm">
@@ -171,6 +157,20 @@ export function InstagramExportTutorial() {
                 </a>
               </p>
             ) : null}
+          </div>
+
+          <div className="flex justify-center px-4 py-4">
+            <div className="overflow-hidden rounded-xl border border-blue-800/50 bg-blue-900/30">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                key={image.src}
+                src={getCachedSrc(image.src)}
+                alt={current.title}
+                width={image.width}
+                height={image.height}
+                className="block h-auto w-auto max-h-[min(60dvh,calc(100dvh-14rem))] max-w-[min(100%,calc(100vw-2rem))] object-contain"
+              />
+            </div>
           </div>
 
           <div className="flex justify-center gap-1.5 px-4 pb-2" role="tablist" aria-label={copy.stepDotsLabel}>
