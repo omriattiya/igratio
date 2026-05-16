@@ -84,6 +84,8 @@ export function InstagramAnalyzer() {
             : null);
         if (analysis) {
           setState({ status: AnalyzerLoadStatus.Ready, analysis });
+          if (snap.followerTimestamps) setFollowerTimestamps(snap.followerTimestamps);
+          if (snap.followingTimestamps) setFollowingTimestamps(snap.followingTimestamps);
         }
       }
     })();
@@ -197,6 +199,8 @@ export function InstagramAnalyzer() {
           followers: uniqueFollowers,
           savedAt,
           analysis,
+          followerTimestamps: followersTs,
+          followingTimestamps: followingTs,
         });
 
         setIndexedDbError(null);

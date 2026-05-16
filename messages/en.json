@@ -122,7 +122,10 @@
   "chart": {
     "title": "Follow activity over time",
     "followersLine": "New followers",
-    "followingLine": "New following"
+    "followingLine": "New following",
+    "dragToZoom": "Drag to zoom",
+    "resetZoom": "Reset zoom",
+    "allHidden": "All series hidden — click a legend item to show"
   },
   "userList": {
     "empty": "No accounts in this category",

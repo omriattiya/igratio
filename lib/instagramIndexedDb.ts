@@ -1,4 +1,4 @@
-import type { InstagramAnalysis } from "@/lib/instagram";
+import type { InstagramAnalysis, TimestampedUser } from "@/lib/instagram";
 
 const DB_NAME = "igratio";
 const DB_VERSION = 1;
@@ -20,6 +20,8 @@ export type ListsSnapshot = {
   followers: string[];
   savedAt: string;
   analysis?: InstagramAnalysis;
+  followerTimestamps?: TimestampedUser[];
+  followingTimestamps?: TimestampedUser[];
 };
 
 function idbAvailable(): boolean {
