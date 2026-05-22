@@ -144,7 +144,8 @@ export function InstagramExportTutorial() {
         ) : null}
 
         <div className="shrink-0 px-4 pt-4">
-          <p className="text-sm leading-relaxed text-blue-200/75">{current.description}</p>
+          {/* eslint-disable-next-line react/no-danger -- trusted static copy from app messages */}
+          <p className="text-sm leading-relaxed text-blue-200/75" dangerouslySetInnerHTML={{ __html: current.description }} />
           {"shortcut" in current && current.shortcut ? (
             <p className="mt-2 text-sm">
               <a

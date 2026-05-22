@@ -72,7 +72,7 @@
         },
         {
           "title": "Followers and following (JSON)",
-          "description": "Customise information: select “Followers and following”. Set Format to JSON, then tap “Start export”. When the file is ready, download and unzip it"
+          "description": "Customise information: select <strong class=\"text-white font-semibold\">“Followers and following”</strong>. Select Date range: <strong class=\"text-white font-semibold\">All time</strong>. Set Format to <strong class=\"text-white font-semibold\">JSON</strong>, then tap “Start export”. When the file is ready, download and unzip it"
         }
       ]
     },
