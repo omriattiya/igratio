@@ -1,31 +1,75 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# IG Ratio
+
+[![Live App](https://img.shields.io/badge/Live-igratio.vercel.app-blue)](https://igratio.vercel.app/)
+
+Compare Instagram following and followers export files locally in your browser. No data is collected — everything is stored in your browser's IndexedDB and localStorage.
+
+**Live app:** https://igratio.vercel.app/
+
+## Features
+
+- Upload Instagram data export JSON files and compare following vs followers
+- Track changes between exports (see who followed/unfollowed you over time)
+- Fully client-side — no data leaves your browser
+- Multi-language support
 
 ## Getting Started
 
-Install dependencies and run the development server (this repo uses [pnpm](https://pnpm.io)):
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) 18+
+- [pnpm](https://pnpm.io/) 10+
+
+### Installation
 
 ```bash
+git clone https://github.com/<your-username>/igratio.git
+cd igratio
 pnpm install
+```
+
+### Development
+
+```bash
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to view the app.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Build
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+pnpm build
+pnpm start
+```
 
-## Learn More
+## Tech Stack
 
-To learn more about Next.js, take a look at the following resources:
+- [Next.js 16](https://nextjs.org/) — React framework
+- [React 19](https://react.dev/) — UI library
+- [Tailwind CSS 4](https://tailwindcss.com/) — Styling
+- [TypeScript](https://www.typescriptlang.org/) — Type safety
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Contributing
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Contributions are welcome! To get started:
 
-## Deploy on Vercel
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/my-feature`)
+3. Commit your changes (`git commit -m "Add my feature"`)
+4. Push to the branch (`git push origin feature/my-feature`)
+5. Open a Pull Request
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Please make sure your code passes linting before submitting:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+pnpm lint
+```
+
+## License
+
+This project is public.
+
+## Deployment
+
+The app is deployed on [Vercel](https://vercel.com/). Every push to the main branch triggers a production deployment automatically.
