@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { BookOpenText, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { messages, t } from "@/lib/i18n";
 import {
@@ -221,6 +221,7 @@ export function InstagramExportTutorial() {
   return (
     <>
       <button type="button" onClick={open} className={TUTORIAL_LINK_CLASS}>
+        <BookOpenText className="inline-block size-4 align-text-bottom mr-1" />
         {copy.trigger}
       </button>
       {mounted ? createPortal(dialog, document.body) : null}
