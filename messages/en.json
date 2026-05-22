@@ -144,5 +144,39 @@
   "userList": {
     "empty": "No accounts in this category",
     "newBadge": "New"
+  },
+  "tour": {
+    "steps": [
+      {
+        "title": "Export your data",
+        "content": "First, click here to learn how to export your Instagram followers and following data as JSON files."
+      },
+      {
+        "title": "Upload Followers",
+        "content": "Upload the JSON file(s) containing your followers list that you exported from Instagram."
+      },
+      {
+        "title": "Upload Following",
+        "content": "Upload the JSON file(s) containing the accounts you follow."
+      },
+      {
+        "title": "Track changes between exports",
+        "content": "Enable this to compare your current export with the previous one. You'll see who unfollowed you, new followers, and more."
+      },
+      {
+        "title": "Analyze",
+        "content": "Once both files are uploaded, hit this button to run the analysis."
+      },
+      {
+        "title": "Done! See the magic happen ✨",
+        "content": "You'll instantly see who doesn't follow you back, who you don't follow back, and your mutual connections. All processed locally in your browser!"
+      }
+    ],
+    "back": "Back",
+    "close": "Close",
+    "last": "Done",
+    "next": "Next",
+    "skip": "Skip tour",
+    "popover": "Show me around →"
   }
 }

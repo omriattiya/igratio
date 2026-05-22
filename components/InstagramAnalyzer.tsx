@@ -273,29 +273,35 @@ export function InstagramAnalyzer() {
         </div>
 
         <div className="mt-6 grid gap-6 sm:grid-cols-2">
-          <JsonFileUploadField
-            id="analyzer-following"
-            inputKey={fileInputKey}
-            label={messages.analyzer.followingLabel}
-            hint={messages.analyzer.followingHint}
-            hasFiles={Boolean(followingFiles?.length)}
-            onChange={(e) => setFollowingFiles(e.target.files)}
-          />
-          <JsonFileUploadField
-            id="analyzer-followers"
-            inputKey={fileInputKey}
-            label={messages.analyzer.followersLabel}
-            hint={messages.analyzer.followersHint}
-            hasFiles={Boolean(followerFiles?.length)}
-            onChange={(e) => setFollowerFiles(e.target.files)}
-          />
+          <div data-tour="upload-followers">
+            <JsonFileUploadField
+              id="analyzer-followers"
+              inputKey={fileInputKey}
+              label={messages.analyzer.followersLabel}
+              hint={messages.analyzer.followersHint}
+              hasFiles={Boolean(followerFiles?.length)}
+              onChange={(e) => setFollowerFiles(e.target.files)}
+            />
+          </div>
+          <div data-tour="upload-following">
+            <JsonFileUploadField
+              id="analyzer-following"
+              inputKey={fileInputKey}
+              label={messages.analyzer.followingLabel}
+              hint={messages.analyzer.followingHint}
+              hasFiles={Boolean(followingFiles?.length)}
+              onChange={(e) => setFollowingFiles(e.target.files)}
+            />
+          </div>
         </div>
 
-        <ExportTrackingToggle
-          enabled={trackSnapshots}
-          onChange={(next) => void handleTrackToggle(next)}
-          disabled={state.status === AnalyzerLoadStatus.Loading}
-        />
+        <div data-tour="track-changes">
+          <ExportTrackingToggle
+            enabled={trackSnapshots}
+            onChange={(next) => void handleTrackToggle(next)}
+            disabled={state.status === AnalyzerLoadStatus.Loading}
+          />
+        </div>
 
         {trackSnapshots && lastSnapshotSavedAt ? (
           <p className="mt-3 text-xs tabular-nums text-blue-200/65">
@@ -313,12 +319,14 @@ export function InstagramAnalyzer() {
               disabled={!canAnalyze || state.status === AnalyzerLoadStatus.Loading}
               onClick={() => void runAnalysis()}
               className="w-full sm:w-auto"
+              data-tour="analyze-button"
             >
               <WandSparkles className="size-4" />
               {state.status === AnalyzerLoadStatus.Loading
                 ? messages.analyzer.analyzing
                 : messages.analyzer.analyze}
             </Button>
+            {(canAnalyze || state.status === AnalyzerLoadStatus.Ready) && (
             <div className="self-end sm:self-auto">
               <AlertDialog.Root>
                 <Tooltip.Root>
@@ -391,6 +399,7 @@ export function InstagramAnalyzer() {
                 </AlertDialog.Portal>
               </AlertDialog.Root>
             </div>
+            )}
           </div>
         </Tooltip.Provider>
 

@@ -1,18 +1,66 @@
-import { Lock } from "lucide-react";
+import { CircleHelp, Lock, X } from "lucide-react";
+import { Logo } from "@/components/Logo";
 
 type SiteHeaderProps = {
   title: string;
   description: string;
   privacyNote: string;
+  popoverText?: string;
+  showPopover?: boolean;
+  onDismissPopover?: () => void;
+  onRelaunchTour?: () => void;
 };
 
-export function SiteHeader({ title, description, privacyNote }: SiteHeaderProps) {
+export function SiteHeader({
+  title,
+  description,
+  privacyNote,
+  popoverText,
+  showPopover,
+  onDismissPopover,
+  onRelaunchTour,
+}: SiteHeaderProps) {
   return (
     <header className="border-b border-blue-900/60 bg-blue-950/85 px-6 py-10 backdrop-blur">
       <div className="mx-auto max-w-4xl">
         <div className="flex items-start justify-between gap-4">
-          <h1 className="text-3xl font-semibold tracking-tight text-blue-50">{title}</h1>
+          <div className="relative flex items-center gap-3">
+            {showPopover && popoverText && (
+              <div className="absolute right-full top-1/2 mr-3 flex -translate-y-1/2 items-center animate-in fade-in slide-in-from-left-2 duration-300">
+                <div className="flex items-center whitespace-nowrap rounded-lg bg-blue-600 shadow-lg shadow-blue-900/40">
+                  <button
+                    type="button"
+                    onClick={onRelaunchTour}
+                    className="rounded-l-lg px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-300"
+                  >
+                    {popoverText}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={onDismissPopover}
+                    aria-label="Dismiss tour hint"
+                    className="rounded-r-lg px-1.5 py-1.5 text-blue-200/70 transition-colors hover:bg-blue-500 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-300"
+                  >
+                    <X className="size-3.5" />
+                  </button>
+                </div>
+                <div className="border-y-[6px] border-l-[8px] border-y-transparent border-l-blue-600" />
+              </div>
+            )}
+            <Logo className="size-9 shrink-0" />
+            <h1 className="text-3xl font-semibold tracking-tight text-blue-50">{title}</h1>
+          </div>
           <div className="mt-1 flex shrink-0 items-center gap-1">
+            {onRelaunchTour && (
+              <button
+                type="button"
+                onClick={onRelaunchTour}
+                aria-label="Replay guided tour"
+                className="rounded-md p-1.5 text-blue-200/60 transition-colors hover:text-blue-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-300"
+              >
+                <CircleHelp className="size-5" />
+              </button>
+            )}
             <a
               href="https://www.linkedin.com/in/omriat/"
               target="_blank"

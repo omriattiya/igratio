@@ -220,7 +220,7 @@ export function InstagramExportTutorial() {
 
   return (
     <>
-      <button type="button" onClick={open} className={TUTORIAL_LINK_CLASS}>
+      <button type="button" onClick={open} className={TUTORIAL_LINK_CLASS} data-tour="export-tutorial">
         <BookOpenText className="inline-block size-4 align-text-bottom mr-1" />
         {copy.trigger}
       </button>
