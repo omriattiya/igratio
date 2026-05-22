@@ -54,8 +54,10 @@ export function SiteHeader({
                 <div className="border-y-[6px] border-l-[8px] border-y-transparent border-l-blue-600" />
               </div>
             )}
-            <Logo className="size-9 shrink-0" />
-            <h1 className="text-3xl font-semibold tracking-tight text-blue-50">{title}</h1>
+            <span className="group/logo flex items-center gap-3 transition-transform duration-300 ease-out hover:scale-[1.03]">
+              <Logo className="size-9 shrink-0 transition-[filter] duration-300 group-hover/logo:drop-shadow-[0_0_8px_rgba(56,189,248,0.5)]" />
+              <h1 className="text-3xl font-semibold tracking-tight text-blue-50 transition-[text-shadow] duration-300 group-hover/logo:[text-shadow:0_0_12px_rgba(56,189,248,0.35)]">{title}</h1>
+            </span>
           </div>
           <Tooltip.Provider delay={0}>
             <div className="mt-1 flex shrink-0 items-center gap-1">
