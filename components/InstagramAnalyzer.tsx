@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState, type ChangeEvent } from "react";
-import { CircleCheck, Trash2, WandSparkles } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
+import { ArrowRightLeft, CircleCheck, Trash2, WandSparkles } from "lucide-react";
 import {
   analyzeFollowingFollowers,
   diffSets,
@@ -58,6 +58,21 @@ function formatSnapshotSavedAt(iso: string): string {
   }
 }
 
+function syncInputFiles(
+  input: HTMLInputElement | null,
+  files: FileList | null,
+) {
+  if (!input) return;
+  const dt = new DataTransfer();
+  if (files) {
+    for (let i = 0; i < files.length; i++) {
+      const f = files.item(i);
+      if (f) dt.items.add(f);
+    }
+  }
+  input.files = dt.files;
+}
+
 type LoadState =
   | { status: typeof AnalyzerLoadStatus.Idle }
   | { status: typeof AnalyzerLoadStatus.Loading }
@@ -73,6 +88,8 @@ export function InstagramAnalyzer() {
   const [lastSnapshotSavedAt, setLastSnapshotSavedAt] = useState<string | null>(null);
   const [indexedDbError, setIndexedDbError] = useState<string | null>(null);
   const [fileInputKey, setFileInputKey] = useState(0);
+  const followerInputRef = useRef<HTMLInputElement>(null);
+  const followingInputRef = useRef<HTMLInputElement>(null);
   const [followerTimestamps, setFollowerTimestamps] = useState<TimestampedUser[]>([]);
   const [followingTimestamps, setFollowingTimestamps] = useState<TimestampedUser[]>([]);
 
@@ -240,7 +257,17 @@ export function InstagramAnalyzer() {
     }
   }, [followingFiles, followerFiles, trackSnapshots]);
 
+  const handleSwapFiles = useCallback(() => {
+    const prevFollowers = followerFiles;
+    const prevFollowing = followingFiles;
+    setFollowerFiles(prevFollowing);
+    setFollowingFiles(prevFollowers);
+    syncInputFiles(followerInputRef.current, prevFollowing);
+    syncInputFiles(followingInputRef.current, prevFollowers);
+  }, [followerFiles, followingFiles]);
+
   const canAnalyze = Boolean(followingFiles?.length && followerFiles?.length);
+  const canSwap = Boolean(followingFiles?.length || followerFiles?.length);
 
   const handleResetAnalysis = useCallback(async () => {
     try {
@@ -272,21 +299,50 @@ export function InstagramAnalyzer() {
           {messages.analyzer.introAfterCode}
         </div>
 
-        <div className="mt-6 grid gap-6 sm:grid-cols-2">
+        <div className="mt-6 grid gap-6 sm:grid-cols-[1fr_auto_1fr]">
           <div data-tour="upload-followers">
             <JsonFileUploadField
               id="analyzer-followers"
               inputKey={fileInputKey}
+              inputRef={followerInputRef}
               label={messages.analyzer.followersLabel}
               hint={messages.analyzer.followersHint}
               hasFiles={Boolean(followerFiles?.length)}
               onChange={(e) => setFollowerFiles(e.target.files)}
             />
           </div>
+          <div className="flex items-center justify-center sm:pt-6">
+            <Tooltip.Provider delay={0}>
+              <Tooltip.Root>
+                <Tooltip.Trigger
+                  render={(props) => (
+                    <Button
+                      {...props}
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      disabled={!canSwap || state.status === AnalyzerLoadStatus.Loading}
+                      onClick={handleSwapFiles}
+                      aria-label={messages.analyzer.swapFilesAriaLabel}
+                      className="text-blue-300 hover:text-blue-100"
+                    >
+                      <ArrowRightLeft className="size-4" />
+                    </Button>
+                  )}
+                />
+                <Tooltip.Portal>
+                  <Tooltip.Positioner side="top" sideOffset={8}>
+                    <TooltipPopup>{messages.analyzer.swapFilesTooltip}</TooltipPopup>
+                  </Tooltip.Positioner>
+                </Tooltip.Portal>
+              </Tooltip.Root>
+            </Tooltip.Provider>
+          </div>
           <div data-tour="upload-following">
             <JsonFileUploadField
               id="analyzer-following"
               inputKey={fileInputKey}
+              inputRef={followingInputRef}
               label={messages.analyzer.followingLabel}
               hint={messages.analyzer.followingHint}
               hasFiles={Boolean(followingFiles?.length)}
@@ -476,6 +532,7 @@ export function InstagramAnalyzer() {
 type JsonFileUploadFieldProps = {
   id: string;
   inputKey: number;
+  inputRef: React.RefObject<HTMLInputElement | null>;
   label: string;
   hint: string;
   hasFiles: boolean;
@@ -485,6 +542,7 @@ type JsonFileUploadFieldProps = {
 function JsonFileUploadField({
   id,
   inputKey,
+  inputRef,
   label,
   hint,
   hasFiles,
@@ -497,6 +555,7 @@ function JsonFileUploadField({
       </Label>
       <div className="relative">
         <Input
+          ref={inputRef}
           key={`${id}-${inputKey}`}
           id={id}
           type="file"

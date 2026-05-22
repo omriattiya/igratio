@@ -80,6 +80,8 @@
     "followingHint": "Usually following.json. Multiple files are merged",
     "followersLabel": "Followers JSON",
     "followersHint": "followers_1.json, followers_2.json, …",
+    "swapFilesTooltip": "Swap followers and following files",
+    "swapFilesAriaLabel": "Swap followers and following files",
     "analyzing": "Analyzing…",
     "analyze": "Analyze",
     "resetAnalysis": "Reset analysis",
