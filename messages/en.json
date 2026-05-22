@@ -6,7 +6,10 @@
   "home": {
     "headerTitle": "IG Ratio",
     "headerDescription": "Compare Instagram following and followers export files locally in your browser",
-    "headerPrivacy": "We don't collect any data - everything is stored in your browser's <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API\" target=\"_blank\" rel=\"noopener noreferrer\">IndexedDB</a> and <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage\" target=\"_blank\" rel=\"noopener noreferrer\">localStorage</a>"
+    "headerPrivacy": "We don't collect any data - everything is stored in your browser's <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API\" target=\"_blank\" rel=\"noopener noreferrer\">IndexedDB</a> and <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage\" target=\"_blank\" rel=\"noopener noreferrer\">localStorage</a>",
+    "tourTooltip": "Replay guided tour",
+    "linkedinTooltip": "My LinkedIn",
+    "githubTooltip": "GitHub repo"
   },
   "analyzer": {
     "errors": {

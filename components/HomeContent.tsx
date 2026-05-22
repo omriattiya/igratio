@@ -18,6 +18,9 @@ export function HomeContent() {
         showPopover={showPopover}
         onDismissPopover={dismissPopover}
         onRelaunchTour={relaunch}
+        tourTooltip={messages.home.tourTooltip}
+        linkedinTooltip={messages.home.linkedinTooltip}
+        githubTooltip={messages.home.githubTooltip}
       />
       <main className="flex flex-1 flex-col px-6 py-10">
         <InstagramAnalyzer />
