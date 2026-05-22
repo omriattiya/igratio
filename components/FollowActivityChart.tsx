@@ -105,12 +105,13 @@ export function FollowActivityChart({
   const data = useMemo(() => {
     const visible = allData.filter((s) => !hiddenSeries.has(s.label));
     if (!zoomRange) return visible;
-    return visible.map((series) => ({
+    const zoomed = visible.map((series) => ({
       ...series,
       data: series.data.filter(
         (d) => d.date >= zoomRange.min && d.date <= zoomRange.max,
       ),
     }));
+    return zoomed.filter((s) => s.data.length > 0);
   }, [allData, zoomRange, hiddenSeries]);
 
   const primaryAxis = useMemo(
@@ -206,6 +207,14 @@ export function FollowActivityChart({
       const min = lerp(left, activeRange.min, activeRange.max);
       const max = lerp(right, activeRange.min, activeRange.max);
       if (max.getTime() - min.getTime() < 1000 * 60 * 60 * 24 * 7) return;
+
+      const hasVisibleData = allData.some(
+        (s) =>
+          !hiddenSeries.has(s.label) &&
+          s.data.some((d) => d.date >= min && d.date <= max),
+      );
+      if (!hasVisibleData) return;
+
       setZoomRange({ min, max });
     },
     [dragStart, dragEnd, activeRange],
