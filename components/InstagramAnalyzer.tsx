@@ -1,291 +1,40 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
-import { ArrowRightLeft, CircleCheck, Trash2, WandSparkles } from "lucide-react";
-import {
-  analyzeFollowingFollowers,
-  diffSets,
-  extractUsernamesFromInstagramJson,
-  extractTimestampedUsersFromInstagramJson,
-  readJsonFile,
-  type InstagramAnalysis,
-  type TimestampedUser,
-} from "@/lib/instagram";
-import {
-  clearAllSiteData,
-  getLatestSnapshot,
-  getTrackSnapshots,
-  setLatestSnapshot,
-  setTrackSnapshots,
-} from "@/lib/instagramIndexedDb";
-import { InstagramAnalysisSummary } from "@/components/InstagramAnalysisSummary";
-import { InstagramUserList } from "@/components/InstagramUserList";
-import {
-  ExportChangeDiff,
-  ExportTrackingToggle,
-  type ExportDiff,
-  type SummaryDiffs,
-} from "@/components/ExportChangePanel";
-import { UnfollowerReviewList } from "@/components/UnfollowerReviewList";
-import { FollowActivityChart } from "@/components/FollowActivityChart";
+import { ExportTrackingToggle } from "@/components/ExportChangePanel";
 import { InstagramExportTutorial } from "@/components/InstagramExportTutorial";
+import { AnalyzerFileUploadSection } from "@/components/AnalyzerFileUploadSection";
+import { AnalyzerActions } from "@/components/AnalyzerActions";
+import { AnalyzerResults } from "@/components/AnalyzerResults";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import {
-  AlertDialog,
-  AlertDialogBackdrop,
-  AlertDialogPopup,
-  AlertDialogTitle,
-  AlertDialogDescription,
-} from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Tooltip, TooltipPopup } from "@/components/ui/tooltip";
-import { Label } from "@/components/ui/label";
 import { AnalyzerLoadStatus } from "@/lib/analyzerLoadStatus";
 import { messages, t } from "@/lib/i18n";
-import { cn } from "@/lib/utils";
-
-function formatSnapshotSavedAt(iso: string): string {
-  try {
-    const d = new Date(iso);
-    if (Number.isNaN(d.getTime())) return iso;
-    return d.toLocaleString(undefined, {
-      dateStyle: "medium",
-      timeStyle: "short",
-    });
-  } catch {
-    return iso;
-  }
-}
-
-function syncInputFiles(
-  input: HTMLInputElement | null,
-  files: FileList | null,
-) {
-  if (!input) return;
-  const dt = new DataTransfer();
-  if (files) {
-    for (let i = 0; i < files.length; i++) {
-      const f = files.item(i);
-      if (f) dt.items.add(f);
-    }
-  }
-  input.files = dt.files;
-}
-
-type LoadState =
-  | { status: typeof AnalyzerLoadStatus.Idle }
-  | { status: typeof AnalyzerLoadStatus.Loading }
-  | { status: typeof AnalyzerLoadStatus.Error; message: string }
-  | { status: typeof AnalyzerLoadStatus.Ready; analysis: InstagramAnalysis };
+import { formatSnapshotSavedAt, useAnalyzerState } from "@/hooks/useAnalyzerState";
 
 export function InstagramAnalyzer() {
-  const [followingFiles, setFollowingFiles] = useState<FileList | null>(null);
-  const [followerFiles, setFollowerFiles] = useState<FileList | null>(null);
-  const [state, setState] = useState<LoadState>({ status: AnalyzerLoadStatus.Idle });
-  const [trackSnapshots, setTrackSnapshotsState] = useState(false);
-  const [lastExportDiff, setLastExportDiff] = useState<ExportDiff | null>(null);
-  const [lastSnapshotSavedAt, setLastSnapshotSavedAt] = useState<string | null>(null);
-  const [indexedDbError, setIndexedDbError] = useState<string | null>(null);
-  const [fileInputKey, setFileInputKey] = useState(0);
-  const followerInputRef = useRef<HTMLInputElement>(null);
-  const followingInputRef = useRef<HTMLInputElement>(null);
-  const [followerTimestamps, setFollowerTimestamps] = useState<TimestampedUser[]>([]);
-  const [followingTimestamps, setFollowingTimestamps] = useState<TimestampedUser[]>([]);
-
-  useEffect(() => {
-    void (async () => {
-      const enabled = await getTrackSnapshots();
-      setTrackSnapshotsState(enabled);
-      const snap = await getLatestSnapshot();
-      if (enabled) {
-        setLastSnapshotSavedAt(snap?.savedAt ?? null);
-      }
-      if (snap) {
-        const analysis =
-          snap.analysis ??
-          (snap.following.length > 0 && snap.followers.length > 0
-            ? analyzeFollowingFollowers(snap.following, snap.followers)
-            : null);
-        if (analysis) {
-          setState({ status: AnalyzerLoadStatus.Ready, analysis });
-          if (snap.followerTimestamps) setFollowerTimestamps(snap.followerTimestamps);
-          if (snap.followingTimestamps) setFollowingTimestamps(snap.followingTimestamps);
-        }
-      }
-    })();
-  }, []);
-
-  const markNewFromDiff = useMemo(() => {
-    if (!trackSnapshots || !lastExportDiff?.hadBaseline) return null;
-    const next = new Set<string>();
-    for (const u of lastExportDiff.followingAdded) next.add(u);
-    for (const u of lastExportDiff.followersAdded) next.add(u);
-    for (const u of lastExportDiff.newUnfollowers) next.add(u);
-    return next;
-  }, [trackSnapshots, lastExportDiff]);
-
-  const handleTrackToggle = useCallback(async (enabled: boolean) => {
-    const previous = trackSnapshots;
-    setTrackSnapshotsState(enabled);
-    try {
-      await setTrackSnapshots(enabled);
-      setIndexedDbError(null);
-      if (enabled) {
-        const snap = await getLatestSnapshot();
-        setLastSnapshotSavedAt(snap?.savedAt ?? null);
-      } else {
-        setLastSnapshotSavedAt(null);
-      }
-    } catch {
-      setTrackSnapshotsState(previous);
-      setIndexedDbError(messages.analyzer.indexedDbFailed);
-    }
-  }, [trackSnapshots]);
-
-  const runAnalysis = useCallback(async () => {
-    if (!followingFiles?.length || !followerFiles?.length) {
-      setState({
-        status: AnalyzerLoadStatus.Error,
-        message: messages.analyzer.errors.selectFiles,
-      });
-      return;
-    }
-
-    setState({ status: AnalyzerLoadStatus.Loading });
-    setLastExportDiff(null);
-    try {
-      const followingRaw: string[] = [];
-      const followingTs: TimestampedUser[] = [];
-      for (let i = 0; i < followingFiles.length; i++) {
-        const file = followingFiles.item(i);
-        if (!file) continue;
-        const json = await readJsonFile(file);
-        followingRaw.push(...extractUsernamesFromInstagramJson(json));
-        followingTs.push(...extractTimestampedUsersFromInstagramJson(json));
-      }
-
-      const followersRaw: string[] = [];
-      const followersTs: TimestampedUser[] = [];
-      for (let i = 0; i < followerFiles.length; i++) {
-        const file = followerFiles.item(i);
-        if (!file) continue;
-        const json = await readJsonFile(file);
-        followersRaw.push(...extractUsernamesFromInstagramJson(json));
-        followersTs.push(...extractTimestampedUsersFromInstagramJson(json));
-      }
-
-      if (followingRaw.length === 0 || followersRaw.length === 0) {
-        setState({
-          status: AnalyzerLoadStatus.Error,
-          message: messages.analyzer.errors.noUsernames,
-        });
-        return;
-      }
-
-      const analysis = analyzeFollowingFollowers(followingRaw, followersRaw);
-
-      const followingSet = new Set(followingRaw);
-      const followersSet = new Set(followersRaw);
-      const uniqueFollowing = [...followingSet].sort();
-      const uniqueFollowers = [...followersSet].sort();
-      const savedAt = new Date().toISOString();
-
-      try {
-        let diff: ExportDiff | null = null;
-        if (trackSnapshots) {
-          const prev = await getLatestSnapshot();
-          if (prev) {
-            const f = diffSets(new Set(prev.following), followingSet);
-            const g = diffSets(new Set(prev.followers), followersSet);
-            const newUnfollowers = g.removed.filter((u) => followingSet.has(u));
-            const summaryDiffs: SummaryDiffs = {
-              followingDiff: analysis.followingUnique - (prev.analysis?.followingUnique ?? new Set(prev.following).size),
-              followersDiff: analysis.followersUnique - (prev.analysis?.followersUnique ?? new Set(prev.followers).size),
-              mutualDiff: analysis.mutuals.length - (prev.analysis?.mutuals.length ?? 0),
-            };
-            diff = {
-              followingAdded: f.added,
-              followingRemoved: f.removed,
-              followersAdded: g.added,
-              followersRemoved: g.removed,
-              newUnfollowers,
-              hadBaseline: true,
-              summaryDiffs,
-            };
-          } else {
-            diff = {
-              followingAdded: [],
-              followingRemoved: [],
-              followersAdded: [],
-              followersRemoved: [],
-              newUnfollowers: [],
-              hadBaseline: false,
-            };
-          }
-        }
-
-        await setLatestSnapshot({
-          following: uniqueFollowing,
-          followers: uniqueFollowers,
-          savedAt,
-          analysis,
-          followerTimestamps: followersTs,
-          followingTimestamps: followingTs,
-        });
-
-        setIndexedDbError(null);
-        if (trackSnapshots && diff) {
-          setLastExportDiff(diff);
-          setLastSnapshotSavedAt(savedAt);
-        } else {
-          setLastExportDiff(null);
-          setLastSnapshotSavedAt(null);
-        }
-      } catch {
-        setIndexedDbError(messages.analyzer.indexedDbFailed);
-        setLastExportDiff(null);
-      }
-
-      setFollowerTimestamps(followersTs);
-      setFollowingTimestamps(followingTs);
-      setState({ status: AnalyzerLoadStatus.Ready, analysis });
-    } catch (e) {
-      const message =
-        e instanceof Error ? e.message : messages.analyzer.errors.parseFailed;
-      setState({ status: AnalyzerLoadStatus.Error, message });
-    }
-  }, [followingFiles, followerFiles, trackSnapshots]);
-
-  const handleSwapFiles = useCallback(() => {
-    const prevFollowers = followerFiles;
-    const prevFollowing = followingFiles;
-    setFollowerFiles(prevFollowing);
-    setFollowingFiles(prevFollowers);
-    syncInputFiles(followerInputRef.current, prevFollowing);
-    syncInputFiles(followingInputRef.current, prevFollowers);
-  }, [followerFiles, followingFiles]);
-
-  const canAnalyze = Boolean(followingFiles?.length && followerFiles?.length);
-  const canSwap = Boolean(followingFiles?.length || followerFiles?.length);
-
-  const handleResetAnalysis = useCallback(async () => {
-    try {
-      await clearAllSiteData();
-      setIndexedDbError(null);
-    } catch {
-      setIndexedDbError(messages.analyzer.indexedDbFailed);
-    }
-    setFollowingFiles(null);
-    setFollowerFiles(null);
-    setFollowerTimestamps([]);
-    setFollowingTimestamps([]);
-    setFileInputKey((k) => k + 1);
-    setState({ status: AnalyzerLoadStatus.Idle });
-    setTrackSnapshotsState(false);
-    setLastExportDiff(null);
-    setLastSnapshotSavedAt(null);
-  }, []);
+  const {
+    state,
+    followingFiles,
+    followerFiles,
+    trackSnapshots,
+    lastExportDiff,
+    lastSnapshotSavedAt,
+    indexedDbError,
+    fileInputKey,
+    followerInputRef,
+    followingInputRef,
+    followerTimestamps,
+    followingTimestamps,
+    markNewFromDiff,
+    canAnalyze,
+    canSwap,
+    setFollowingFiles,
+    setFollowerFiles,
+    setIndexedDbError,
+    handleTrackToggle,
+    runAnalysis,
+    handleSwapFiles,
+    handleResetAnalysis,
+  } = useAnalyzerState();
 
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-8">
@@ -299,57 +48,18 @@ export function InstagramAnalyzer() {
           {messages.analyzer.introAfterCode}
         </div>
 
-        <div className="mt-6 grid gap-6 sm:grid-cols-[1fr_auto_1fr]">
-          <div data-tour="upload-followers">
-            <JsonFileUploadField
-              id="analyzer-followers"
-              inputKey={fileInputKey}
-              inputRef={followerInputRef}
-              label={messages.analyzer.followersLabel}
-              hint={messages.analyzer.followersHint}
-              hasFiles={Boolean(followerFiles?.length)}
-              onChange={(e) => setFollowerFiles(e.target.files)}
-            />
-          </div>
-          <div className="flex items-center justify-center sm:pt-6">
-            <Tooltip.Provider delay={0}>
-              <Tooltip.Root>
-                <Tooltip.Trigger
-                  render={(props) => (
-                    <Button
-                      {...props}
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      disabled={!canSwap || state.status === AnalyzerLoadStatus.Loading}
-                      onClick={handleSwapFiles}
-                      aria-label={messages.analyzer.swapFilesAriaLabel}
-                      className="text-blue-300 hover:text-blue-100"
-                    >
-                      <ArrowRightLeft className="size-4" />
-                    </Button>
-                  )}
-                />
-                <Tooltip.Portal>
-                  <Tooltip.Positioner side="top" sideOffset={8}>
-                    <TooltipPopup>{messages.analyzer.swapFilesTooltip}</TooltipPopup>
-                  </Tooltip.Positioner>
-                </Tooltip.Portal>
-              </Tooltip.Root>
-            </Tooltip.Provider>
-          </div>
-          <div data-tour="upload-following">
-            <JsonFileUploadField
-              id="analyzer-following"
-              inputKey={fileInputKey}
-              inputRef={followingInputRef}
-              label={messages.analyzer.followingLabel}
-              hint={messages.analyzer.followingHint}
-              hasFiles={Boolean(followingFiles?.length)}
-              onChange={(e) => setFollowingFiles(e.target.files)}
-            />
-          </div>
-        </div>
+        <AnalyzerFileUploadSection
+          state={state}
+          fileInputKey={fileInputKey}
+          followerInputRef={followerInputRef}
+          followingInputRef={followingInputRef}
+          followerFiles={followerFiles}
+          followingFiles={followingFiles}
+          canSwap={canSwap}
+          onFollowerChange={(files) => setFollowerFiles(files)}
+          onFollowingChange={(files) => setFollowingFiles(files)}
+          onSwap={handleSwapFiles}
+        />
 
         <div data-tour="track-changes">
           <ExportTrackingToggle
@@ -367,97 +77,12 @@ export function InstagramAnalyzer() {
           </p>
         ) : null}
 
-        <Tooltip.Provider delay={0}>
-          <div className="mt-6 flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <Button
-              type="button"
-              size="lg"
-              disabled={!canAnalyze || state.status === AnalyzerLoadStatus.Loading}
-              onClick={() => void runAnalysis()}
-              className="w-full sm:w-auto"
-              data-tour="analyze-button"
-            >
-              <WandSparkles className="size-4" />
-              {state.status === AnalyzerLoadStatus.Loading
-                ? messages.analyzer.analyzing
-                : messages.analyzer.analyze}
-            </Button>
-            {(canAnalyze || state.status === AnalyzerLoadStatus.Ready) && (
-            <div className="self-end sm:self-auto">
-              <AlertDialog.Root>
-                <Tooltip.Root>
-                  <AlertDialog.Trigger
-                    render={(triggerProps) => (
-                      <Tooltip.Trigger
-                        type="button"
-                        delay={0}
-                        disabled={state.status === AnalyzerLoadStatus.Loading}
-                        render={(tooltipProps) => (
-                          <Button
-                            {...tooltipProps}
-                            {...triggerProps}
-                            type="button"
-                            variant="outline"
-                            size="lg"
-                            className="w-auto border-destructive/90 text-destructive hover:bg-destructive/15"
-                            aria-label={messages.analyzer.resetAnalysisAriaLabel}
-                          >
-                            <Trash2 className="size-4" />
-                            {messages.analyzer.resetAnalysis}
-                          </Button>
-                        )}
-                      />
-                    )}
-                  />
-                  <Tooltip.Portal>
-                    <Tooltip.Positioner side="top" sideOffset={8}>
-                      <TooltipPopup>{messages.analyzer.resetAnalysisTooltip}</TooltipPopup>
-                    </Tooltip.Positioner>
-                  </Tooltip.Portal>
-                </Tooltip.Root>
-                <AlertDialog.Portal>
-                  <AlertDialogBackdrop />
-                  <AlertDialogPopup>
-                    <AlertDialogTitle>
-                      {messages.analyzer.resetConfirm.title}
-                    </AlertDialogTitle>
-                    <AlertDialogDescription>
-                      {messages.analyzer.resetConfirm.description}
-                    </AlertDialogDescription>
-                    <p className="mt-2 text-sm leading-relaxed text-emerald-300/80">
-                      {messages.analyzer.resetConfirm.privacy}
-                    </p>
-                    <div className="mt-6 flex justify-end gap-3">
-                      <AlertDialog.Close
-                        render={(props) => (
-                          <Button {...props} variant="outline" size="lg">
-                            {messages.analyzer.resetConfirm.cancel}
-                          </Button>
-                        )}
-                      />
-                      <AlertDialog.Close
-                        render={(props) => (
-                          <Button
-                            {...props}
-                            variant="destructive"
-                            size="lg"
-                            onClick={(e) => {
-                              props.onClick?.(e);
-                              void handleResetAnalysis();
-                            }}
-                          >
-                            {messages.analyzer.resetConfirm.confirm}
-                          </Button>
-                        )}
-                      />
-                    </div>
-                  </AlertDialogPopup>
-                </AlertDialog.Portal>
-              </AlertDialog.Root>
-            </div>
-            )}
-          </div>
-        </Tooltip.Provider>
+        <AnalyzerActions
+          state={state}
+          canAnalyze={canAnalyze}
+          onAnalyze={() => void runAnalysis()}
+          onReset={() => void handleResetAnalysis()}
+        />
 
         {state.status === AnalyzerLoadStatus.Error && (
           <Alert variant="destructive" className="mt-4">
@@ -478,103 +103,17 @@ export function InstagramAnalyzer() {
       </div>
 
       {state.status === AnalyzerLoadStatus.Ready && (
-        <>
-          <InstagramAnalysisSummary analysis={state.analysis} summaryDiffs={lastExportDiff?.summaryDiffs} />
-          <FollowActivityChart
-            followerTimestamps={followerTimestamps}
-            followingTimestamps={followingTimestamps}
-          />
-          <ul className="list-disc rounded-xl border border-blue-800/50 bg-blue-950/35 px-4 py-3 pl-8 text-sm text-blue-200/70 space-y-1">
-            {messages.analyzer.indexedDbPrivacy.map((line: string) => (
-              <li key={line}>{line}</li>
-            ))}
-          </ul>
-          {trackSnapshots && <ExportChangeDiff diff={lastExportDiff} />}
-          {indexedDbError && (
-            <Alert
-              className="border-amber-900/40 bg-amber-950/30 text-amber-100"
-              variant="default"
-            >
-              <AlertDescription className="text-amber-200">
-                {indexedDbError}
-              </AlertDescription>
-            </Alert>
-          )}
-          <div className="grid gap-4 lg:grid-cols-3 lg:h-[32rem]">
-            <UnfollowerReviewList
-              title={messages.analyzer.lists.dontFollowBack}
-              usernames={state.analysis.youFollowTheyDont}
-              accent="text-amber-400"
-              onPersistError={(msg) => setIndexedDbError(msg)}
-              markNew={markNewFromDiff}
-            />
-            <InstagramUserList
-              title={messages.analyzer.lists.onlyTheyFollow}
-              usernames={state.analysis.theyFollowYouDont}
-              accent="text-sky-400"
-              userStatus="follower"
-              markNew={markNewFromDiff}
-            />
-            <InstagramUserList
-              title={messages.analyzer.lists.mutual}
-              usernames={state.analysis.mutuals}
-              accent="text-emerald-400"
-              userStatus="mutual"
-              markNew={markNewFromDiff}
-            />
-          </div>
-        </>
-      )}
-    </div>
-  );
-}
-
-type JsonFileUploadFieldProps = {
-  id: string;
-  inputKey: number;
-  inputRef: React.RefObject<HTMLInputElement | null>;
-  label: string;
-  hint: string;
-  hasFiles: boolean;
-  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
-};
-
-function JsonFileUploadField({
-  id,
-  inputKey,
-  inputRef,
-  label,
-  hint,
-  hasFiles,
-  onChange,
-}: JsonFileUploadFieldProps) {
-  return (
-    <div className="flex flex-col gap-2">
-      <Label htmlFor={id} className="text-foreground">
-        {label}
-      </Label>
-      <div className="relative">
-        <Input
-          ref={inputRef}
-          key={`${id}-${inputKey}`}
-          id={id}
-          type="file"
-          accept=".json,application/json"
-          multiple
-          onChange={onChange}
-          className={cn(
-            hasFiles &&
-              "border-emerald-500/80 pr-10 outline outline-2 outline-emerald-500/70 -outline-offset-1 focus-visible:border-emerald-500 focus-visible:ring-emerald-500/30",
-          )}
+        <AnalyzerResults
+          analysis={state.analysis}
+          followerTimestamps={followerTimestamps}
+          followingTimestamps={followingTimestamps}
+          trackSnapshots={trackSnapshots}
+          lastExportDiff={lastExportDiff}
+          indexedDbError={indexedDbError}
+          markNewFromDiff={markNewFromDiff}
+          onPersistError={(msg) => setIndexedDbError(msg)}
         />
-        {hasFiles ? (
-          <CircleCheck
-            className="pointer-events-none absolute top-1/2 right-3 size-5 -translate-y-1/2 text-emerald-400"
-            aria-hidden
-          />
-        ) : null}
-      </div>
-      <span className="text-xs text-muted-foreground">{hint}</span>
+      )}
     </div>
   );
 }
