@@ -25,7 +25,7 @@ export function JsonFileUploadField({
 }: JsonFileUploadFieldProps) {
   return (
     <div className="flex flex-col gap-2">
-      <Label htmlFor={id} className="text-foreground">
+      <Label htmlFor={id} className="font-medium text-foreground">
         {label}
       </Label>
       <div className="relative">

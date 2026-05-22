@@ -38,7 +38,7 @@ export function InstagramAnalyzer() {
 
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-8">
-      <div className="overflow-hidden rounded-2xl border border-blue-800/40 bg-blue-950/40 shadow-lg shadow-black/20">
+      <div className="overflow-hidden rounded-2xl border border-blue-800/60 bg-blue-950/40 shadow-lg shadow-black/20">
         <div className="border-b border-blue-800/30 px-6 py-5">
           <p className="text-sm leading-relaxed text-blue-200/80">
             <InstagramExportTutorial />

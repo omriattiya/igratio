@@ -4,7 +4,7 @@ import type { SummaryDiffs } from "@/components/ExportChangePanel";
 import { duplicateRowsNote, messages } from "@/lib/i18n";
 
 const summaryStatCardClass =
-  "rounded-xl border border-blue-800/40 bg-blue-950/50 p-4 transition duration-200 ease-out hover:-translate-y-0.5 hover:border-blue-600/50 hover:bg-blue-900/60 hover:shadow-lg hover:shadow-black/25";
+  "rounded-xl border border-blue-800/60 bg-blue-950/50 p-4 transition duration-200 ease-out hover:-translate-y-0.5 hover:border-teal-400/40 hover:bg-blue-900/60 hover:shadow-lg hover:shadow-teal-950/30";
 
 function DiffBadge({ value }: { value: number }) {
   if (value === 0) return null;

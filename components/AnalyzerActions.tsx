@@ -33,7 +33,7 @@ export function AnalyzerActions({
           size="lg"
           disabled={!canAnalyze || state.status === AnalyzerLoadStatus.Loading}
           onClick={onAnalyze}
-          className="relative w-full overflow-hidden bg-gradient-to-r from-blue-600 to-blue-500 px-5 text-white shadow-md shadow-blue-900/40 transition-all duration-200 hover:from-blue-500 hover:to-blue-400 hover:shadow-lg hover:shadow-blue-800/40 disabled:from-blue-800 disabled:to-blue-800 disabled:shadow-none sm:w-auto"
+          className="relative w-full overflow-hidden bg-[length:200%_100%] bg-[position:0%_0%] bg-gradient-to-r from-teal-500 via-sky-400 to-teal-500 px-5 text-white shadow-md shadow-teal-900/30 transition-all duration-500 ease-in-out hover:bg-[position:100%_0%] hover:shadow-lg hover:shadow-teal-900/40 disabled:from-slate-700 disabled:via-slate-700 disabled:to-slate-700 disabled:shadow-none sm:w-auto"
           data-tour="analyze-button"
         >
           <WandSparkles className="size-4" />

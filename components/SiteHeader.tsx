@@ -28,8 +28,8 @@ export function SiteHeader({
   githubTooltip,
 }: SiteHeaderProps) {
   return (
-    <header className="relative overflow-hidden border-b border-blue-900/50 bg-gradient-to-b from-blue-950/95 to-blue-950/80 px-6 py-8 backdrop-blur-sm sm:py-10">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_-20%,rgba(56,189,248,0.08),transparent)]" />
+    <header className="relative overflow-hidden border-b border-teal-500/15 bg-gradient-to-b from-blue-950/95 to-blue-950/80 px-6 py-8 backdrop-blur-sm sm:py-10">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_-20%,rgba(45,212,191,0.07),rgba(56,189,248,0.04)_60%,transparent)]" />
       <div className="relative mx-auto max-w-4xl">
         <div className="flex items-center justify-between gap-4">
           <div className="relative flex items-center gap-3">
