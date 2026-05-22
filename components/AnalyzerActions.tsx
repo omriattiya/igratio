@@ -27,13 +27,13 @@ export function AnalyzerActions({
 }: AnalyzerActionsProps) {
   return (
     <Tooltip.Provider delay={0}>
-      <div className="mt-6 flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <Button
           type="button"
           size="lg"
           disabled={!canAnalyze || state.status === AnalyzerLoadStatus.Loading}
           onClick={onAnalyze}
-          className="w-full sm:w-auto"
+          className="relative w-full overflow-hidden bg-gradient-to-r from-blue-600 to-blue-500 px-5 text-white shadow-md shadow-blue-900/40 transition-all duration-200 hover:from-blue-500 hover:to-blue-400 hover:shadow-lg hover:shadow-blue-800/40 disabled:from-blue-800 disabled:to-blue-800 disabled:shadow-none sm:w-auto"
           data-tour="analyze-button"
         >
           <WandSparkles className="size-4" />

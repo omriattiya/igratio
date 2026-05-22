@@ -239,7 +239,7 @@ export function FollowActivityChart({
   if (!hasData) return null;
 
   return (
-    <section className="rounded-xl border border-blue-800/50 bg-blue-950/40 p-4">
+    <section className="rounded-xl border border-blue-800/30 bg-blue-950/35 p-4">
       <div className="mb-4 flex items-center justify-between">
         <h3 className="text-sm font-semibold text-blue-200/80">
           {copy.title}

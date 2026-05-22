@@ -32,7 +32,7 @@ export function AnalyzerFileUploadSection({
   onSwap,
 }: AnalyzerFileUploadSectionProps) {
   return (
-    <div className="mt-6 grid gap-6 sm:grid-cols-[1fr_auto_1fr]">
+    <div className="grid gap-6 sm:grid-cols-[1fr_auto_1fr]">
       <div data-tour="upload-followers">
         <JsonFileUploadField
           id="analyzer-followers"

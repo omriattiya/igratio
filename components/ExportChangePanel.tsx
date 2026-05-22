@@ -36,7 +36,7 @@ export function ExportTrackingToggle({
   const copy = messages.analyzer.exportTracking;
 
   return (
-    <div className="mt-6 rounded-xl border border-blue-800/50 bg-blue-950/30 p-4">
+    <div className="rounded-xl border border-blue-800/30 bg-blue-900/15 p-4">
       <div className="flex items-center gap-4">
         <Switch
           id="export-tracking-toggle"
@@ -68,13 +68,13 @@ type UsernameListProps = {
 function UsernameMiniList({ label, usernames, userStatus }: UsernameListProps) {
   const empty = messages.analyzer.exportTracking.emptyList;
   return (
-    <div className="rounded-lg border border-blue-800/40 bg-blue-950/50 p-3">
-      <p className="text-xs font-medium uppercase tracking-wide text-blue-200/60">
+    <div className="rounded-lg border border-blue-800/30 bg-blue-950/40 p-3">
+      <p className="text-xs font-medium uppercase tracking-wide text-blue-200/70">
         {label}{" "}
         <span className="font-normal tabular-nums">({usernames.length})</span>
       </p>
       {usernames.length === 0 ? (
-        <p className="mt-2 text-sm text-blue-200/55">{empty}</p>
+        <p className="mt-2 text-sm text-blue-200/65">{empty}</p>
       ) : (
         <ul className="custom-scrollbar mt-2 max-h-40 list-none space-y-1.5 overflow-y-auto pr-2">
           {usernames.map((u) => (
@@ -99,7 +99,7 @@ export function ExportChangeDiff({ diff }: ExportChangeDiffProps) {
 
   if (!diff.hadBaseline) {
     return (
-      <div className="rounded-xl border border-blue-800/50 bg-blue-950/40 p-4">
+      <div className="rounded-xl border border-blue-800/30 bg-blue-950/35 p-4">
         <h3 className="text-sm font-semibold text-blue-100">{copy.sectionTitle}</h3>
         <p className="mt-2 text-sm text-blue-200/70">{copy.baselineOnly}</p>
       </div>
@@ -107,7 +107,7 @@ export function ExportChangeDiff({ diff }: ExportChangeDiffProps) {
   }
 
   return (
-    <div className="rounded-xl border border-blue-800/50 bg-blue-950/40 p-4">
+    <div className="rounded-xl border border-blue-800/30 bg-blue-950/35 p-4">
       <h3 className="text-sm font-semibold text-blue-100">{copy.sectionTitle}</h3>
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
         <div className="sm:col-span-2">

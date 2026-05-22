@@ -49,7 +49,7 @@ export function UserLinkCard({
 
   return (
     <div
-      className={`group flex items-center gap-3 rounded-lg border border-blue-800/40 bg-blue-950/50 px-3 py-2.5 transition duration-150 hover:border-blue-600/60 hover:bg-blue-900/50 ${dimmed ? "opacity-60" : ""}`}
+      className={`group flex items-center gap-3 rounded-lg border border-blue-800/30 bg-blue-950/40 px-3 py-2.5 transition duration-150 hover:border-blue-600/40 hover:bg-blue-900/40 ${dimmed ? "opacity-50" : ""}`}
     >
       {children}
       <Icon

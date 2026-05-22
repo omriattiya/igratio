@@ -4,7 +4,7 @@ import type { SummaryDiffs } from "@/components/ExportChangePanel";
 import { duplicateRowsNote, messages } from "@/lib/i18n";
 
 const summaryStatCardClass =
-  "rounded-xl border border-blue-800/60 bg-blue-950/70 p-4 transition duration-200 ease-out hover:-translate-y-0.5 hover:border-blue-500/80 hover:bg-blue-900/90 hover:shadow-lg hover:shadow-black/30";
+  "rounded-xl border border-blue-800/40 bg-blue-950/50 p-4 transition duration-200 ease-out hover:-translate-y-0.5 hover:border-blue-600/50 hover:bg-blue-900/60 hover:shadow-lg hover:shadow-black/25";
 
 function DiffBadge({ value }: { value: number }) {
   if (value === 0) return null;
@@ -36,12 +36,12 @@ export function InstagramAnalysisSummary({ analysis: a, summaryDiffs }: Instagra
       : a.followersRatio.toLocaleString(undefined, { maximumFractionDigits: 3, minimumFractionDigits: 0 });
 
   return (
-    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+    <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-5">
       <div className={summaryStatCardClass}>
-        <p className="text-xs font-medium uppercase tracking-wide text-blue-200/65">
+        <p className="text-xs font-medium uppercase tracking-wide text-blue-200/70">
           {copy.following}
         </p>
-        <p className="mt-1 text-2xl font-semibold tabular-nums">{a.followingUnique}</p>
+        <p className="mt-1.5 text-2xl font-semibold tabular-nums text-blue-50">{a.followingUnique}</p>
         {summaryDiffs && <DiffBadge value={summaryDiffs.followingDiff} />}
         {a.followingCount !== a.followingUnique && (
           <p className="mt-1 text-xs text-amber-400">
@@ -54,10 +54,10 @@ export function InstagramAnalysisSummary({ analysis: a, summaryDiffs }: Instagra
         )}
       </div>
       <div className={summaryStatCardClass}>
-        <p className="text-xs font-medium uppercase tracking-wide text-blue-200/65">
+        <p className="text-xs font-medium uppercase tracking-wide text-blue-200/70">
           {copy.followers}
         </p>
-        <p className="mt-1 text-2xl font-semibold tabular-nums">{a.followersUnique}</p>
+        <p className="mt-1.5 text-2xl font-semibold tabular-nums text-blue-50">{a.followersUnique}</p>
         {summaryDiffs && <DiffBadge value={summaryDiffs.followersDiff} />}
         {a.followersCount !== a.followersUnique && (
           <p className="mt-1 text-xs text-amber-400">
@@ -66,28 +66,28 @@ export function InstagramAnalysisSummary({ analysis: a, summaryDiffs }: Instagra
         )}
       </div>
       <div className={summaryStatCardClass}>
-        <p className="text-xs font-medium uppercase tracking-wide text-blue-200/65">
+        <p className="text-xs font-medium uppercase tracking-wide text-blue-200/70">
           {copy.mutual}
         </p>
-        <p className="mt-1 text-2xl font-semibold tabular-nums">{a.mutuals.length}</p>
+        <p className="mt-1.5 text-2xl font-semibold tabular-nums text-blue-50">{a.mutuals.length}</p>
         {summaryDiffs && <DiffBadge value={summaryDiffs.mutualDiff} />}
       </div>
       <div className={summaryStatCardClass}>
-        <p className="text-xs font-medium uppercase tracking-wide text-blue-200/65">
+        <p className="text-xs font-medium uppercase tracking-wide text-blue-200/70">
           {copy.netDifference}
         </p>
-        <p className="mt-1 text-2xl font-semibold tabular-nums">
+        <p className="mt-1.5 text-2xl font-semibold tabular-nums text-blue-50">
           {a.netDifference > 0 ? "+" : ""}
           {a.netDifference}
         </p>
-        <p className="mt-1 text-xs text-blue-200/55">{copy.netDifferenceHint}</p>
+        <p className="mt-1 text-xs text-blue-200/60">{copy.netDifferenceHint}</p>
       </div>
-      <div className={summaryStatCardClass}>
-        <p className="text-xs font-medium uppercase tracking-wide text-blue-200/65">
+      <div className={`${summaryStatCardClass} col-span-2 sm:col-span-1`}>
+        <p className="text-xs font-medium uppercase tracking-wide text-blue-200/70">
           {copy.followersRatio}
         </p>
-        <p className="mt-1 text-2xl font-semibold tabular-nums">{ratioLabel}</p>
-        <p className="mt-1 text-xs text-blue-200/55">{copy.followersRatioHint}</p>
+        <p className="mt-1.5 text-2xl font-semibold tabular-nums text-blue-50">{ratioLabel}</p>
+        <p className="mt-1 text-xs text-blue-200/60">{copy.followersRatioHint}</p>
       </div>
     </div>
   );

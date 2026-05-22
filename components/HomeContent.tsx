@@ -9,7 +9,8 @@ export function HomeContent() {
   const { run, relaunch, finish, showPopover, dismissPopover } = useAppTour();
 
   return (
-    <div className="flex min-h-full flex-1 flex-col bg-background">
+    <div className="relative flex min-h-full flex-1 flex-col bg-background">
+      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-10%,rgba(56,130,246,0.06),transparent_60%)]" />
       <SiteHeader
         title={messages.home.headerTitle}
         description={messages.home.headerDescription}
@@ -22,9 +23,15 @@ export function HomeContent() {
         linkedinTooltip={messages.home.linkedinTooltip}
         githubTooltip={messages.home.githubTooltip}
       />
-      <main className="flex flex-1 flex-col px-6 py-10">
+      <main className="relative flex flex-1 flex-col px-4 py-8 sm:px-6 sm:py-10">
         <InstagramAnalyzer />
       </main>
+      <footer className="relative border-t border-blue-900/30 px-6 py-6">
+        <div className="mx-auto flex max-w-4xl items-center justify-between text-xs text-blue-300/45">
+          <span>IG Ratio</span>
+          <span>Open source &middot; Your data stays local</span>
+        </div>
+      </footer>
       <AppTour run={run} onFinish={finish} />
     </div>
   );

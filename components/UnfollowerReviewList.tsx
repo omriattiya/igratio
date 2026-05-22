@@ -114,9 +114,9 @@ export function UnfollowerReviewList({
 
   if (usernames.length === 0) {
     return (
-      <section className="rounded-xl border border-blue-800/50 bg-blue-950/40 p-4">
+      <section className="rounded-xl border border-blue-800/30 bg-blue-950/35 p-4">
         <h3 className={`text-sm font-semibold ${accent}`}>{title}</h3>
-        <p className="mt-2 text-sm text-blue-200/60">
+        <p className="mt-2 text-sm text-blue-200/65">
           {messages.userList.empty}
         </p>
       </section>
@@ -126,7 +126,7 @@ export function UnfollowerReviewList({
   const collapsed = isSmallScreen && !expanded;
 
   return (
-    <section className="flex h-full flex-col rounded-xl border border-blue-800/50 bg-blue-950/40 p-4">
+    <section className="flex h-full flex-col rounded-xl border border-blue-800/30 bg-blue-950/35 p-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <button
