@@ -1,0 +1,11 @@
+---
+description: Style rules for writing translation strings in messages/*.json
+globs: "messages/*.json"
+alwaysApply: false
+---
+
+# Translation string style
+
+When writing or editing translation strings in `messages/*.json`:
+
+1. **Don't end sentences with a period.** Trailing periods look overly formal in UI copy. Exclamation marks and question marks are fine.

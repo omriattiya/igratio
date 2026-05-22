@@ -77,7 +77,7 @@ export function InstagramExportTutorial() {
       ref={dialogRef}
       aria-labelledby="export-tutorial-title"
       className={cn(
-        "hidden w-max max-w-[calc(100vw-1.5rem)] max-h-[calc(100dvh-1.5rem)]",
+        "hidden w-[70vw] max-w-[700px] h-[90vh] max-h-[90vh]",
         "open:fixed open:left-1/2 open:top-1/2 open:z-50 open:-translate-x-1/2 open:-translate-y-1/2",
         "open:flex open:flex-col",
         "overflow-hidden rounded-2xl border border-blue-800/70 bg-blue-950 p-0 text-blue-50 shadow-2xl shadow-black/50",
@@ -117,9 +117,9 @@ export function InstagramExportTutorial() {
         </Button>
       </header>
 
-      <div className="flex min-h-0 flex-col overflow-y-auto">
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
         {quickStart ? (
-          <div className="mx-4 mt-4 space-y-2 rounded-xl border border-blue-700/50 bg-blue-900/40 px-3 py-3 text-sm">
+          <div className="mx-4 mt-4 shrink-0 space-y-2 rounded-xl border border-blue-700/50 bg-blue-900/40 px-3 py-3 text-sm">
             <p className="leading-relaxed text-blue-200/80">
               {quickStart.startPrefix}{" "}
               <a
@@ -143,7 +143,7 @@ export function InstagramExportTutorial() {
           </div>
         ) : null}
 
-        <div className="px-4 pt-4">
+        <div className="shrink-0 px-4 pt-4">
           <p className="text-sm leading-relaxed text-blue-200/75">{current.description}</p>
           {"shortcut" in current && current.shortcut ? (
             <p className="mt-2 text-sm">
@@ -159,8 +159,8 @@ export function InstagramExportTutorial() {
           ) : null}
         </div>
 
-        <div className="flex justify-center px-4 py-4">
-          <div className="overflow-hidden rounded-xl border border-blue-800/50 bg-blue-900/30" style={{ width: "fit-content" }}>
+        <div className="relative min-h-0 flex-1 px-4 py-4">
+          <div className="flex h-full w-full items-center justify-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               key={image.src}
@@ -168,13 +168,12 @@ export function InstagramExportTutorial() {
               alt={current.title}
               width={image.width}
               height={image.height}
-              className="block max-h-[min(60dvh,calc(100dvh-14rem))]"
-              style={{ width: "auto", height: "auto", maxWidth: "100%" }}
+              className="block max-h-full max-w-full rounded-xl border border-blue-800/50 object-contain"
             />
           </div>
         </div>
 
-        <div className="flex justify-center gap-1.5 px-4 pb-2" role="tablist" aria-label={copy.stepDotsLabel}>
+        <div className="flex shrink-0 justify-center gap-1.5 px-4 pb-2" role="tablist" aria-label={copy.stepDotsLabel}>
           {steps.map((_, i) => (
             <button
               key={i}

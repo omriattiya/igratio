@@ -149,23 +149,23 @@
     "steps": [
       {
         "title": "Export your data",
-        "content": "First, click here to learn how to export your Instagram followers and following data as JSON files."
+        "content": "First, click here to learn how to export your Instagram followers and following data as JSON files"
       },
       {
         "title": "Upload Followers",
-        "content": "Upload the JSON file(s) containing your followers list that you exported from Instagram."
+        "content": "Upload the JSON file(s) containing your followers list that you exported from Instagram"
       },
       {
         "title": "Upload Following",
-        "content": "Upload the JSON file(s) containing the accounts you follow."
+        "content": "Upload the JSON file(s) containing the accounts you follow"
       },
       {
         "title": "Track changes between exports",
-        "content": "Enable this to compare your current export with the previous one. You'll see who unfollowed you, new followers, and more."
+        "content": "Enable this to compare your current export with the previous one. You'll see who unfollowed you, new followers, and more"
       },
       {
         "title": "Analyze",
-        "content": "Once both files are uploaded, hit this button to run the analysis."
+        "content": "Once both files are uploaded, hit this button to run the analysis"
       },
       {
         "title": "Done! See the magic happen ✨",

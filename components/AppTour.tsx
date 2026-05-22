@@ -15,11 +15,14 @@ const TARGETS = [
   '[data-tour="analyze-button"]',
 ];
 
+const WIDER_TOOLTIP = { tooltip: { minWidth: "440px" } };
+
 const STEPS: Step[] = messages.tour.steps.map((step, i) => ({
   target: TARGETS[i],
   title: step.title,
   content: step.content,
   skipBeacon: true,
+  ...(i === 2 || i === 4 ? { styles: WIDER_TOOLTIP } : {}),
 }));
 
 export function AppTour({ run, onFinish }: { run: boolean; onFinish: () => void }) {
