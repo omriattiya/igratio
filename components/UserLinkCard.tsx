@@ -49,24 +49,24 @@ export function UserLinkCard({
 
   return (
     <div
-      className={`group flex items-center gap-3 rounded-lg border border-blue-800/30 bg-blue-950/40 px-3 py-2.5 transition duration-150 hover:border-blue-600/40 hover:bg-blue-900/40 ${dimmed ? "opacity-50" : ""}`}
+      className={`group interactive-row flex items-center gap-3 rounded-lg border border-blue-500/30 bg-[#1c355e] px-3 py-2.5 hover:border-sky-400/40 hover:bg-[#234276] hover:shadow-[0_6px_16px_-8px_rgba(37,99,235,0.4)] ${dimmed ? "opacity-55" : ""}`}
     >
       {children}
       <Icon
-        className={`size-5 shrink-0 ${iconClass} transition-transform duration-150 group-hover:scale-110`}
+        className={`size-5 shrink-0 ${iconClass} transition-transform duration-150 [transition-timing-function:var(--ease-out-expo)] group-hover:scale-110`}
         aria-hidden
       />
       <a
         href={`https://www.instagram.com/${username}/`}
         target="_blank"
         rel="noopener noreferrer"
-        className="min-w-0 flex-1 truncate text-[0.9375rem] font-medium leading-snug text-blue-200 underline-offset-2 transition-colors hover:text-blue-100 hover:underline"
+        className="min-w-0 flex-1 truncate text-[0.9375rem] font-medium leading-snug text-blue-50 underline-offset-2 transition-colors duration-150 hover:text-sky-200 hover:underline"
       >
         {username}
       </a>
       {isNew && (
         <span
-          className="shrink-0 rounded-full border border-emerald-500/40 bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-300"
+          className="shrink-0 rounded-full border border-emerald-400/45 bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-200"
           aria-label={messages.userList.newBadge}
         >
           {messages.userList.newBadge}

@@ -114,9 +114,9 @@ export function UnfollowerReviewList({
 
   if (usernames.length === 0) {
     return (
-      <section className="rounded-xl border border-blue-800/30 bg-blue-950/35 p-4">
+      <section className="surface-panel-soft p-4">
         <h3 className={`text-sm font-semibold ${accent}`}>{title}</h3>
-        <p className="mt-2 text-sm text-blue-200/65">
+        <p className="mt-2 text-sm text-secondary-readable">
           {messages.userList.empty}
         </p>
       </section>
@@ -126,7 +126,7 @@ export function UnfollowerReviewList({
   const collapsed = isSmallScreen && !expanded;
 
   return (
-    <section className="flex h-full flex-col rounded-xl border border-blue-800/30 bg-blue-950/35 p-4">
+    <section className="surface-panel-soft flex h-full flex-col p-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <button
@@ -136,16 +136,16 @@ export function UnfollowerReviewList({
           >
             <h3 className={`text-sm font-semibold ${accent}`}>
               {title}{" "}
-              <span className="font-normal text-blue-200/60">({usernames.length})</span>
+              <span className="font-normal text-tertiary-readable">({usernames.length})</span>
             </h3>
             <ChevronDown
-              className={`size-4 text-blue-300/70 transition-transform lg:hidden ${expanded ? "rotate-180" : ""}`}
+              className={`size-4 text-blue-200/80 transition-transform duration-200 [transition-timing-function:var(--ease-out-expo)] lg:hidden ${expanded ? "rotate-180" : ""}`}
             />
           </button>
           <Tooltip.Provider delay={0}>
             <Tooltip.Root>
               <Tooltip.Trigger
-                className="inline-flex cursor-default text-blue-300/50 transition-colors hover:text-blue-200/80"
+                className="inline-flex cursor-default text-blue-200/70 transition-colors duration-150 hover:text-blue-50"
               >
                 <Info className="size-4" />
               </Tooltip.Trigger>
@@ -162,18 +162,18 @@ export function UnfollowerReviewList({
           <button
             type="button"
             onClick={() => setMenuOpen((v) => !v)}
-            className="rounded-md p-1.5 text-blue-300/70 transition-colors hover:bg-blue-800/40 hover:text-blue-200"
+            className="rounded-md p-1.5 text-blue-200/80 transition-colors duration-150 hover:bg-blue-800/45 hover:text-blue-50"
             aria-label="Sort options"
           >
             <ArrowUpDown className="size-4" />
           </button>
 
           {menuOpen && (
-            <div className="absolute right-0 z-20 mt-1 w-36 overflow-hidden rounded-lg border border-blue-700/60 bg-blue-950 shadow-xl shadow-black/40">
+            <div className="absolute right-0 z-20 mt-1 w-36 overflow-hidden rounded-lg border border-blue-700/55 bg-blue-950 shadow-[0_12px_28px_-10px_rgba(0,0,0,0.65)] animate-in fade-in zoom-in-95 duration-150">
               <button
                 type="button"
                 onClick={() => { setSort("a-z"); setMenuOpen(false); }}
-                className={`flex w-full items-center gap-2 px-3 py-2 text-left text-sm transition-colors hover:bg-blue-800/50 ${sort === "a-z" ? "text-blue-100" : "text-blue-300/80"}`}
+                className={`flex w-full items-center gap-2 px-3 py-2 text-left text-sm transition-colors duration-150 hover:bg-blue-800/50 ${sort === "a-z" ? "text-blue-50" : "text-blue-200/85"}`}
               >
                 <ArrowDownAZ className="size-4" />
                 A–Z
@@ -181,7 +181,7 @@ export function UnfollowerReviewList({
               <button
                 type="button"
                 onClick={() => { setSort("new-first"); setMenuOpen(false); }}
-                className={`flex w-full items-center gap-2 px-3 py-2 text-left text-sm transition-colors hover:bg-blue-800/50 ${sort === "new-first" ? "text-blue-100" : "text-blue-300/80"}`}
+                className={`flex w-full items-center gap-2 px-3 py-2 text-left text-sm transition-colors duration-150 hover:bg-blue-800/50 ${sort === "new-first" ? "text-blue-50" : "text-blue-200/85"}`}
               >
                 <Sparkles className="size-4" />
                 New first

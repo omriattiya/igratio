@@ -1,7 +1,9 @@
 {
   "metadata": {
-    "title": "IG Ratio — Instagram following & followers ratio",
-    "description": "Analyze Instagram following and followers JSON exports in the browser"
+    "title": "IG Ratio — Instagram following & followers analyzer",
+    "description": "Compare Instagram following and followers JSON exports locally in your browser. Private — files never leave your device",
+    "ogTitle": "IG Ratio",
+    "ogDescription": "Compare Instagram following and followers exports locally. Private — nothing uploads"
   },
   "home": {
     "headerTitle": "IG Ratio",

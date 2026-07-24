@@ -51,24 +51,28 @@
 /* Single theme: dark blue / navy only (no light mode). */
 :root {
   color-scheme: dark;
-  --background: oklch(0.19 0.042 264);
-  --foreground: oklch(0.93 0.025 250);
-  --card: oklch(0.23 0.052 264);
-  --card-foreground: oklch(0.93 0.025 250);
-  --popover: oklch(0.23 0.052 264);
-  --popover-foreground: oklch(0.93 0.025 250);
-  --primary: oklch(0.58 0.14 260);
+  --background: oklch(0.145 0.038 264);
+  --foreground: oklch(0.95 0.02 250);
+  --card: oklch(0.245 0.085 258);
+  --card-foreground: oklch(0.95 0.02 250);
+  --popover: oklch(0.245 0.085 258);
+  --popover-foreground: oklch(0.95 0.02 250);
+  --primary: oklch(0.62 0.14 260);
   --primary-foreground: oklch(0.98 0.01 260);
   --secondary: oklch(0.29 0.048 264);
-  --secondary-foreground: oklch(0.93 0.025 250);
+  --secondary-foreground: oklch(0.95 0.02 250);
   --muted: oklch(0.27 0.04 264);
-  --muted-foreground: oklch(0.72 0.04 250);
+  /* Tuned for ≥4.5:1 on navy surfaces */
+  --muted-foreground: oklch(0.78 0.035 250);
   --accent: oklch(0.3 0.055 264);
-  --accent-foreground: oklch(0.93 0.025 250);
+  --accent-foreground: oklch(0.95 0.02 250);
   --destructive: oklch(0.68 0.2 22);
-  --border: oklch(0.38 0.065 264 / 45%);
-  --input: oklch(0.32 0.05 264 / 55%);
-  --ring: oklch(0.52 0.12 260);
+  --border: oklch(0.42 0.07 264 / 50%);
+  --input: oklch(0.34 0.055 264 / 60%);
+  --ring: oklch(0.58 0.13 250);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 150ms;
+  --duration-med: 220ms;
   --chart-1: oklch(0.62 0.16 260);
   --chart-2: oklch(0.55 0.12 250);
   --chart-3: oklch(0.48 0.1 250);
@@ -132,4 +136,89 @@
 }
 .custom-scrollbar:hover::-webkit-scrollbar-thumb:hover {
   background: oklch(0.6 0.08 260 / 65%);
+}
+
+/* Shared surfaces — one card depth, no nested chrome */
+@layer utilities {
+  .surface-panel {
+    border-radius: var(--radius-xl);
+    border: 1px solid oklch(0.46 0.1 258 / 48%);
+    background: oklch(0.245 0.085 258);
+    box-shadow: 0 10px 32px -14px oklch(0.05 0.03 258 / 85%);
+  }
+
+  .surface-panel-soft {
+    border-radius: var(--radius-xl);
+    border: 1px solid oklch(0.4 0.09 258 / 42%);
+    /* Slightly deeper than main panel so username rows can sit lighter on top */
+    background: oklch(0.2 0.078 258);
+  }
+
+  .surface-inset {
+    border-radius: var(--radius-lg);
+    background: oklch(0.185 0.07 258);
+  }
+
+  .text-secondary-readable {
+    color: oklch(0.82 0.035 250);
+  }
+
+  .text-tertiary-readable {
+    color: oklch(0.74 0.04 250);
+  }
+
+  .interactive-row {
+    transition:
+      border-color var(--duration-fast) var(--ease-out-expo),
+      background-color var(--duration-fast) var(--ease-out-expo),
+      box-shadow var(--duration-fast) var(--ease-out-expo),
+      transform var(--duration-fast) var(--ease-out-expo);
+  }
+
+  .interactive-lift {
+    transition:
+      border-color var(--duration-med) var(--ease-out-expo),
+      background-color var(--duration-med) var(--ease-out-expo),
+      box-shadow var(--duration-med) var(--ease-out-expo),
+      transform var(--duration-med) var(--ease-out-expo);
+  }
+
+  .interactive-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px -10px oklch(0.45 0.1 190 / 35%);
+  }
+
+  .results-enter {
+    animation: results-enter var(--duration-med) var(--ease-out-expo) both;
+  }
+}
+
+@keyframes results-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+    filter: blur(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .interactive-row,
+  .interactive-lift,
+  .interactive-lift:hover {
+    transition: none;
+    transform: none;
+  }
+
+  .results-enter {
+    animation: none;
+  }
+
+  .custom-scrollbar {
+    transition: none;
+  }
 }

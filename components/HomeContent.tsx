@@ -10,7 +10,6 @@ export function HomeContent() {
 
   return (
     <div className="relative flex min-h-full flex-1 flex-col bg-background">
-      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-10%,rgba(45,212,191,0.04),rgba(56,189,248,0.03)_50%,transparent_70%)]" />
       <SiteHeader
         title={messages.home.headerTitle}
         description={messages.home.headerDescription}
@@ -26,8 +25,8 @@ export function HomeContent() {
       <main className="relative flex flex-1 flex-col px-4 py-8 sm:px-6 sm:py-10">
         <InstagramAnalyzer />
       </main>
-      <footer className="relative border-t border-blue-900/30 px-6 py-6">
-        <div className="mx-auto flex max-w-4xl items-center justify-between text-xs text-blue-300/45">
+      <footer className="relative border-t border-blue-800/35 px-6 py-6">
+        <div className="mx-auto flex max-w-4xl items-center justify-between text-xs text-tertiary-readable">
           <span>IG Ratio</span>
           <span>Open source &middot; by Omri Attiya</span>
         </div>

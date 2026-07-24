@@ -239,34 +239,34 @@ export function FollowActivityChart({
   if (!hasData) return null;
 
   return (
-    <section className="rounded-xl border border-blue-800/30 bg-blue-950/35 p-4">
+    <section className="surface-panel-soft p-4">
       <div className="mb-4 flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-blue-200/80">
+        <h3 className="text-sm font-semibold text-blue-50">
           {copy.title}
         </h3>
         <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={toggleCumulative}
-            className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs transition-colors hover:bg-blue-800/40 hover:text-blue-100 ${
-              cumulative ? "bg-blue-800/50 text-blue-100" : "text-blue-300/60"
+            className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs transition-colors duration-150 hover:bg-blue-800/40 hover:text-blue-50 ${
+              cumulative ? "bg-blue-800/50 text-blue-50" : "text-blue-200/75"
             }`}
           >
             <TrendingUp className="size-3.5" />
             {copy.accumulated}
           </button>
-          <span className="text-blue-700/60">|</span>
+          <span className="text-blue-600/70">|</span>
           {zoomRange ? (
             <button
               type="button"
               onClick={handleResetZoom}
-              className="flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs text-blue-300/80 transition-colors hover:bg-blue-800/40 hover:text-blue-100"
+              className="flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs text-blue-200/85 transition-colors duration-150 hover:bg-blue-800/40 hover:text-blue-50"
             >
               <ZoomOut className="size-3.5" />
               {copy.resetZoom}
             </button>
           ) : (
-            <span className="flex items-center gap-1.5 text-xs text-blue-300/50">
+            <span className="flex items-center gap-1.5 text-xs text-tertiary-readable">
               <ZoomIn className="size-3.5" />
               {copy.dragToZoom}
             </span>
@@ -305,7 +305,7 @@ export function FollowActivityChart({
           )}
         </div>
       ) : (
-        <div className="flex h-72 items-center justify-center text-sm text-blue-300/50">
+        <div className="flex h-72 items-center justify-center text-sm text-tertiary-readable">
           {copy.allHidden}
         </div>
       )}

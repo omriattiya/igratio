@@ -57,7 +57,7 @@ export function AnalyzerFileUploadSection({
                   disabled={!canSwap || state.status === AnalyzerLoadStatus.Loading}
                   onClick={onSwap}
                   aria-label={messages.analyzer.swapFilesAriaLabel}
-                  className="text-blue-300 hover:text-blue-100"
+                  className="text-blue-200 transition-all duration-200 [transition-timing-function:var(--ease-out-expo)] hover:rotate-180 hover:bg-blue-800/40 hover:text-sky-200"
                 >
                   <ArrowRightLeft className="size-4" />
                 </Button>

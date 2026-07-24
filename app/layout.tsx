@@ -19,9 +19,35 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const siteUrl = "https://igratio.vercel.app";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: messages.metadata.title,
   description: messages.metadata.description,
+  alternates: {
+    canonical: siteUrl,
+  },
+  openGraph: {
+    title: messages.metadata.ogTitle,
+    description: messages.metadata.ogDescription,
+    url: siteUrl,
+    siteName: "IG Ratio",
+    type: "website",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary",
+    title: messages.metadata.ogTitle,
+    description: messages.metadata.ogDescription,
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+  verification: {
+    google: "q4TWpuivuU8rC4wXGzN87Hw3W7C9ZEzAC-QvO0R6T98",
+  },
 };
 
 export const viewport: Viewport = {

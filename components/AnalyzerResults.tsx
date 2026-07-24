@@ -36,7 +36,7 @@ export function AnalyzerResults({
         followerTimestamps={followerTimestamps}
         followingTimestamps={followingTimestamps}
       />
-      <ul className="list-disc rounded-xl border border-blue-800/30 bg-blue-950/30 px-4 py-3 pl-8 text-sm text-blue-200/70 space-y-1">
+      <ul className="list-disc space-y-1 rounded-xl border border-blue-800/30 bg-transparent px-4 py-3 pl-8 text-sm text-secondary-readable">
         {messages.analyzer.indexedDbPrivacy.map((line: string) => (
           <li key={line}>{line}</li>
         ))}

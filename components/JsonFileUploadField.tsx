@@ -38,13 +38,14 @@ export function JsonFileUploadField({
           multiple
           onChange={onChange}
           className={cn(
+            "transition-[border-color,box-shadow,background-color] duration-200 [transition-timing-function:var(--ease-out-expo)] hover:border-sky-500/40 hover:bg-input/45",
             hasFiles &&
-              "border-emerald-500/80 pr-10 outline outline-2 outline-emerald-500/70 -outline-offset-1 focus-visible:border-emerald-500 focus-visible:ring-emerald-500/30",
+              "border-emerald-400/85 pr-10 outline outline-2 outline-emerald-400/55 -outline-offset-1 hover:border-emerald-400 focus-visible:border-emerald-400 focus-visible:ring-emerald-500/30",
           )}
         />
         {hasFiles ? (
           <CircleCheck
-            className="pointer-events-none absolute top-1/2 right-3 size-5 -translate-y-1/2 text-emerald-400"
+            className="pointer-events-none absolute top-1/2 right-3 size-5 -translate-y-1/2 text-emerald-300 animate-in zoom-in-50 fade-in duration-200"
             aria-hidden
           />
         ) : null}

@@ -38,12 +38,12 @@ export function InstagramAnalyzer() {
 
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-8">
-      <div className="overflow-hidden rounded-2xl border border-blue-800/60 bg-blue-950/40 shadow-lg shadow-black/20">
-        <div className="border-b border-blue-800/30 px-6 py-5">
-          <p className="text-sm leading-relaxed text-blue-200/80">
+      <div className="surface-panel relative overflow-hidden rounded-2xl">
+        <div className="border-b border-blue-800/35 px-6 py-5">
+          <p className="text-sm leading-relaxed text-secondary-readable">
             <InstagramExportTutorial />
             {messages.analyzer.introAfterLink}{" "}
-            <code className="rounded bg-blue-800/30 px-1.5 py-0.5 font-mono text-xs text-blue-100">
+            <code className="rounded bg-blue-800/45 px-1.5 py-0.5 font-mono text-xs text-blue-50">
               {messages.analyzer.pathCode}
             </code>
             {messages.analyzer.introAfterCode}
@@ -65,7 +65,7 @@ export function InstagramAnalyzer() {
           />
         </div>
 
-        <div className="border-t border-blue-800/25 px-6 py-5">
+        <div className="border-t border-blue-800/30 px-6 py-5">
           <div data-tour="track-changes">
             <ExportTrackingToggle
               enabled={trackSnapshots}
@@ -75,7 +75,7 @@ export function InstagramAnalyzer() {
           </div>
 
           {trackSnapshots && lastSnapshotSavedAt ? (
-            <p className="mt-3 text-xs tabular-nums text-blue-200/65">
+            <p className="mt-3 text-xs tabular-nums text-tertiary-readable">
               {t(messages.analyzer.exportTracking.lastSaved, {
                 date: formatSnapshotSavedAt(lastSnapshotSavedAt),
               })}
@@ -83,7 +83,7 @@ export function InstagramAnalyzer() {
           ) : null}
         </div>
 
-        <div className="border-t border-blue-800/25 bg-blue-950/30 px-6 py-5">
+        <div className="border-t border-blue-800/30 bg-blue-950/40 px-6 py-5">
           <AnalyzerActions
             state={state}
             canAnalyze={canAnalyze}
@@ -111,16 +111,18 @@ export function InstagramAnalyzer() {
       </div>
 
       {state.status === AnalyzerLoadStatus.Ready && (
-        <AnalyzerResults
-          analysis={state.analysis}
-          followerTimestamps={followerTimestamps}
-          followingTimestamps={followingTimestamps}
-          trackSnapshots={trackSnapshots}
-          lastExportDiff={lastExportDiff}
-          indexedDbError={indexedDbError}
-          markNewFromDiff={markNewFromDiff}
-          onPersistError={(msg) => setIndexedDbError(msg)}
-        />
+        <div className="results-enter flex flex-col gap-8">
+          <AnalyzerResults
+            analysis={state.analysis}
+            followerTimestamps={followerTimestamps}
+            followingTimestamps={followingTimestamps}
+            trackSnapshots={trackSnapshots}
+            lastExportDiff={lastExportDiff}
+            indexedDbError={indexedDbError}
+            markNewFromDiff={markNewFromDiff}
+            onPersistError={(msg) => setIndexedDbError(msg)}
+          />
+        </div>
       )}
     </div>
   );

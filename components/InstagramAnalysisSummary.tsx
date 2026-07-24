@@ -4,7 +4,7 @@ import type { SummaryDiffs } from "@/components/ExportChangePanel";
 import { duplicateRowsNote, messages } from "@/lib/i18n";
 
 const summaryStatCardClass =
-  "rounded-xl border border-blue-800/60 bg-blue-950/50 p-4 transition duration-200 ease-out hover:-translate-y-0.5 hover:border-teal-400/40 hover:bg-blue-900/60 hover:shadow-lg hover:shadow-teal-950/30";
+  "interactive-lift rounded-xl border border-blue-500/30 bg-[#1a3058] p-4 hover:border-blue-400/45 hover:bg-[#1f3a66]";
 
 function DiffBadge({ value }: { value: number }) {
   if (value === 0) return null;
@@ -38,13 +38,13 @@ export function InstagramAnalysisSummary({ analysis: a, summaryDiffs }: Instagra
   return (
     <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-5">
       <div className={summaryStatCardClass}>
-        <p className="text-xs font-medium uppercase tracking-wide text-blue-200/70">
+        <p className="text-xs font-medium uppercase tracking-wide text-tertiary-readable">
           {copy.following}
         </p>
         <p className="mt-1.5 text-2xl font-semibold tabular-nums text-blue-50">{a.followingUnique}</p>
         {summaryDiffs && <DiffBadge value={summaryDiffs.followingDiff} />}
         {a.followingCount !== a.followingUnique && (
-          <p className="mt-1 text-xs text-amber-400">
+          <p className="mt-1 text-xs text-amber-300">
             {duplicateRowsNote(
               a.followingCount,
               a.followingCount - a.followingUnique,
@@ -54,40 +54,40 @@ export function InstagramAnalysisSummary({ analysis: a, summaryDiffs }: Instagra
         )}
       </div>
       <div className={summaryStatCardClass}>
-        <p className="text-xs font-medium uppercase tracking-wide text-blue-200/70">
+        <p className="text-xs font-medium uppercase tracking-wide text-tertiary-readable">
           {copy.followers}
         </p>
         <p className="mt-1.5 text-2xl font-semibold tabular-nums text-blue-50">{a.followersUnique}</p>
         {summaryDiffs && <DiffBadge value={summaryDiffs.followersDiff} />}
         {a.followersCount !== a.followersUnique && (
-          <p className="mt-1 text-xs text-amber-400">
+          <p className="mt-1 text-xs text-amber-300">
             {duplicateRowsNote(a.followersCount, a.followersCount - a.followersUnique, copy)}
           </p>
         )}
       </div>
       <div className={summaryStatCardClass}>
-        <p className="text-xs font-medium uppercase tracking-wide text-blue-200/70">
+        <p className="text-xs font-medium uppercase tracking-wide text-tertiary-readable">
           {copy.mutual}
         </p>
         <p className="mt-1.5 text-2xl font-semibold tabular-nums text-blue-50">{a.mutuals.length}</p>
         {summaryDiffs && <DiffBadge value={summaryDiffs.mutualDiff} />}
       </div>
       <div className={summaryStatCardClass}>
-        <p className="text-xs font-medium uppercase tracking-wide text-blue-200/70">
+        <p className="text-xs font-medium uppercase tracking-wide text-tertiary-readable">
           {copy.netDifference}
         </p>
         <p className="mt-1.5 text-2xl font-semibold tabular-nums text-blue-50">
           {a.netDifference > 0 ? "+" : ""}
           {a.netDifference}
         </p>
-        <p className="mt-1 text-xs text-blue-200/60">{copy.netDifferenceHint}</p>
+        <p className="mt-1 text-xs text-tertiary-readable">{copy.netDifferenceHint}</p>
       </div>
       <div className={`${summaryStatCardClass} col-span-2 sm:col-span-1`}>
-        <p className="text-xs font-medium uppercase tracking-wide text-blue-200/70">
+        <p className="text-xs font-medium uppercase tracking-wide text-tertiary-readable">
           {copy.followersRatio}
         </p>
         <p className="mt-1.5 text-2xl font-semibold tabular-nums text-blue-50">{ratioLabel}</p>
-        <p className="mt-1 text-xs text-blue-200/60">{copy.followersRatioHint}</p>
+        <p className="mt-1 text-xs text-tertiary-readable">{copy.followersRatioHint}</p>
       </div>
     </div>
   );
