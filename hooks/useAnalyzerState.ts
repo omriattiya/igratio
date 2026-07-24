@@ -6,10 +6,10 @@ import {
   diffSets,
   extractUsernamesFromInstagramJson,
   extractTimestampedUsersFromInstagramJson,
-  readJsonFile,
   type InstagramAnalysis,
   type TimestampedUser,
 } from "@/lib/instagram";
+import { extractFollowGraphFromExportArchive } from "@/lib/exportArchive";
 import {
   clearAllSiteData,
   getLatestSnapshot,
@@ -27,19 +27,8 @@ export type LoadState =
   | { status: typeof AnalyzerLoadStatus.Error; message: string }
   | { status: typeof AnalyzerLoadStatus.Ready; analysis: InstagramAnalysis };
 
-export function syncInputFiles(
-  input: HTMLInputElement | null,
-  files: FileList | null,
-) {
-  if (!input) return;
-  const dt = new DataTransfer();
-  if (files) {
-    for (let i = 0; i < files.length; i++) {
-      const f = files.item(i);
-      if (f) dt.items.add(f);
-    }
-  }
-  input.files = dt.files;
+function parseJsonTexts(texts: string[]): unknown[] {
+  return texts.map((text) => JSON.parse(text) as unknown);
 }
 
 export function formatSnapshotSavedAt(iso: string): string {
@@ -56,16 +45,15 @@ export function formatSnapshotSavedAt(iso: string): string {
 }
 
 export function useAnalyzerState() {
-  const [followingFiles, setFollowingFiles] = useState<FileList | null>(null);
-  const [followerFiles, setFollowerFiles] = useState<FileList | null>(null);
+  const [archiveName, setArchiveName] = useState<string | null>(null);
+  const [selectedBasenames, setSelectedBasenames] = useState<string[]>([]);
   const [state, setState] = useState<LoadState>({ status: AnalyzerLoadStatus.Idle });
-  const [trackSnapshots, setTrackSnapshotsState] = useState(false);
+  const [trackSnapshots, setTrackSnapshotsState] = useState(true);
   const [lastExportDiff, setLastExportDiff] = useState<ExportDiff | null>(null);
   const [lastSnapshotSavedAt, setLastSnapshotSavedAt] = useState<string | null>(null);
   const [indexedDbError, setIndexedDbError] = useState<string | null>(null);
   const [fileInputKey, setFileInputKey] = useState(0);
-  const followerInputRef = useRef<HTMLInputElement>(null);
-  const followingInputRef = useRef<HTMLInputElement>(null);
+  const archiveInputRef = useRef<HTMLInputElement>(null);
   const [followerTimestamps, setFollowerTimestamps] = useState<TimestampedUser[]>([]);
   const [followingTimestamps, setFollowingTimestamps] = useState<TimestampedUser[]>([]);
 
@@ -119,34 +107,39 @@ export function useAnalyzerState() {
     }
   }, [trackSnapshots]);
 
-  const runAnalysis = useCallback(async () => {
-    if (!followingFiles?.length || !followerFiles?.length) {
-      setState({
-        status: AnalyzerLoadStatus.Error,
-        message: messages.analyzer.errors.selectFiles,
-      });
-      return;
-    }
-
+  const runAnalysisFromArchive = useCallback(async (file: File) => {
     setState({ status: AnalyzerLoadStatus.Loading });
     setLastExportDiff(null);
+    setArchiveName(file.name);
+    setSelectedBasenames([]);
+
     try {
+      const extracted = await extractFollowGraphFromExportArchive(file);
+      setSelectedBasenames(extracted.selectedBasenames);
+
+      let followingJson: unknown[];
+      let followersJson: unknown[];
+      try {
+        followingJson = parseJsonTexts(extracted.followingJsonTexts);
+        followersJson = parseJsonTexts(extracted.followersJsonTexts);
+      } catch {
+        setState({
+          status: AnalyzerLoadStatus.Error,
+          message: messages.analyzer.errors.parseFailed,
+        });
+        return;
+      }
+
       const followingRaw: string[] = [];
       const followingTs: TimestampedUser[] = [];
-      for (let i = 0; i < followingFiles.length; i++) {
-        const file = followingFiles.item(i);
-        if (!file) continue;
-        const json = await readJsonFile(file);
+      for (const json of followingJson) {
         followingRaw.push(...extractUsernamesFromInstagramJson(json));
         followingTs.push(...extractTimestampedUsersFromInstagramJson(json));
       }
 
       const followersRaw: string[] = [];
       const followersTs: TimestampedUser[] = [];
-      for (let i = 0; i < followerFiles.length; i++) {
-        const file = followerFiles.item(i);
-        if (!file) continue;
-        const json = await readJsonFile(file);
+      for (const json of followersJson) {
         followersRaw.push(...extractUsernamesFromInstagramJson(json));
         followersTs.push(...extractTimestampedUsersFromInstagramJson(json));
       }
@@ -160,7 +153,6 @@ export function useAnalyzerState() {
       }
 
       const analysis = analyzeFollowingFollowers(followingRaw, followersRaw);
-
       const followingSet = new Set(followingRaw);
       const followersSet = new Set(followersRaw);
       const uniqueFollowing = [...followingSet].sort();
@@ -176,8 +168,12 @@ export function useAnalyzerState() {
             const g = diffSets(new Set(prev.followers), followersSet);
             const newUnfollowers = g.removed.filter((u) => followingSet.has(u));
             const summaryDiffs: SummaryDiffs = {
-              followingDiff: analysis.followingUnique - (prev.analysis?.followingUnique ?? new Set(prev.following).size),
-              followersDiff: analysis.followersUnique - (prev.analysis?.followersUnique ?? new Set(prev.followers).size),
+              followingDiff:
+                analysis.followingUnique -
+                (prev.analysis?.followingUnique ?? new Set(prev.following).size),
+              followersDiff:
+                analysis.followersUnique -
+                (prev.analysis?.followersUnique ?? new Set(prev.followers).size),
               mutualDiff: analysis.mutuals.length - (prev.analysis?.mutuals.length ?? 0),
             };
             diff = {
@@ -231,60 +227,59 @@ export function useAnalyzerState() {
         e instanceof Error ? e.message : messages.analyzer.errors.parseFailed;
       setState({ status: AnalyzerLoadStatus.Error, message });
     }
-  }, [followingFiles, followerFiles, trackSnapshots]);
+  }, [trackSnapshots]);
 
-  const handleSwapFiles = useCallback(() => {
-    const prevFollowers = followerFiles;
-    const prevFollowing = followingFiles;
-    setFollowerFiles(prevFollowing);
-    setFollowingFiles(prevFollowers);
-    syncInputFiles(followerInputRef.current, prevFollowing);
-    syncInputFiles(followingInputRef.current, prevFollowers);
-  }, [followerFiles, followingFiles]);
+  const handleArchiveChange = useCallback(
+    (files: FileList | null) => {
+      const file = files?.item(0) ?? null;
+      if (!file) {
+        setArchiveName(null);
+        setSelectedBasenames([]);
+        return;
+      }
+      void runAnalysisFromArchive(file);
+    },
+    [runAnalysisFromArchive],
+  );
 
   const handleResetAnalysis = useCallback(async () => {
     try {
       await clearAllSiteData();
+      await setTrackSnapshots(true);
       setIndexedDbError(null);
     } catch {
       setIndexedDbError(messages.analyzer.indexedDbFailed);
     }
-    setFollowingFiles(null);
-    setFollowerFiles(null);
+    setArchiveName(null);
+    setSelectedBasenames([]);
     setFollowerTimestamps([]);
     setFollowingTimestamps([]);
     setFileInputKey((k) => k + 1);
     setState({ status: AnalyzerLoadStatus.Idle });
-    setTrackSnapshotsState(false);
+    setTrackSnapshotsState(true);
     setLastExportDiff(null);
     setLastSnapshotSavedAt(null);
   }, []);
 
-  const canAnalyze = Boolean(followingFiles?.length && followerFiles?.length);
-  const canSwap = Boolean(followingFiles?.length || followerFiles?.length);
+  const hasArchive = Boolean(archiveName);
 
   return {
     state,
-    followingFiles,
-    followerFiles,
+    archiveName,
+    selectedBasenames,
     trackSnapshots,
     lastExportDiff,
     lastSnapshotSavedAt,
     indexedDbError,
     fileInputKey,
-    followerInputRef,
-    followingInputRef,
+    archiveInputRef,
     followerTimestamps,
     followingTimestamps,
     markNewFromDiff,
-    canAnalyze,
-    canSwap,
-    setFollowingFiles,
-    setFollowerFiles,
+    hasArchive,
     setIndexedDbError,
     handleTrackToggle,
-    runAnalysis,
-    handleSwapFiles,
+    handleArchiveChange,
     handleResetAnalysis,
   };
 }

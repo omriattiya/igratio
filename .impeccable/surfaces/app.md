@@ -14,7 +14,7 @@ Operate
 Instagram account owners comparing following vs followers exports locally.
 
 ## Action
-Upload JSON exports → analyze → review non-mutuals / unfollowers.
+Drop export zip → auto-analyze → review non-mutuals / unfollowers.
 
 ## Direction
 Blue react-cursor playground chrome: sticky frosted nav, dual radial page wash, grad-surface cards. Comp C stack density; real followers/following content only (no fake dashboard IA).

@@ -8,11 +8,9 @@ const POPOVER_DISMISSED_KEY = "igratio-tour-popover-dismissed";
 
 const TARGETS = [
   '[data-tour="export-tutorial"]',
-  '[data-tour="upload-followers"]',
-  '[data-tour="upload-following"]',
+  '[data-tour="drop-archive"]',
   '[data-tour="track-changes"]',
-  '[data-tour="analyze-button"]',
-  '[data-tour="analyze-button"]',
+  '[data-tour="analyzer-panel"]',
 ];
 
 const WIDER_TOOLTIP = { tooltip: { minWidth: "440px" } };
@@ -22,7 +20,7 @@ const STEPS: Step[] = messages.tour.steps.map((step, i) => ({
   title: step.title,
   content: step.content,
   skipBeacon: true,
-  ...(i === 2 || i === 4 ? { styles: WIDER_TOOLTIP } : {}),
+  ...(i === 1 || i === 3 ? { styles: WIDER_TOOLTIP } : {}),
 }));
 
 export function AppTour({ run, onFinish }: { run: boolean; onFinish: () => void }) {

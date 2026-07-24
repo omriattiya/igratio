@@ -2,13 +2,13 @@
 
 [![Live App](https://img.shields.io/badge/Live-igratio.vercel.app-blue)](https://igratio.vercel.app/)
 
-Compare Instagram following and followers export files locally in your browser. No data is collected — everything is stored in your browser's IndexedDB and localStorage.
+Compare Instagram following and followers from your export zip locally in your browser. No data is collected — everything is stored in your browser's IndexedDB and localStorage.
 
 **Live app:** https://igratio.vercel.app/
 
 ## Features
 
-- Upload Instagram data export JSON files and compare following vs followers
+- Drop an Instagram “Followers and following” export zip; extract and compare following vs followers in-browser
 - Track changes between exports (see who followed/unfollowed you over time)
 - Fully client-side — no data leaves your browser
 - Multi-language support
@@ -48,7 +48,7 @@ pnpm start
 - [Next.js 16](https://nextjs.org/) — React framework
 - [React 19](https://react.dev/) — UI library
 - [Tailwind CSS 4](https://tailwindcss.com/) — Styling
-- [TypeScript](https://www.typescriptlang.org/) — Type safety
+- [fflate](https://github.com/101arrowz/fflate) — in-browser zip extract
 
 ## Contributing
 

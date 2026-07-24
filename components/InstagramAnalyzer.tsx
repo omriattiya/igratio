@@ -2,7 +2,7 @@
 
 import { ExportTrackingToggle } from "@/components/ExportChangePanel";
 import { InstagramExportTutorial } from "@/components/InstagramExportTutorial";
-import { AnalyzerFileUploadSection } from "@/components/AnalyzerFileUploadSection";
+import { ArchiveDropzone } from "@/components/ArchiveDropzone";
 import { AnalyzerActions } from "@/components/AnalyzerActions";
 import { AnalyzerResults } from "@/components/AnalyzerResults";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -13,32 +13,27 @@ import { formatSnapshotSavedAt, useAnalyzerState } from "@/hooks/useAnalyzerStat
 export function InstagramAnalyzer() {
   const {
     state,
-    followingFiles,
-    followerFiles,
+    archiveName,
+    selectedBasenames,
     trackSnapshots,
     lastExportDiff,
     lastSnapshotSavedAt,
     indexedDbError,
     fileInputKey,
-    followerInputRef,
-    followingInputRef,
+    archiveInputRef,
     followerTimestamps,
     followingTimestamps,
     markNewFromDiff,
-    canAnalyze,
-    canSwap,
-    setFollowingFiles,
-    setFollowerFiles,
+    hasArchive,
     setIndexedDbError,
     handleTrackToggle,
-    runAnalysis,
-    handleSwapFiles,
+    handleArchiveChange,
     handleResetAnalysis,
   } = useAnalyzerState();
 
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 self-center">
-      <div className="surface-panel relative overflow-hidden">
+      <div className="surface-panel relative overflow-hidden" data-tour="analyzer-panel">
         <div className="surface-card-header px-6 py-5">
           <p className="text-sm leading-relaxed text-secondary-readable">
             <InstagramExportTutorial />
@@ -51,17 +46,14 @@ export function InstagramAnalyzer() {
         </div>
 
         <div className="border-b border-[var(--line)] px-6 py-6">
-          <AnalyzerFileUploadSection
-            state={state}
-            fileInputKey={fileInputKey}
-            followerInputRef={followerInputRef}
-            followingInputRef={followingInputRef}
-            followerFiles={followerFiles}
-            followingFiles={followingFiles}
-            canSwap={canSwap}
-            onFollowerChange={(files) => setFollowerFiles(files)}
-            onFollowingChange={(files) => setFollowingFiles(files)}
-            onSwap={handleSwapFiles}
+          <ArchiveDropzone
+            inputKey={fileInputKey}
+            inputRef={archiveInputRef}
+            hasArchive={hasArchive}
+            archiveName={archiveName}
+            selectedBasenames={selectedBasenames}
+            isLoading={state.status === AnalyzerLoadStatus.Loading}
+            onChange={handleArchiveChange}
           />
         </div>
 
@@ -83,31 +75,35 @@ export function InstagramAnalyzer() {
           ) : null}
         </div>
 
-        <div className="bg-[color-mix(in_srgb,var(--bg-inset)_55%,transparent)] px-6 py-5">
-          <AnalyzerActions
-            state={state}
-            canAnalyze={canAnalyze}
-            onAnalyze={() => void runAnalysis()}
-            onReset={() => void handleResetAnalysis()}
-          />
+        {(hasArchive ||
+          state.status === AnalyzerLoadStatus.Ready ||
+          state.status === AnalyzerLoadStatus.Error ||
+          indexedDbError) && (
+          <div className="bg-[color-mix(in_srgb,var(--bg-inset)_55%,transparent)] px-6 py-5">
+            <AnalyzerActions
+              state={state}
+              canReset={hasArchive || state.status === AnalyzerLoadStatus.Ready}
+              onReset={() => void handleResetAnalysis()}
+            />
 
-          {state.status === AnalyzerLoadStatus.Error && (
-            <Alert variant="destructive" className="mt-4">
-              <AlertDescription>{state.message}</AlertDescription>
-            </Alert>
-          )}
+            {state.status === AnalyzerLoadStatus.Error && (
+              <Alert variant="destructive" className={hasArchive ? "mt-4" : undefined}>
+                <AlertDescription>{state.message}</AlertDescription>
+              </Alert>
+            )}
 
-          {indexedDbError && state.status !== AnalyzerLoadStatus.Ready && (
-            <Alert
-              className="mt-4 border-amber-900/40 bg-amber-950/30 text-amber-100"
-              variant="default"
-            >
-              <AlertDescription className="text-amber-200">
-                {indexedDbError}
-              </AlertDescription>
-            </Alert>
-          )}
-        </div>
+            {indexedDbError && state.status !== AnalyzerLoadStatus.Ready && (
+              <Alert
+                className="mt-4 border-amber-900/40 bg-amber-950/30 text-amber-100"
+                variant="default"
+              >
+                <AlertDescription className="text-amber-200">
+                  {indexedDbError}
+                </AlertDescription>
+              </Alert>
+            )}
+          </div>
+        )}
       </div>
 
       {state.status === AnalyzerLoadStatus.Ready && (

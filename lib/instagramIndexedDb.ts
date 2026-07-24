@@ -72,16 +72,18 @@ function withStore<T>(
 }
 
 export async function getTrackSnapshots(): Promise<boolean> {
-  if (!idbAvailable()) return false;
+  if (!idbAvailable()) return true;
   try {
     const row = (await withStore<TrackSnapshotsMeta | undefined>(
       STORE_META,
       "readonly",
       (s) => s.get(KEY_TRACK_SNAPSHOTS),
     )) as TrackSnapshotsMeta | undefined;
-    return Boolean(row?.enabled);
+    // Default ON when the user has never set a preference.
+    if (!row) return true;
+    return Boolean(row.enabled);
   } catch {
-    return false;
+    return true;
   }
 }
 

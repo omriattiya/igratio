@@ -12,7 +12,7 @@ Primary users are Instagram account owners cleaning up who they follow and check
 
 ## Product Purpose
 
-IG Ratio compares Instagram following and followers JSON export files in the browser so users can see non-mutual follows, review unfollowers, and notice how those lists change between exports. Success is a fast, trustworthy local analysis that helps them decide who to unfollow or ignore.
+IG Ratio compares Instagram following and followers from an Export Archive zip in the browser so users can see non-mutual follows, review unfollowers, and notice how those lists change between exports. Success is a fast, trustworthy local analysis that helps them decide who to unfollow or ignore.
 
 ## Positioning
 
@@ -20,11 +20,11 @@ Runs entirely client-side: files never leave the browser (IndexedDB and localSto
 
 ## Operating Context
 
-Users obtain an Instagram “followers and following” JSON export (app or Accounts Centre), unzip it, and select `following.json` / `followers_*.json` from `connections/followers_and_following/`. The app includes an in-product export tutorial and a guided tour. Analysis, review checkmarks, and prior export snapshots stay on the device.
+Users obtain an Instagram “Followers and following” JSON export zip (app or Accounts Centre) and drop that Export Archive in the app. The browser extracts allowlisted files under `connections/followers_and_following/` (`following.json`, `followers*.json`). Full account dumps are out of scope (20 MB size cap). The app includes an in-product export tutorial and a guided tour. Analysis, review checkmarks, and prior export snapshots stay on the device.
 
 ## Capabilities and Constraints
 
-- Upload following and followers JSON; merge multiple files when needed
+- Drop Export Archive zip; extract allowlisted following/followers JSON in-browser; merge multiple followers files when needed
 - Summarize following, followers, mutuals, and followers/following ratio
 - List non-mutual accounts and support local “OK” marks for unfollowers the user accepts
 - Diff against a previous export (added/removed follows and followers, new unfollowers)
@@ -51,6 +51,6 @@ Users obtain an Instagram “followers and following” JSON export (app or Acco
 
 1. Privacy is non-negotiable: analysis stays on-device; never imply uploads or accounts.
 2. Job-first clarity: help users clean following and spot unfollowers with minimal friction.
-3. Convenience over ceremony: upload → results → review, with tutorial/tour only when needed.
+3. Convenience over ceremony: drop archive → results → review, with tutorial/tour only when needed.
 4. Honesty over marketing: don’t invent proof, languages, or compliance claims.
 5. Preserve export fidelity: Instagram JSON paths and formats are the source of truth.
