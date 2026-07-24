@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ArrowDownAZ, ArrowUpDown, ChevronDown, Info, Sparkles } from "lucide-react";
+import { ArrowDownAZ, ArrowUpDown, ChevronDown, CircleDashed, Info, Sparkles } from "lucide-react";
 import {
   getUnfollowerOkSet,
   pruneUnfollowerOk,
@@ -13,7 +13,7 @@ import { UserLinkCard } from "@/components/UserLinkCard";
 import { messages } from "@/lib/i18n";
 import { useIsSmallScreen } from "@/lib/useIsSmallScreen";
 
-type SortMode = "new-first" | "a-z";
+type SortMode = "new-first" | "a-z" | "pending-first";
 
 type UnfollowerReviewListProps = {
   usernames: string[];
@@ -100,6 +100,13 @@ export function UnfollowerReviewList({
         a.localeCompare(b, undefined, { sensitivity: "base" }),
       );
     }
+    if (sort === "pending-first") {
+      return [...usernames].sort((a, b) => {
+        const aOk = okSet.has(a) ? 1 : 0;
+        const bOk = okSet.has(b) ? 1 : 0;
+        return aOk - bOk;
+      });
+    }
     if (markNew && markNew.size > 0) {
       return [...usernames].sort((a, b) => {
         const aNew = markNew.has(a) ? 0 : 1;
@@ -108,7 +115,7 @@ export function UnfollowerReviewList({
       });
     }
     return usernames;
-  }, [usernames, sort, markNew]);
+  }, [usernames, sort, markNew, okSet]);
 
   const copy = messages.analyzer.unfollowers;
 
@@ -169,7 +176,7 @@ export function UnfollowerReviewList({
           </button>
 
           {menuOpen && (
-            <div className="absolute right-0 z-20 mt-1 w-36 overflow-hidden rounded-[10px] border border-[var(--line)] bg-[var(--bg-soft)] shadow-[var(--shadow-sm)] animate-in fade-in zoom-in-95 duration-150">
+            <div className="absolute right-0 z-20 mt-1 w-40 overflow-hidden rounded-[10px] border border-[var(--line)] bg-[var(--bg-soft)] shadow-[var(--shadow-sm)] animate-in fade-in zoom-in-95 duration-150">
               <button
                 type="button"
                 onClick={() => { setSort("a-z"); setMenuOpen(false); }}
@@ -185,6 +192,14 @@ export function UnfollowerReviewList({
               >
                 <Sparkles className="size-4" />
                 New first
+              </button>
+              <button
+                type="button"
+                onClick={() => { setSort("pending-first"); setMenuOpen(false); }}
+                className={`flex w-full items-center gap-2 px-3 py-2 text-left text-sm transition-colors duration-150 hover:bg-blue-800/50 ${sort === "pending-first" ? "text-blue-50" : "text-blue-200/85"}`}
+              >
+                <CircleDashed className="size-4" />
+                Pending first
               </button>
             </div>
           )}
