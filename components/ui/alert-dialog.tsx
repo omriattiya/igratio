@@ -31,7 +31,7 @@ export function AlertDialogPopup({
   return (
     <AlertDialog.Popup
       className={cn(
-        "fixed top-1/2 left-1/2 z-50 w-[calc(100vw-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-blue-800/60 bg-blue-950 p-6 shadow-2xl",
+        "fixed top-1/2 left-1/2 z-50 w-[calc(100vw-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-[var(--line)] bg-[var(--grad-surface)] p-6 shadow-2xl",
         "transition-all duration-200 ease-out",
         "scale-100 opacity-100 data-[starting-style]:scale-95 data-[starting-style]:opacity-0 data-[ending-style]:scale-95 data-[ending-style]:opacity-0",
         className,

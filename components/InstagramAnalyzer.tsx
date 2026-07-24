@@ -37,20 +37,20 @@ export function InstagramAnalyzer() {
   } = useAnalyzerState();
 
   return (
-    <div className="mx-auto flex w-full max-w-4xl flex-col gap-8">
-      <div className="surface-panel relative overflow-hidden rounded-2xl">
-        <div className="border-b border-blue-800/35 px-6 py-5">
+    <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 self-center">
+      <div className="surface-panel relative overflow-hidden">
+        <div className="surface-card-header px-6 py-5">
           <p className="text-sm leading-relaxed text-secondary-readable">
             <InstagramExportTutorial />
             {messages.analyzer.introAfterLink}{" "}
-            <code className="rounded bg-blue-800/45 px-1.5 py-0.5 font-mono text-xs text-blue-50">
+            <code className="rounded border border-[var(--line)] bg-[var(--bg-inset)] px-1.5 py-0.5 font-mono text-xs text-[var(--text-soft)]">
               {messages.analyzer.pathCode}
             </code>
             {messages.analyzer.introAfterCode}
           </p>
         </div>
 
-        <div className="px-6 py-6">
+        <div className="border-b border-[var(--line)] px-6 py-6">
           <AnalyzerFileUploadSection
             state={state}
             fileInputKey={fileInputKey}
@@ -65,7 +65,7 @@ export function InstagramAnalyzer() {
           />
         </div>
 
-        <div className="border-t border-blue-800/30 px-6 py-5">
+        <div className="border-b border-[var(--line)] px-6 py-5">
           <div data-tour="track-changes">
             <ExportTrackingToggle
               enabled={trackSnapshots}
@@ -83,7 +83,7 @@ export function InstagramAnalyzer() {
           ) : null}
         </div>
 
-        <div className="border-t border-blue-800/30 bg-blue-950/40 px-6 py-5">
+        <div className="bg-[color-mix(in_srgb,var(--bg-inset)_55%,transparent)] px-6 py-5">
           <AnalyzerActions
             state={state}
             canAnalyze={canAnalyze}
@@ -111,7 +111,7 @@ export function InstagramAnalyzer() {
       </div>
 
       {state.status === AnalyzerLoadStatus.Ready && (
-        <div className="results-enter flex flex-col gap-8">
+        <div className="results-enter flex flex-col gap-6">
           <AnalyzerResults
             analysis={state.analysis}
             followerTimestamps={followerTimestamps}

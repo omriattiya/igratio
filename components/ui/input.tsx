@@ -13,7 +13,7 @@ const inputFile =
   "flex min-h-10 cursor-pointer flex-wrap items-center gap-x-3 gap-y-1.5 bg-input/30 py-2 pl-2.5 pr-2 text-sm leading-normal text-muted-foreground dark:bg-input/30"
 
 const fileSelectorButton =
-  "file:mr-3 file:inline-flex file:h-9 file:shrink-0 file:cursor-pointer file:items-center file:justify-center file:self-center file:rounded-md file:border-0 file:bg-primary file:px-3.5 file:text-sm file:font-medium file:leading-none file:text-primary-foreground hover:file:bg-primary/90"
+  "file:mr-3 file:inline-flex file:h-9 file:shrink-0 file:cursor-pointer file:items-center file:justify-center file:self-center file:rounded-md file:border-0 file:bg-[var(--grad-accent)] file:px-3.5 file:text-sm file:font-medium file:leading-none file:text-[var(--brand-contrast)] hover:file:brightness-110"
 
 function Input({ className, type, ...props }: React.ComponentProps<"input">) {
   const isFile = type === "file"

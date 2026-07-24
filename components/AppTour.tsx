@@ -37,11 +37,14 @@ export function AppTour({ run, onFinish }: { run: boolean; onFinish: () => void 
       showProgress: true,
       overlayClickAction: false,
       primaryColor: "#3b82f6",
-      backgroundColor: "#172554",
-      textColor: "#e0f2fe",
-      arrowColor: "#172554",
-      overlayColor: "rgba(0, 0, 0, 0.65)",
+      backgroundColor: "#121a33",
+      textColor: "#c5d4ec",
+      arrowColor: "#121a33",
+      overlayColor: "rgba(11, 18, 36, 0.88)",
       zIndex: 10000,
+      scrollOffset: 96,
+      spotlightRadius: 12,
+      spotlightPadding: 8,
     },
     locale: {
       back: messages.tour.back,
@@ -51,12 +54,48 @@ export function AppTour({ run, onFinish }: { run: boolean; onFinish: () => void 
       skip: messages.tour.skip,
     },
     styles: {
-      tooltip: { borderRadius: "12px", border: "1px solid rgba(59, 130, 246, 0.4)" },
-      tooltipTitle: { color: "#f0f9ff", fontSize: "16px", fontWeight: 600 },
-      tooltipContent: { color: "#bfdbfe", fontSize: "14px" },
-      buttonPrimary: { backgroundColor: "#3b82f6", borderRadius: "8px", fontSize: "14px", padding: "8px 16px", color: "#ffffff" },
-      buttonBack: { color: "#93c5fd", fontSize: "14px" },
-      buttonSkip: { color: "#64748b", fontSize: "13px" },
+      tooltip: {
+        borderRadius: "16px",
+        border: "1px solid #2a3a5c",
+        background:
+          "linear-gradient(165deg, color-mix(in srgb, #121a33 92%, #38bdf8) 0%, #121a33 42%, #121a33 100%)",
+        boxShadow: "0 4px 16px -6px #00000080",
+        padding: "16px",
+      },
+      tooltipTitle: {
+        color: "#eef3ff",
+        fontSize: "16px",
+        fontWeight: 600,
+        letterSpacing: "-0.01em",
+      },
+      tooltipContent: {
+        color: "#9aafd0",
+        fontSize: "14px",
+        lineHeight: 1.55,
+      },
+      buttonPrimary: {
+        background: "linear-gradient(135deg, #38bdf8 0%, #3b82f6 100%)",
+        borderRadius: "8px",
+        fontSize: "14px",
+        fontWeight: 600,
+        padding: "8px 16px",
+        color: "#041018",
+        border: "none",
+      },
+      buttonBack: {
+        color: "#9aafd0",
+        fontSize: "14px",
+      },
+      buttonSkip: {
+        color: "#9aafd0",
+        fontSize: "13px",
+      },
+      buttonClose: {
+        color: "#9aafd0",
+      },
+      spotlight: {
+        borderRadius: "12px",
+      },
     },
   });
 

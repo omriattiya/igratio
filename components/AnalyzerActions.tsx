@@ -33,7 +33,7 @@ export function AnalyzerActions({
           size="lg"
           disabled={!canAnalyze || state.status === AnalyzerLoadStatus.Loading}
           onClick={onAnalyze}
-          className="relative w-full overflow-hidden bg-[length:200%_100%] bg-[position:0%_0%] bg-gradient-to-r from-teal-500 via-sky-400 to-teal-500 px-5 text-white shadow-[0_8px_22px_-8px_rgba(20,184,166,0.55)] transition-[background-position,box-shadow,transform,filter] duration-300 [transition-timing-function:var(--ease-out-expo)] hover:bg-[position:100%_0%] hover:shadow-[0_12px_28px_-8px_rgba(56,189,248,0.45)] active:translate-y-px disabled:from-slate-700 disabled:via-slate-700 disabled:to-slate-700 disabled:shadow-none sm:w-auto"
+          className="relative w-full overflow-hidden border-0 bg-gradient-to-br from-[var(--brand)] to-[var(--brand-2)] px-5 text-white shadow-[0_8px_22px_-8px_color-mix(in_srgb,var(--brand)_55%,transparent)] transition-[box-shadow,transform,filter] duration-300 [transition-timing-function:var(--ease-out-expo)] hover:brightness-110 hover:shadow-[0_12px_28px_-8px_color-mix(in_srgb,var(--brand)_45%,transparent)] active:translate-y-px disabled:bg-none disabled:from-[var(--line)] disabled:to-[var(--line)] disabled:text-[var(--text-muted)] disabled:shadow-none disabled:brightness-100 sm:w-auto"
           data-tour="analyze-button"
         >
           <WandSparkles className="size-4" />

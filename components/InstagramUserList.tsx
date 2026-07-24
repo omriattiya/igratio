@@ -100,7 +100,7 @@ export function InstagramUserList({
           </button>
 
           {menuOpen && (
-            <div className="absolute right-0 z-20 mt-1 w-36 overflow-hidden rounded-lg border border-blue-700/55 bg-blue-950 shadow-[0_12px_28px_-10px_rgba(0,0,0,0.65)] animate-in fade-in zoom-in-95 duration-150">
+            <div className="absolute right-0 z-20 mt-1 w-36 overflow-hidden rounded-[10px] border border-[var(--line)] bg-[var(--bg-soft)] shadow-[var(--shadow-sm)] animate-in fade-in zoom-in-95 duration-150">
               <button
                 type="button"
                 onClick={() => { setSort("a-z"); setMenuOpen(false); }}

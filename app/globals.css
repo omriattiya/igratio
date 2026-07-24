@@ -48,45 +48,97 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* Single theme: dark blue / navy only (no light mode). */
+/*
+  THESIS: Blue react-cursor playground chrome for a local followers/following analyzer —
+  not a marketing hero, not an image-ratio dashboard.
+  OWN-WORLD: Navy field, dual sky/cobalt radial washes, frosted sticky nav,
+  grad-surface cards (16px), hairline borders, soft offset shadow.
+  STORY: Sticky chrome → intro → upload card → results stack (summary + lists).
+  FIRST VIEWPORT: Sticky glass nav; intro+privacy; primary upload card.
+  FORM: User-pinned react-cursor + sticky-glass + comp-c stack density.
+*/
+
+/* Single theme: dark navy only (no light mode). React-cursor grammar, blue remap. */
 :root {
   color-scheme: dark;
-  --background: oklch(0.145 0.038 264);
-  --foreground: oklch(0.95 0.02 250);
-  --card: oklch(0.245 0.085 258);
-  --card-foreground: oklch(0.95 0.02 250);
-  --popover: oklch(0.245 0.085 258);
-  --popover-foreground: oklch(0.95 0.02 250);
-  --primary: oklch(0.62 0.14 260);
-  --primary-foreground: oklch(0.98 0.01 260);
-  --secondary: oklch(0.29 0.048 264);
-  --secondary-foreground: oklch(0.95 0.02 250);
-  --muted: oklch(0.27 0.04 264);
-  /* Tuned for ≥4.5:1 on navy surfaces */
-  --muted-foreground: oklch(0.78 0.035 250);
-  --accent: oklch(0.3 0.055 264);
-  --accent-foreground: oklch(0.95 0.02 250);
-  --destructive: oklch(0.68 0.2 22);
-  --border: oklch(0.42 0.07 264 / 50%);
-  --input: oklch(0.34 0.055 264 / 60%);
-  --ring: oklch(0.58 0.13 250);
-  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --bg: #0b1224;
+  --bg-soft: #121a33;
+  --bg-inset: #070d1c;
+  --line: #2a3a5c;
+  --line-strong: #3a4f78;
+  --text: #eef3ff;
+  --text-muted: #9aafd0;
+  --text-soft: #c5d4ec;
+  --brand: #38bdf8;
+  --brand-2: #3b82f6;
+  --brand-contrast: #041018;
+  --success: #4ade80;
+  --warning: #fbbf24;
+  --focus-ring: color-mix(in srgb, var(--brand) 50%, transparent);
+  --shadow-sm: 0 4px 16px -6px #00000080;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-fast: 0.14s;
+  --dur: 0.2s;
+  --grad-accent: linear-gradient(135deg, var(--brand) 0%, var(--brand-2) 100%);
+  --grad-accent-soft: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--brand) 28%, transparent),
+    color-mix(in srgb, var(--brand-2) 16%, transparent)
+  );
+  --grad-surface: linear-gradient(
+    165deg,
+    color-mix(in srgb, var(--bg-soft) 92%, var(--brand)) 0%,
+    var(--bg-soft) 42%,
+    var(--bg-soft) 100%
+  );
+  --grad-page:
+    radial-gradient(
+      900px 480px at 8% -10%,
+      color-mix(in srgb, var(--brand) 22%, transparent),
+      transparent 60%
+    ),
+    radial-gradient(
+      700px 420px at 92% 0%,
+      color-mix(in srgb, var(--brand-2) 16%, transparent),
+      transparent 55%
+    ),
+    var(--bg);
+
+  --background: var(--bg);
+  --foreground: var(--text);
+  --card: var(--bg-soft);
+  --card-foreground: var(--text);
+  --popover: var(--bg-soft);
+  --popover-foreground: var(--text);
+  --primary: var(--brand-2);
+  --primary-foreground: var(--text);
+  --secondary: color-mix(in srgb, var(--bg-soft) 80%, var(--line));
+  --secondary-foreground: var(--text);
+  --muted: color-mix(in srgb, var(--bg-inset) 70%, var(--bg-soft));
+  --muted-foreground: var(--text-muted);
+  --accent: color-mix(in srgb, var(--bg-soft) 82%, var(--brand));
+  --accent-foreground: var(--text);
+  --destructive: #f87171;
+  --border: var(--line);
+  --input: color-mix(in srgb, var(--bg-inset) 70%, var(--line) 30%);
+  --ring: var(--brand);
+  --ease-out-expo: var(--ease-out);
   --duration-fast: 150ms;
   --duration-med: 220ms;
-  --chart-1: oklch(0.62 0.16 260);
-  --chart-2: oklch(0.55 0.12 250);
-  --chart-3: oklch(0.48 0.1 250);
-  --chart-4: oklch(0.42 0.08 250);
-  --chart-5: oklch(0.36 0.06 250);
+  --chart-1: #38bdf8;
+  --chart-2: #3b82f6;
+  --chart-3: #60a5fa;
+  --chart-4: #818cf8;
+  --chart-5: #2dd4bf;
   --radius: 0.625rem;
-  --sidebar: oklch(0.21 0.045 264);
-  --sidebar-foreground: oklch(0.93 0.025 250);
-  --sidebar-primary: oklch(0.58 0.14 260);
-  --sidebar-primary-foreground: oklch(0.98 0.01 260);
-  --sidebar-accent: oklch(0.29 0.048 264);
-  --sidebar-accent-foreground: oklch(0.93 0.025 250);
-  --sidebar-border: oklch(0.38 0.065 264 / 45%);
-  --sidebar-ring: oklch(0.52 0.12 260);
+  --sidebar: var(--bg-soft);
+  --sidebar-foreground: var(--text);
+  --sidebar-primary: var(--brand-2);
+  --sidebar-primary-foreground: var(--text);
+  --sidebar-accent: color-mix(in srgb, var(--bg-soft) 80%, var(--line));
+  --sidebar-accent-foreground: var(--text);
+  --sidebar-border: color-mix(in srgb, var(--line) 80%, transparent);
+  --sidebar-ring: var(--brand);
 }
 
 @layer base {
@@ -94,7 +146,9 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    background: var(--grad-page);
+    background-attachment: fixed;
+    color: var(--text);
   }
   html {
     @apply font-sans;
@@ -117,7 +171,7 @@
   transition: scrollbar-color 0.25s ease;
 }
 .custom-scrollbar:hover {
-  scrollbar-color: oklch(0.55 0.06 260 / 50%) transparent;
+  scrollbar-color: color-mix(in srgb, var(--line-strong) 55%, transparent) transparent;
 }
 
 .custom-scrollbar::-webkit-scrollbar {
@@ -132,39 +186,86 @@
   transition: background 0.25s ease;
 }
 .custom-scrollbar:hover::-webkit-scrollbar-thumb {
-  background: oklch(0.55 0.06 260 / 50%);
+  background: color-mix(in srgb, var(--line-strong) 55%, transparent);
 }
 .custom-scrollbar:hover::-webkit-scrollbar-thumb:hover {
-  background: oklch(0.6 0.08 260 / 65%);
+  background: color-mix(in srgb, var(--brand) 40%, var(--line-strong));
 }
 
-/* Shared surfaces — one card depth, no nested chrome */
+/* Shared surfaces — react-cursor card grammar, blue remap */
 @layer utilities {
   .surface-panel {
-    border-radius: var(--radius-xl);
-    border: 1px solid oklch(0.46 0.1 258 / 48%);
-    background: oklch(0.245 0.085 258);
-    box-shadow: 0 10px 32px -14px oklch(0.05 0.03 258 / 85%);
+    border-radius: 16px;
+    border: 1px solid var(--line);
+    background: var(--grad-surface);
+    box-shadow: var(--shadow-sm);
   }
 
   .surface-panel-soft {
-    border-radius: var(--radius-xl);
-    border: 1px solid oklch(0.4 0.09 258 / 42%);
-    /* Slightly deeper than main panel so username rows can sit lighter on top */
-    background: oklch(0.2 0.078 258);
+    border-radius: 16px;
+    border: 1px solid var(--line);
+    background: linear-gradient(
+      165deg,
+      color-mix(in srgb, var(--bg-inset) 88%, var(--brand)) 0%,
+      var(--bg-inset) 45%,
+      var(--bg-inset) 100%
+    );
+    box-shadow: var(--shadow-sm);
   }
 
   .surface-inset {
-    border-radius: var(--radius-lg);
-    background: oklch(0.185 0.07 258);
+    border-radius: 12px;
+    background: var(--bg-inset);
+    border: 1px solid color-mix(in srgb, var(--line) 80%, transparent);
+  }
+
+  .surface-card-header {
+    background: var(--grad-accent-soft);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .site-navbar {
+    z-index: 10;
+    position: sticky;
+    top: 0;
+    background: color-mix(in srgb, var(--bg) 82%, transparent);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .icon-button {
+    width: 36px;
+    height: 36px;
+    color: var(--text-muted);
+    border: 1px solid transparent;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition:
+      color var(--dur-fast) var(--ease-out),
+      background-color var(--dur-fast) var(--ease-out),
+      border-color var(--dur-fast) var(--ease-out);
+  }
+
+  .icon-button:hover {
+    color: var(--text);
+    border-color: var(--line);
+    background: var(--bg-soft);
+  }
+
+  .icon-button:focus-visible {
+    outline: 2px solid var(--brand);
+    outline-offset: 1px;
   }
 
   .text-secondary-readable {
-    color: oklch(0.82 0.035 250);
+    color: var(--text-soft);
   }
 
   .text-tertiary-readable {
-    color: oklch(0.74 0.04 250);
+    color: var(--text-muted);
   }
 
   .interactive-row {
@@ -185,11 +286,15 @@
 
   .interactive-lift:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 24px -10px oklch(0.45 0.1 190 / 35%);
+    box-shadow: 0 10px 24px -10px color-mix(in srgb, var(--brand) 35%, transparent);
   }
 
   .results-enter {
     animation: results-enter var(--duration-med) var(--ease-out-expo) both;
+  }
+
+  .page-in {
+    animation: page-in var(--dur) var(--ease-out);
   }
 }
 
@@ -206,6 +311,17 @@
   }
 }
 
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .interactive-row,
   .interactive-lift,
@@ -214,7 +330,8 @@
     transform: none;
   }
 
-  .results-enter {
+  .results-enter,
+  .page-in {
     animation: none;
   }
 

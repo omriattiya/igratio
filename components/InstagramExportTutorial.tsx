@@ -16,7 +16,7 @@ const copy = messages.analyzer.exportTutorial;
 const steps = copy.steps;
 
 const TUTORIAL_LINK_CLASS =
-  "font-medium text-blue-200 underline decoration-blue-400/55 underline-offset-2 transition-colors duration-150 hover:text-blue-50 hover:decoration-blue-300";
+  "font-medium text-[var(--brand)] underline decoration-[color-mix(in_srgb,var(--brand)_55%,transparent)] underline-offset-2 transition-colors duration-150 hover:text-[var(--text)] hover:decoration-[var(--brand)]";
 
 function stepIndexFromNumber(stepNumber: number): number {
   return stepNumber - 1;
@@ -80,9 +80,9 @@ export function InstagramExportTutorial() {
         "hidden w-[min(100vw-1.5rem,50rem)] max-h-[min(90vh,56rem)]",
         "open:fixed open:left-1/2 open:top-1/2 open:z-50 open:-translate-x-1/2 open:-translate-y-1/2",
         "open:flex open:flex-col",
-        "overflow-hidden rounded-2xl border border-blue-500/25 bg-[#0f1c38] p-0 text-blue-50",
+        "overflow-hidden rounded-2xl border border-[var(--line)] bg-[var(--grad-surface)] p-0 text-[var(--text)]",
         "shadow-[0_24px_64px_-20px_rgba(0,0,0,0.75)]",
-        "backdrop:bg-black/70 backdrop:backdrop-blur-[2px]",
+        "backdrop:bg-[var(--bg)] backdrop:backdrop-blur-none",
         "opacity-0 transition-opacity duration-200 [transition-timing-function:var(--ease-out-expo)] open:opacity-100",
         "starting:open:opacity-0",
       )}
@@ -94,14 +94,14 @@ export function InstagramExportTutorial() {
         if (e.target === dialogRef.current) close();
       }}
     >
-      <header className="flex shrink-0 items-start justify-between gap-3 border-b border-blue-500/20 px-5 py-3.5">
+      <header className="surface-card-header flex shrink-0 items-start justify-between gap-3 px-5 py-3.5">
         <div className="min-w-0">
           <p className="text-xs font-medium tabular-nums text-tertiary-readable">
             {t(copy.stepOf, { current: step + 1, total: steps.length })}
           </p>
           <h2
             id="export-tutorial-title"
-            className="mt-1 text-base font-semibold leading-snug text-blue-50"
+            className="mt-1 text-base font-semibold leading-snug text-[var(--text)]"
           >
             {current.title}
           </h2>
@@ -110,7 +110,7 @@ export function InstagramExportTutorial() {
           type="button"
           variant="ghost"
           size="icon-sm"
-          className="shrink-0 text-blue-200/85 transition-colors duration-150 hover:bg-blue-800/45 hover:text-blue-50"
+          className="icon-button shrink-0"
           aria-label={copy.close}
           onClick={close}
         >
@@ -165,7 +165,7 @@ export function InstagramExportTutorial() {
             ) : null}
           </div>
 
-          <div className="flex justify-center rounded-xl bg-[#0a1428] p-3 ring-1 ring-blue-500/15">
+          <div className="surface-inset flex justify-center p-3">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               key={image.src}
@@ -186,7 +186,7 @@ export function InstagramExportTutorial() {
       </div>
 
       <div
-        className="flex shrink-0 justify-center gap-1.5 border-t border-blue-500/15 px-5 py-2.5"
+        className="flex shrink-0 justify-center gap-1.5 border-t border-[var(--line)] px-5 py-2.5"
         role="tablist"
         aria-label={copy.stepDotsLabel}
       >
@@ -200,20 +200,20 @@ export function InstagramExportTutorial() {
             className={cn(
               "h-2 rounded-full transition-all duration-200 [transition-timing-function:var(--ease-out-expo)]",
               i === step
-                ? "w-5 bg-sky-400"
-                : "w-2 bg-blue-600/70 hover:bg-blue-500",
+                ? "w-5 bg-[var(--brand)]"
+                : "w-2 bg-[var(--line-strong)] hover:bg-[var(--brand-2)]",
             )}
             onClick={() => setStep(i)}
           />
         ))}
       </div>
 
-      <footer className="flex shrink-0 items-center justify-between gap-2 border-t border-blue-500/20 px-5 py-3">
+      <footer className="flex shrink-0 items-center justify-between gap-2 border-t border-[var(--line)] px-5 py-3">
         <Button
           type="button"
           variant="outline"
           size="sm"
-          className="border-blue-500/30 bg-transparent text-blue-100 transition-colors duration-150 hover:bg-blue-800/40"
+          className="border-[var(--line)] bg-transparent text-[var(--text-soft)] transition-colors duration-150 hover:bg-[var(--bg-soft)] hover:text-[var(--text)]"
           disabled={isFirst}
           onClick={() => setStep((s) => s - 1)}
         >
@@ -224,7 +224,7 @@ export function InstagramExportTutorial() {
           <Button
             type="button"
             size="sm"
-            className="bg-sky-500 text-white hover:bg-sky-400"
+            className="border-0 bg-gradient-to-br from-[var(--brand)] to-[var(--brand-2)] text-[var(--brand-contrast)] hover:brightness-110"
             onClick={close}
           >
             {copy.finish}
@@ -233,7 +233,7 @@ export function InstagramExportTutorial() {
           <Button
             type="button"
             size="sm"
-            className="bg-sky-500 text-white hover:bg-sky-400"
+            className="border-0 bg-gradient-to-br from-[var(--brand)] to-[var(--brand-2)] text-[var(--brand-contrast)] hover:brightness-110"
             onClick={() => setStep((s) => s + 1)}
           >
             {copy.next}

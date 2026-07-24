@@ -36,11 +36,13 @@ export function AnalyzerResults({
         followerTimestamps={followerTimestamps}
         followingTimestamps={followingTimestamps}
       />
-      <ul className="list-disc space-y-1 rounded-xl border border-blue-800/30 bg-transparent px-4 py-3 pl-8 text-sm text-secondary-readable">
-        {messages.analyzer.indexedDbPrivacy.map((line: string) => (
-          <li key={line}>{line}</li>
-        ))}
-      </ul>
+      <div className="surface-panel px-5 py-4">
+        <ul className="list-disc space-y-1 pl-5 text-sm text-secondary-readable">
+          {messages.analyzer.indexedDbPrivacy.map((line: string) => (
+            <li key={line}>{line}</li>
+          ))}
+        </ul>
+      </div>
       {trackSnapshots && <ExportChangeDiff diff={lastExportDiff} />}
       {indexedDbError && (
         <Alert
