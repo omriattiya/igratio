@@ -1,4 +1,3 @@
-import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { preload } from "react-dom";
 import { messages } from "@/lib/i18n";
@@ -21,39 +20,6 @@ const geistMono = Geist_Mono({
 
 const siteUrl = "https://igratio.vercel.app";
 
-export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
-  title: messages.metadata.title,
-  description: messages.metadata.description,
-  alternates: {
-    canonical: siteUrl,
-  },
-  openGraph: {
-    title: messages.metadata.ogTitle,
-    description: messages.metadata.ogDescription,
-    url: siteUrl,
-    siteName: "IG Ratio",
-    type: "website",
-    locale: "en_US",
-  },
-  twitter: {
-    card: "summary",
-    title: messages.metadata.ogTitle,
-    description: messages.metadata.ogDescription,
-  },
-  robots: {
-    index: true,
-    follow: true,
-  },
-  verification: {
-    google: "q4TWpuivuU8rC4wXGzN87Hw3W7C9ZEzAC-QvO0R6T98",
-  },
-};
-
-export const viewport: Viewport = {
-  colorScheme: "dark",
-};
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -64,6 +30,32 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} dark h-full antialiased`}
     >
+      <head>
+        <title>{messages.metadata.title}</title>
+        <meta name="description" content={messages.metadata.description} />
+        <meta name="robots" content="index, follow" />
+        <meta name="color-scheme" content="dark" />
+        <meta
+          name="google-site-verification"
+          content="q4TWpuivuU8rC4wXGzN87Hw3W7C9ZEzAC-QvO0R6T98"
+        />
+        <link rel="canonical" href={siteUrl} />
+        <meta property="og:title" content={messages.metadata.ogTitle} />
+        <meta
+          property="og:description"
+          content={messages.metadata.ogDescription}
+        />
+        <meta property="og:url" content={siteUrl} />
+        <meta property="og:site_name" content="IG Ratio" />
+        <meta property="og:type" content="website" />
+        <meta property="og:locale" content="en_US" />
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content={messages.metadata.ogTitle} />
+        <meta
+          name="twitter:description"
+          content={messages.metadata.ogDescription}
+        />
+      </head>
       <body className="flex min-h-full flex-col">{children}</body>
     </html>
   );
