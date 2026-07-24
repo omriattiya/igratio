@@ -79,7 +79,7 @@ export function SiteHeader({
                   />
                   {tourTooltip && (
                     <Tooltip.Portal>
-                      <Tooltip.Positioner side="bottom" sideOffset={8}>
+                      <Tooltip.Positioner className="z-[100]" side="bottom" sideOffset={8}>
                         <TooltipPopup>{tourTooltip}</TooltipPopup>
                       </Tooltip.Positioner>
                     </Tooltip.Portal>
@@ -104,7 +104,7 @@ export function SiteHeader({
                 />
                 {linkedinTooltip && (
                   <Tooltip.Portal>
-                    <Tooltip.Positioner side="bottom" sideOffset={8}>
+                    <Tooltip.Positioner className="z-[100]" side="bottom" sideOffset={8}>
                       <TooltipPopup>{linkedinTooltip}</TooltipPopup>
                     </Tooltip.Positioner>
                   </Tooltip.Portal>
@@ -128,7 +128,7 @@ export function SiteHeader({
                 />
                 {githubTooltip && (
                   <Tooltip.Portal>
-                    <Tooltip.Positioner side="bottom" sideOffset={8}>
+                    <Tooltip.Positioner className="z-[100]" side="bottom" sideOffset={8}>
                       <TooltipPopup>{githubTooltip}</TooltipPopup>
                     </Tooltip.Positioner>
                   </Tooltip.Portal>
