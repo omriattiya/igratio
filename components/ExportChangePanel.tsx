@@ -3,24 +3,10 @@
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { UserLinkCard, type UserStatus } from "@/components/UserLinkCard";
+import type { ExportDiff, SummaryDiffs } from "@/lib/exportDiff";
 import { messages } from "@/lib/i18n";
 
-export type SummaryDiffs = {
-  followingDiff: number;
-  followersDiff: number;
-  mutualDiff: number;
-};
-
-export type ExportDiff = {
-  followingAdded: string[];
-  followingRemoved: string[];
-  followersAdded: string[];
-  followersRemoved: string[];
-  /** Still in your following but no longer in your followers since last export. */
-  newUnfollowers: string[];
-  hadBaseline: boolean;
-  summaryDiffs?: SummaryDiffs;
-};
+export type { ExportDiff, SummaryDiffs };
 
 type ExportTrackingToggleProps = {
   enabled: boolean;

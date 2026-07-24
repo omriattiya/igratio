@@ -1,3 +1,4 @@
+import type { ExportDiff } from "@/lib/exportDiff";
 import type { InstagramAnalysis, TimestampedUser } from "@/lib/instagram";
 
 const DB_NAME = "igratio";
@@ -22,6 +23,8 @@ export type ListsSnapshot = {
   analysis?: InstagramAnalysis;
   followerTimestamps?: TimestampedUser[];
   followingTimestamps?: TimestampedUser[];
+  /** Diff vs the previous snapshot when this one was saved; restored after refresh. */
+  exportDiff?: ExportDiff;
 };
 
 function idbAvailable(): boolean {

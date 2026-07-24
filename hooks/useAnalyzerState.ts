@@ -3,13 +3,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   analyzeFollowingFollowers,
-  diffSets,
   extractUsernamesFromInstagramJson,
   extractTimestampedUsersFromInstagramJson,
   type InstagramAnalysis,
   type TimestampedUser,
 } from "@/lib/instagram";
 import { extractFollowGraphFromExportArchive } from "@/lib/exportArchive";
+import { computeExportDiff, type ExportDiff } from "@/lib/exportDiff";
 import {
   clearAllSiteData,
   getLatestSnapshot,
@@ -17,7 +17,6 @@ import {
   setLatestSnapshot,
   setTrackSnapshots,
 } from "@/lib/instagramIndexedDb";
-import type { ExportDiff, SummaryDiffs } from "@/components/ExportChangePanel";
 import { AnalyzerLoadStatus } from "@/lib/analyzerLoadStatus";
 import { messages } from "@/lib/i18n";
 
@@ -75,6 +74,9 @@ export function useAnalyzerState() {
           setState({ status: AnalyzerLoadStatus.Ready, analysis });
           if (snap.followerTimestamps) setFollowerTimestamps(snap.followerTimestamps);
           if (snap.followingTimestamps) setFollowingTimestamps(snap.followingTimestamps);
+          if (enabled && snap.exportDiff?.hadBaseline) {
+            setLastExportDiff(snap.exportDiff);
+          }
         }
       }
     })();
@@ -163,38 +165,14 @@ export function useAnalyzerState() {
         let diff: ExportDiff | null = null;
         if (trackSnapshots) {
           const prev = await getLatestSnapshot();
-          if (prev) {
-            const f = diffSets(new Set(prev.following), followingSet);
-            const g = diffSets(new Set(prev.followers), followersSet);
-            const newUnfollowers = g.removed.filter((u) => followingSet.has(u));
-            const summaryDiffs: SummaryDiffs = {
-              followingDiff:
-                analysis.followingUnique -
-                (prev.analysis?.followingUnique ?? new Set(prev.following).size),
-              followersDiff:
-                analysis.followersUnique -
-                (prev.analysis?.followersUnique ?? new Set(prev.followers).size),
-              mutualDiff: analysis.mutuals.length - (prev.analysis?.mutuals.length ?? 0),
-            };
-            diff = {
-              followingAdded: f.added,
-              followingRemoved: f.removed,
-              followersAdded: g.added,
-              followersRemoved: g.removed,
-              newUnfollowers,
-              hadBaseline: true,
-              summaryDiffs,
-            };
-          } else {
-            diff = {
-              followingAdded: [],
-              followingRemoved: [],
-              followersAdded: [],
-              followersRemoved: [],
-              newUnfollowers: [],
-              hadBaseline: false,
-            };
-          }
+          diff = computeExportDiff(
+            prev,
+            followingSet,
+            followersSet,
+            analysis,
+            uniqueFollowing,
+            uniqueFollowers,
+          );
         }
 
         await setLatestSnapshot({
@@ -204,6 +182,7 @@ export function useAnalyzerState() {
           analysis,
           followerTimestamps: followersTs,
           followingTimestamps: followingTs,
+          exportDiff: diff?.hadBaseline ? diff : undefined,
         });
 
         setIndexedDbError(null);
