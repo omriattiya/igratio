@@ -16,7 +16,7 @@ const copy = messages.analyzer.exportTutorial;
 const steps = copy.steps;
 
 const TUTORIAL_LINK_CLASS =
-  "font-medium text-blue-300 underline decoration-blue-400/50 underline-offset-2 transition-colors hover:text-blue-200 hover:decoration-blue-300";
+  "font-medium text-blue-200 underline decoration-blue-400/55 underline-offset-2 transition-colors duration-150 hover:text-blue-50 hover:decoration-blue-300";
 
 function stepIndexFromNumber(stepNumber: number): number {
   return stepNumber - 1;
@@ -77,12 +77,13 @@ export function InstagramExportTutorial() {
       ref={dialogRef}
       aria-labelledby="export-tutorial-title"
       className={cn(
-        "hidden w-[70vw] max-w-[700px] h-[90vh] max-h-[90vh]",
+        "hidden w-[min(100vw-1.5rem,50rem)] max-h-[min(90vh,56rem)]",
         "open:fixed open:left-1/2 open:top-1/2 open:z-50 open:-translate-x-1/2 open:-translate-y-1/2",
         "open:flex open:flex-col",
-        "overflow-hidden rounded-2xl border border-blue-800/70 bg-blue-950 p-0 text-blue-50 shadow-2xl shadow-black/50",
-        "backdrop:bg-black/65 backdrop:backdrop-blur-sm",
-        "opacity-0 transition-opacity duration-200 ease-out open:opacity-100",
+        "overflow-hidden rounded-2xl border border-blue-500/25 bg-[#0f1c38] p-0 text-blue-50",
+        "shadow-[0_24px_64px_-20px_rgba(0,0,0,0.75)]",
+        "backdrop:bg-black/70 backdrop:backdrop-blur-[2px]",
+        "opacity-0 transition-opacity duration-200 [transition-timing-function:var(--ease-out-expo)] open:opacity-100",
         "starting:open:opacity-0",
       )}
       onCancel={(e) => {
@@ -93,14 +94,14 @@ export function InstagramExportTutorial() {
         if (e.target === dialogRef.current) close();
       }}
     >
-      <header className="flex shrink-0 items-start justify-between gap-3 border-b border-blue-800/50 px-4 py-3">
-        <div>
-          <p className="text-xs font-medium tabular-nums text-blue-300/80">
+      <header className="flex shrink-0 items-start justify-between gap-3 border-b border-blue-500/20 px-5 py-3.5">
+        <div className="min-w-0">
+          <p className="text-xs font-medium tabular-nums text-tertiary-readable">
             {t(copy.stepOf, { current: step + 1, total: steps.length })}
           </p>
           <h2
             id="export-tutorial-title"
-            className="mt-0.5 text-base font-semibold leading-snug text-blue-50"
+            className="mt-1 text-base font-semibold leading-snug text-blue-50"
           >
             {current.title}
           </h2>
@@ -109,7 +110,7 @@ export function InstagramExportTutorial() {
           type="button"
           variant="ghost"
           size="icon-sm"
-          className="shrink-0 text-blue-200/80 hover:bg-blue-900/60 hover:text-blue-50"
+          className="shrink-0 text-blue-200/85 transition-colors duration-150 hover:bg-blue-800/45 hover:text-blue-50"
           aria-label={copy.close}
           onClick={close}
         >
@@ -117,51 +118,54 @@ export function InstagramExportTutorial() {
         </Button>
       </header>
 
-      <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-        {quickStart ? (
-          <div className="mx-4 mt-4 shrink-0 space-y-2 rounded-xl border border-blue-700/50 bg-blue-900/40 px-3 py-3 text-sm">
-            <p className="leading-relaxed text-blue-200/80">
-              {quickStart.startPrefix}{" "}
+      <div className="custom-scrollbar flex min-h-0 flex-1 flex-col overflow-y-auto">
+        <div key={step} className="flex flex-col gap-4 px-5 py-4">
+          {quickStart ? (
+            <div className="surface-inset space-y-2 px-3.5 py-3 text-sm">
+              <p className="leading-relaxed text-secondary-readable">
+                {quickStart.startPrefix}{" "}
+                <a
+                  href={quickStart.startLink.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={TUTORIAL_LINK_CLASS}
+                >
+                  {quickStart.startLink.label}
+                </a>
+              </p>
               <a
-                href={quickStart.startLink.href}
+                href={quickStart.skipLink.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={TUTORIAL_LINK_CLASS}
+                className={cn(TUTORIAL_LINK_CLASS, "block")}
+                onClick={() => setStep(stepIndexFromNumber(quickStart.skipToStep))}
               >
-                {quickStart.startLink.label}
+                {quickStart.skipLink.label}
               </a>
-            </p>
-            <a
-              href={quickStart.skipLink.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={cn(TUTORIAL_LINK_CLASS, "block")}
-              onClick={() => setStep(stepIndexFromNumber(quickStart.skipToStep))}
-            >
-              {quickStart.skipLink.label}
-            </a>
-          </div>
-        ) : null}
-
-        <div className="shrink-0 px-4 pt-4">
-          {/* eslint-disable-next-line react/no-danger -- trusted static copy from app messages */}
-          <p className="text-sm leading-relaxed text-blue-200/75" dangerouslySetInnerHTML={{ __html: current.description }} />
-          {"shortcut" in current && current.shortcut ? (
-            <p className="mt-2 text-sm">
-              <a
-                href={current.shortcut.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={TUTORIAL_LINK_CLASS}
-              >
-                {current.shortcut.label}
-              </a>
-            </p>
+            </div>
           ) : null}
-        </div>
 
-        <div className="relative min-h-0 flex-1 px-4 py-4">
-          <div className="flex h-full w-full items-center justify-center">
+          <div>
+            {/* eslint-disable-next-line react/no-danger -- trusted static copy from app messages */}
+            <p
+              className="text-sm leading-relaxed text-secondary-readable"
+              dangerouslySetInnerHTML={{ __html: current.description }}
+            />
+            {"shortcut" in current && current.shortcut ? (
+              <p className="mt-2 text-sm">
+                <a
+                  href={current.shortcut.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={TUTORIAL_LINK_CLASS}
+                >
+                  {current.shortcut.label}
+                </a>
+              </p>
+            ) : null}
+          </div>
+
+          <div className="flex justify-center rounded-xl bg-[#0a1428] p-3 ring-1 ring-blue-500/15">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               key={image.src}
@@ -169,35 +173,47 @@ export function InstagramExportTutorial() {
               alt={current.title}
               width={image.width}
               height={image.height}
-              className="block max-h-full max-w-full rounded-xl border border-blue-800/50 object-contain"
+              decoding="async"
+              className="block h-auto w-auto max-w-full rounded-lg"
+              style={{
+                // Never upscale past the source bitmap — only shrink to fit the dialog.
+                maxWidth: `min(100%, ${image.width}px)`,
+                maxHeight: `min(52vh, ${image.height}px)`,
+              }}
             />
           </div>
         </div>
-
-        <div className="flex shrink-0 justify-center gap-1.5 px-4 pb-2" role="tablist" aria-label={copy.stepDotsLabel}>
-          {steps.map((_, i) => (
-            <button
-              key={i}
-              type="button"
-              role="tab"
-              aria-label={t(copy.goToStep, { step: i + 1 })}
-              aria-selected={i === step}
-              className={cn(
-                "size-2 rounded-full transition-colors",
-                i === step ? "bg-blue-400" : "bg-blue-700/80 hover:bg-blue-600",
-              )}
-              onClick={() => setStep(i)}
-            />
-          ))}
-        </div>
       </div>
 
-      <footer className="flex shrink-0 items-center justify-between gap-2 border-t border-blue-800/50 px-4 py-3">
+      <div
+        className="flex shrink-0 justify-center gap-1.5 border-t border-blue-500/15 px-5 py-2.5"
+        role="tablist"
+        aria-label={copy.stepDotsLabel}
+      >
+        {steps.map((_, i) => (
+          <button
+            key={i}
+            type="button"
+            role="tab"
+            aria-label={t(copy.goToStep, { step: i + 1 })}
+            aria-selected={i === step}
+            className={cn(
+              "h-2 rounded-full transition-all duration-200 [transition-timing-function:var(--ease-out-expo)]",
+              i === step
+                ? "w-5 bg-sky-400"
+                : "w-2 bg-blue-600/70 hover:bg-blue-500",
+            )}
+            onClick={() => setStep(i)}
+          />
+        ))}
+      </div>
+
+      <footer className="flex shrink-0 items-center justify-between gap-2 border-t border-blue-500/20 px-5 py-3">
         <Button
           type="button"
           variant="outline"
           size="sm"
-          className="border-blue-700/60 bg-transparent text-blue-100 hover:bg-blue-900/50"
+          className="border-blue-500/30 bg-transparent text-blue-100 transition-colors duration-150 hover:bg-blue-800/40"
           disabled={isFirst}
           onClick={() => setStep((s) => s - 1)}
         >
@@ -205,11 +221,21 @@ export function InstagramExportTutorial() {
           {copy.previous}
         </Button>
         {isLast ? (
-          <Button type="button" size="sm" onClick={close}>
+          <Button
+            type="button"
+            size="sm"
+            className="bg-sky-500 text-white hover:bg-sky-400"
+            onClick={close}
+          >
             {copy.finish}
           </Button>
         ) : (
-          <Button type="button" size="sm" onClick={() => setStep((s) => s + 1)}>
+          <Button
+            type="button"
+            size="sm"
+            className="bg-sky-500 text-white hover:bg-sky-400"
+            onClick={() => setStep((s) => s + 1)}
+          >
             {copy.next}
             <ChevronRight className="size-4" />
           </Button>
@@ -221,7 +247,7 @@ export function InstagramExportTutorial() {
   return (
     <>
       <button type="button" onClick={open} className={TUTORIAL_LINK_CLASS} data-tour="export-tutorial">
-        <BookOpenText className="inline-block size-4 align-text-bottom mr-1" />
+        <BookOpenText className="mr-1 inline-block size-4 align-text-bottom" />
         {copy.trigger}
       </button>
       {mounted ? createPortal(dialog, document.body) : null}
