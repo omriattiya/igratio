@@ -93,9 +93,6 @@ export function AppTour({ run, onFinish }: { run: boolean; onFinish: () => void 
       buttonClose: {
         color: "#9aafd0",
       },
-      spotlight: {
-        borderRadius: "12px",
-      },
     },
   });
 
