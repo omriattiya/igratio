@@ -1,11 +1,10 @@
 "use client";
 
+import { Alert, Box, Code, Stack, Text } from "@mantine/core";
 import { ExportTrackingToggle } from "@/components/ExportChangePanel";
 import { InstagramExportTutorial } from "@/components/InstagramExportTutorial";
 import { ArchiveDropzone } from "@/components/ArchiveDropzone";
-import { AnalyzerActions } from "@/components/AnalyzerActions";
 import { AnalyzerResults } from "@/components/AnalyzerResults";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AnalyzerLoadStatus } from "@/lib/analyzerLoadStatus";
 import { messages, t } from "@/lib/i18n";
 import { formatSnapshotSavedAt, useAnalyzerState } from "@/hooks/useAnalyzerState";
@@ -19,8 +18,6 @@ export function InstagramAnalyzer() {
     lastExportDiff,
     lastSnapshotSavedAt,
     indexedDbError,
-    fileInputKey,
-    archiveInputRef,
     followerTimestamps,
     followingTimestamps,
     markNewFromDiff,
@@ -28,86 +25,75 @@ export function InstagramAnalyzer() {
     setIndexedDbError,
     handleTrackToggle,
     handleArchiveChange,
-    handleResetAnalysis,
   } = useAnalyzerState();
 
+  const showAlerts =
+    state.status === AnalyzerLoadStatus.Error ||
+    Boolean(indexedDbError && state.status !== AnalyzerLoadStatus.Ready);
+
   return (
-    <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 self-center">
-      <div className="surface-panel relative overflow-hidden" data-tour="analyzer-panel">
-        <div className="surface-card-header px-6 py-5">
-          <p className="text-sm leading-relaxed text-secondary-readable">
+    <Stack gap="lg" className="mx-auto w-full max-w-4xl self-center">
+      <Box className="surface-panel relative overflow-hidden" data-tour="analyzer-panel">
+        <Box className="surface-card-header px-6 py-5">
+          <Text component="div" size="sm" lh={1.6} className="text-secondary-readable">
             <InstagramExportTutorial />
             {messages.analyzer.introAfterLink}{" "}
-            <code className="rounded border border-[var(--line)] bg-[var(--bg-inset)] px-1.5 py-0.5 font-mono text-xs text-[var(--text-soft)]">
+            <Code
+              c="var(--text-soft)"
+              bg="var(--bg-inset)"
+              className="border border-[var(--line)] font-mono text-xs"
+            >
               {messages.analyzer.pathCode}
-            </code>
+            </Code>
             {messages.analyzer.introAfterCode}
-          </p>
-        </div>
+          </Text>
+        </Box>
 
-        <div className="border-b border-[var(--line)] px-6 py-6">
+        <Box className="border-b border-[var(--line)] px-6 py-6">
           <ArchiveDropzone
-            inputKey={fileInputKey}
-            inputRef={archiveInputRef}
             hasArchive={hasArchive}
             archiveName={archiveName}
             selectedBasenames={selectedBasenames}
             isLoading={state.status === AnalyzerLoadStatus.Loading}
             onChange={handleArchiveChange}
           />
-        </div>
+        </Box>
 
-        <div className="border-b border-[var(--line)] px-6 py-5">
-          <div data-tour="track-changes">
+        <Box className="border-b border-[var(--line)] px-6 py-5">
+          <Box data-tour="track-changes">
             <ExportTrackingToggle
               enabled={trackSnapshots}
               onChange={(next) => void handleTrackToggle(next)}
               disabled={state.status === AnalyzerLoadStatus.Loading}
             />
-          </div>
+          </Box>
 
           {trackSnapshots && lastSnapshotSavedAt ? (
-            <p className="mt-3 text-xs tabular-nums text-tertiary-readable">
+            <Text size="xs" mt="sm" className="tabular-nums text-tertiary-readable">
               {t(messages.analyzer.exportTracking.lastSaved, {
                 date: formatSnapshotSavedAt(lastSnapshotSavedAt),
               })}
-            </p>
+            </Text>
           ) : null}
-        </div>
+        </Box>
 
-        {(hasArchive ||
-          state.status === AnalyzerLoadStatus.Ready ||
-          state.status === AnalyzerLoadStatus.Error ||
-          indexedDbError) && (
-          <div className="bg-[color-mix(in_srgb,var(--bg-inset)_55%,transparent)] px-6 py-5">
-            <AnalyzerActions
-              state={state}
-              canReset={hasArchive || state.status === AnalyzerLoadStatus.Ready}
-              onReset={() => void handleResetAnalysis()}
-            />
-
+        {showAlerts && (
+          <Box className="bg-[color-mix(in_srgb,var(--bg-inset)_55%,transparent)] px-6 py-5">
             {state.status === AnalyzerLoadStatus.Error && (
-              <Alert variant="destructive" className={hasArchive ? "mt-4" : undefined}>
-                <AlertDescription>{state.message}</AlertDescription>
-              </Alert>
+              <Alert color="red">{state.message}</Alert>
             )}
 
             {indexedDbError && state.status !== AnalyzerLoadStatus.Ready && (
-              <Alert
-                className="mt-4 border-amber-900/40 bg-amber-950/30 text-amber-100"
-                variant="default"
-              >
-                <AlertDescription className="text-amber-200">
-                  {indexedDbError}
-                </AlertDescription>
+              <Alert color="yellow" mt={state.status === AnalyzerLoadStatus.Error ? "md" : undefined}>
+                {indexedDbError}
               </Alert>
             )}
-          </div>
+          </Box>
         )}
-      </div>
+      </Box>
 
       {state.status === AnalyzerLoadStatus.Ready && (
-        <div className="results-enter flex flex-col gap-6">
+        <Stack gap="lg" className="results-enter">
           <AnalyzerResults
             analysis={state.analysis}
             followerTimestamps={followerTimestamps}
@@ -118,8 +104,8 @@ export function InstagramAnalyzer() {
             markNewFromDiff={markNewFromDiff}
             onPersistError={(msg) => setIndexedDbError(msg)}
           />
-        </div>
+        </Stack>
       )}
-    </div>
+    </Stack>
   );
 }

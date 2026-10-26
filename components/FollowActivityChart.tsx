@@ -8,6 +8,7 @@ import {
   type MouseEvent as ReactMouseEvent,
   type PointerEvent as ReactPointerEvent,
 } from "react";
+import { Box, Button, Group, Text } from "@mantine/core";
 import { Chart } from "react-charts";
 import type { AxisOptions } from "react-charts";
 import { TrendingUp, ZoomIn, ZoomOut } from "lucide-react";
@@ -217,7 +218,7 @@ export function FollowActivityChart({
 
       setZoomRange({ min, max });
     },
-    [dragStart, dragEnd, activeRange],
+    [dragStart, dragEnd, activeRange, allData, hiddenSeries],
   );
 
   const handleClick = useCallback((e: ReactMouseEvent) => {
@@ -239,42 +240,46 @@ export function FollowActivityChart({
   if (!hasData) return null;
 
   return (
-    <section className="surface-panel-soft p-4">
-      <div className="mb-4 flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-blue-50">
+    <Box component="section" className="surface-panel-soft" p="md">
+      <Group justify="space-between" mb="md" wrap="nowrap">
+        <Text component="h3" size="sm" fw={600} c="blue.0">
           {copy.title}
-        </h3>
-        <div className="flex items-center gap-2">
-          <button
+        </Text>
+        <Group gap="xs" wrap="nowrap">
+          <Button
             type="button"
+            variant={cumulative ? "light" : "subtle"}
+            color={cumulative ? "blue" : "gray"}
+            size="compact-xs"
+            leftSection={<TrendingUp className="size-3.5" />}
             onClick={toggleCumulative}
-            className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs transition-colors duration-150 hover:bg-blue-800/40 hover:text-blue-50 ${
-              cumulative ? "bg-blue-800/50 text-blue-50" : "text-blue-200/75"
-            }`}
           >
-            <TrendingUp className="size-3.5" />
             {copy.accumulated}
-          </button>
-          <span className="text-blue-600/70">|</span>
+          </Button>
+          <Text size="xs" c="blue.7">
+            |
+          </Text>
           {zoomRange ? (
-            <button
+            <Button
               type="button"
+              variant="subtle"
+              color="gray"
+              size="compact-xs"
+              leftSection={<ZoomOut className="size-3.5" />}
               onClick={handleResetZoom}
-              className="flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs text-blue-200/85 transition-colors duration-150 hover:bg-blue-800/40 hover:text-blue-50"
             >
-              <ZoomOut className="size-3.5" />
               {copy.resetZoom}
-            </button>
+            </Button>
           ) : (
-            <span className="flex items-center gap-1.5 text-xs text-tertiary-readable">
+            <Text size="xs" className="inline-flex items-center gap-1.5 text-tertiary-readable">
               <ZoomIn className="size-3.5" />
               {copy.dragToZoom}
-            </span>
+            </Text>
           )}
-        </div>
-      </div>
+        </Group>
+      </Group>
       {data.length > 0 ? (
-        <div
+        <Box
           ref={containerRef}
           className="relative h-72 w-full select-none"
           onPointerDown={handlePointerDown}
@@ -303,37 +308,40 @@ export function FollowActivityChart({
               style={selectionStyle}
             />
           )}
-        </div>
+        </Box>
       ) : (
-        <div className="flex h-72 items-center justify-center text-sm text-tertiary-readable">
+        <Text size="sm" className="flex h-72 items-center justify-center text-tertiary-readable">
           {copy.allHidden}
-        </div>
+        </Text>
       )}
-      <div className="mt-3 flex items-center justify-center gap-4">
+      <Group justify="center" gap="md" mt="sm">
         {allData.map((series) => {
           const hidden = hiddenSeries.has(series.label);
           const color = seriesColors[series.label] ?? "#38bdf8";
           return (
-            <button
+            <Button
               key={series.label}
               type="button"
+              variant="subtle"
+              color="gray"
+              size="compact-xs"
               onClick={() => toggleSeries(series.label)}
-              className={`flex items-center gap-2 rounded-md px-2.5 py-1.5 text-xs transition-colors hover:bg-blue-800/30 ${
-                hidden ? "text-blue-400/35" : "text-blue-100"
-              }`}
+              className={hidden ? "text-blue-400/35" : "text-blue-100"}
+              leftSection={
+                <span
+                  className="inline-block size-2.5 rounded-full transition-opacity"
+                  style={{
+                    backgroundColor: color,
+                    opacity: hidden ? 0.25 : 1,
+                  }}
+                />
+              }
             >
-              <span
-                className="inline-block size-2.5 rounded-full transition-opacity"
-                style={{
-                  backgroundColor: color,
-                  opacity: hidden ? 0.25 : 1,
-                }}
-              />
               {series.label}
-            </button>
+            </Button>
           );
         })}
-      </div>
-    </section>
+      </Group>
+    </Box>
   );
 }

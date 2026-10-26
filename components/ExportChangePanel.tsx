@@ -1,7 +1,6 @@
 "use client";
 
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
+import { Box, SimpleGrid, Stack, Text } from "@mantine/core";
 import { UserLinkCard, type UserStatus } from "@/components/UserLinkCard";
 import type { ExportDiff, SummaryDiffs } from "@/lib/exportDiff";
 import { messages } from "@/lib/i18n";
@@ -22,26 +21,43 @@ export function ExportTrackingToggle({
   const copy = messages.analyzer.exportTracking;
 
   return (
-    <div className="surface-inset p-3.5">
-      <div className="flex items-center gap-4">
-        <Switch
+    <Box className="surface-inset" p="sm">
+      <label
+        htmlFor="export-tracking-toggle"
+        className={`flex items-center ${disabled ? "cursor-not-allowed" : "cursor-pointer"}`}
+      >
+        <input
           id="export-tracking-toggle"
+          type="checkbox"
+          className="track-check-input"
           checked={enabled}
           disabled={disabled}
-          onCheckedChange={onChange}
-          className="mt-0.5"
+          onChange={(event) => onChange(event.currentTarget.checked)}
         />
-        <div className="flex min-w-0 flex-1 flex-col gap-1">
-          <Label
-            htmlFor="export-tracking-toggle"
-            className="font-medium text-foreground"
-          >
+        <span className="track-check" aria-hidden="true">
+          <svg viewBox="0 0 48 48" className="track-check-svg">
+            <circle className="track-check-ring" cx="24" cy="24" r="22" />
+            <circle className="track-check-fill" cx="24" cy="24" />
+            <path className="track-check-mark" d="M15.5 25.2 22 31.6 34 17.5" />
+          </svg>
+        </span>
+        <span className="min-w-0 flex-1">
+          <Text component="span" display="block" size="sm" fw={500}>
             {copy.toggle}
-          </Label>
-          <p className="text-xs leading-relaxed text-muted-foreground">{copy.toggleHint}</p>
-        </div>
-      </div>
-    </div>
+          </Text>
+          <Text
+            component="span"
+            display="block"
+            size="sm"
+            mt={2}
+            lh={1.6}
+            className="text-secondary-readable"
+          >
+            {copy.toggleHint}
+          </Text>
+        </span>
+      </label>
+    </Box>
   );
 }
 
@@ -54,23 +70,32 @@ type UsernameListProps = {
 function UsernameMiniList({ label, usernames, userStatus }: UsernameListProps) {
   const empty = messages.analyzer.exportTracking.emptyList;
   return (
-    <div className="surface-inset p-3">
-      <p className="text-xs font-medium uppercase tracking-wide text-tertiary-readable">
+    <Box className="surface-inset" p="sm">
+      <Text size="xs" fw={500} tt="uppercase" className="tracking-wide text-tertiary-readable">
         {label}{" "}
-        <span className="font-normal tabular-nums">({usernames.length})</span>
-      </p>
+        <Text component="span" inherit fw={400} className="tabular-nums">
+          ({usernames.length})
+        </Text>
+      </Text>
       {usernames.length === 0 ? (
-        <p className="mt-2 text-sm text-secondary-readable">{empty}</p>
+        <Text size="sm" mt="xs" className="text-secondary-readable">
+          {empty}
+        </Text>
       ) : (
-        <ul className="custom-scrollbar mt-2 max-h-40 list-none space-y-1.5 overflow-y-auto pr-2">
+        <Stack
+          component="ul"
+          gap={6}
+          mt="xs"
+          className="custom-scrollbar max-h-40 list-none overflow-y-auto pr-2"
+        >
           {usernames.map((u) => (
             <li key={u}>
               <UserLinkCard username={u} status={userStatus} />
             </li>
           ))}
-        </ul>
+        </Stack>
       )}
-    </div>
+    </Box>
   );
 }
 
@@ -85,25 +110,51 @@ export function ExportChangeDiff({ diff }: ExportChangeDiffProps) {
 
   if (!diff.hadBaseline) {
     return (
-      <div className="surface-panel-soft p-4">
-        <h3 className="text-sm font-semibold text-blue-50">{copy.sectionTitle}</h3>
-        <p className="mt-2 text-sm text-secondary-readable">{copy.baselineOnly}</p>
-      </div>
+      <Box className="surface-panel-soft" p="md">
+        <Text component="h3" size="sm" fw={600} c="blue.0">
+          {copy.sectionTitle}
+        </Text>
+        <Text size="sm" mt="xs" className="text-secondary-readable">
+          {copy.baselineOnly}
+        </Text>
+      </Box>
     );
   }
 
   return (
-    <div className="surface-panel-soft p-4">
-      <h3 className="text-sm font-semibold text-blue-50">{copy.sectionTitle}</h3>
-      <div className="mt-4 grid gap-3 sm:grid-cols-2">
-        <div className="sm:col-span-2">
-          <UsernameMiniList label={copy.newUnfollowers} usernames={diff.newUnfollowers} userStatus="unfollower" />
-        </div>
-        <UsernameMiniList label={copy.followingAdded} usernames={diff.followingAdded} userStatus="new-follow" />
-        <UsernameMiniList label={copy.followingRemoved} usernames={diff.followingRemoved} userStatus="removed" />
-        <UsernameMiniList label={copy.followersAdded} usernames={diff.followersAdded} userStatus="new-follow" />
-        <UsernameMiniList label={copy.followersRemoved} usernames={diff.followersRemoved} userStatus="removed" />
-      </div>
-    </div>
+    <Box className="surface-panel-soft" p="md">
+      <Text component="h3" size="sm" fw={600} c="blue.0">
+        {copy.sectionTitle}
+      </Text>
+      <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="sm" mt="md">
+        <Box className="sm:col-span-2">
+          <UsernameMiniList
+            label={copy.newUnfollowers}
+            usernames={diff.newUnfollowers}
+            userStatus="unfollower"
+          />
+        </Box>
+        <UsernameMiniList
+          label={copy.followingAdded}
+          usernames={diff.followingAdded}
+          userStatus="new-follow"
+        />
+        <UsernameMiniList
+          label={copy.followingRemoved}
+          usernames={diff.followingRemoved}
+          userStatus="removed"
+        />
+        <UsernameMiniList
+          label={copy.followersAdded}
+          usernames={diff.followersAdded}
+          userStatus="new-follow"
+        />
+        <UsernameMiniList
+          label={copy.followersRemoved}
+          usernames={diff.followersRemoved}
+          userStatus="removed"
+        />
+      </SimpleGrid>
+    </Box>
   );
 }

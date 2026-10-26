@@ -1,13 +1,11 @@
 import type { ChangeEvent } from "react";
+import { Box, Stack, Text } from "@mantine/core";
 import { Archive, CircleCheck } from "lucide-react";
-import { Label } from "@/components/ui/label";
 import { messages } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
 type ArchiveDropzoneProps = {
   id?: string;
-  inputKey: number;
-  inputRef: React.RefObject<HTMLInputElement | null>;
   hasArchive: boolean;
   archiveName: string | null;
   selectedBasenames: string[];
@@ -17,8 +15,6 @@ type ArchiveDropzoneProps = {
 
 export function ArchiveDropzone({
   id = "analyzer-archive",
-  inputKey,
-  inputRef,
   hasArchive,
   archiveName,
   selectedBasenames,
@@ -26,11 +22,12 @@ export function ArchiveDropzone({
   onChange,
 }: ArchiveDropzoneProps) {
   return (
-    <div className="flex flex-col gap-2" data-tour="drop-archive">
-      <Label htmlFor={id} className="font-medium text-[var(--text)]">
+    <Stack gap={8} data-tour="drop-archive">
+      <Text component="label" htmlFor={id} fw={500} size="sm" c="var(--text)">
         {messages.analyzer.archiveLabel}
-      </Label>
-      <label
+      </Text>
+      <Box
+        component="label"
         htmlFor={id}
         className={cn(
           "surface-inset relative flex cursor-pointer flex-col items-center justify-center gap-2 border-dashed px-4 py-8 text-center transition-[border-color,background-color,box-shadow] duration-200 [transition-timing-function:var(--ease-out-expo)]",
@@ -47,16 +44,14 @@ export function ArchiveDropzone({
           )}
           aria-hidden
         />
-        <span className="text-sm text-[var(--text-soft)]">
+        <Text component="span" size="sm" c="var(--text-soft)">
           {isLoading
             ? messages.analyzer.analyzing
             : hasArchive
               ? archiveName ?? messages.analyzer.archiveSelected
               : messages.analyzer.dropArchivePrompt}
-        </span>
+        </Text>
         <input
-          ref={inputRef}
-          key={`${id}-${inputKey}`}
           id={id}
           type="file"
           accept=".zip,application/zip,application/x-zip-compressed"
@@ -70,16 +65,20 @@ export function ArchiveDropzone({
             aria-hidden
           />
         ) : null}
-      </label>
-      <span className="text-xs text-tertiary-readable">{messages.analyzer.archiveHint}</span>
+      </Box>
+      <Text size="xs" className="text-tertiary-readable">
+        {messages.analyzer.archiveHint}
+      </Text>
       {selectedBasenames.length > 0 ? (
-        <p className="text-xs text-secondary-readable">
-          <span className="font-medium text-[var(--text-soft)]">
+        <Text size="xs" className="text-secondary-readable">
+          <Text component="span" inherit fw={500} c="var(--text-soft)">
             {messages.analyzer.selectedFilesLabel}:{" "}
-          </span>
-          <span className="font-mono">{selectedBasenames.join(", ")}</span>
-        </p>
+          </Text>
+          <Text component="span" inherit ff="monospace">
+            {selectedBasenames.join(", ")}
+          </Text>
+        </Text>
       ) : null}
-    </div>
+    </Stack>
   );
 }

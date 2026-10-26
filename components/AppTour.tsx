@@ -1,10 +1,33 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import { useJoyride, EVENTS, STATUS, type Step } from "react-joyride";
 import { messages } from "@/lib/i18n";
 
 const POPOVER_DISMISSED_KEY = "igratio-tour-popover-dismissed";
+const popoverListeners = new Set<() => void>();
+
+function subscribePopover(onStoreChange: () => void) {
+  popoverListeners.add(onStoreChange);
+  return () => {
+    popoverListeners.delete(onStoreChange);
+  };
+}
+
+function readPopoverOpen() {
+  try {
+    return localStorage.getItem(POPOVER_DISMISSED_KEY) == null;
+  } catch {
+    return false;
+  }
+}
+
+function dismissPopoverStorage() {
+  try {
+    localStorage.setItem(POPOVER_DISMISSED_KEY, "1");
+  } catch {}
+  for (const listener of popoverListeners) listener();
+}
 
 const TARGETS = [
   '[data-tour="export-tutorial"]',
@@ -116,28 +139,18 @@ export function AppTour({ run, onFinish }: { run: boolean; onFinish: () => void 
 
 export function useAppTour() {
   const [run, setRun] = useState(false);
-  const [showPopover, setShowPopover] = useState(false);
-
-  useEffect(() => {
-    try {
-      if (!localStorage.getItem(POPOVER_DISMISSED_KEY)) {
-        setShowPopover(true);
-      }
-    } catch {}
-  }, []);
+  const showPopover = useSyncExternalStore(
+    subscribePopover,
+    readPopoverOpen,
+    () => false,
+  );
 
   const dismissPopover = useCallback(() => {
-    setShowPopover(false);
-    try {
-      localStorage.setItem(POPOVER_DISMISSED_KEY, "1");
-    } catch {}
+    dismissPopoverStorage();
   }, []);
 
   const relaunch = useCallback(() => {
-    setShowPopover(false);
-    try {
-      localStorage.setItem(POPOVER_DISMISSED_KEY, "1");
-    } catch {}
+    dismissPopoverStorage();
     setRun(true);
   }, []);
 

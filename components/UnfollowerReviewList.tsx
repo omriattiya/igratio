@@ -1,14 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ActionIcon, Box, Checkbox, Group, Menu, Text, Tooltip, UnstyledButton } from "@mantine/core";
 import { ArrowDownAZ, ArrowUpDown, ChevronDown, CircleDashed, Info, Sparkles } from "lucide-react";
 import {
   getUnfollowerOkSet,
   pruneUnfollowerOk,
   setUnfollowerOk,
 } from "@/lib/instagramIndexedDb";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Tooltip, TooltipPopup } from "@/components/ui/tooltip";
 import { UserLinkCard } from "@/components/UserLinkCard";
 import { messages } from "@/lib/i18n";
 import { useIsSmallScreen } from "@/lib/useIsSmallScreen";
@@ -32,26 +31,13 @@ export function UnfollowerReviewList({
 }: UnfollowerReviewListProps) {
   const [okSet, setOkSet] = useState<Set<string>>(new Set());
   const [sort, setSort] = useState<SortMode>("new-first");
-  const [menuOpen, setMenuOpen] = useState(false);
   const [expanded, setExpanded] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
   const onPersistErrorRef = useRef(onPersistError);
   const isSmallScreen = useIsSmallScreen();
 
   useEffect(() => {
     onPersistErrorRef.current = onPersistError;
   });
-
-  useEffect(() => {
-    if (!menuOpen) return;
-    function onClickOutside(e: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setMenuOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", onClickOutside);
-    return () => document.removeEventListener("mousedown", onClickOutside);
-  }, [menuOpen]);
 
   useEffect(() => {
     const valid = new Set(usernames);
@@ -121,93 +107,88 @@ export function UnfollowerReviewList({
 
   if (usernames.length === 0) {
     return (
-      <section className="surface-panel-soft p-4">
-        <h3 className={`text-sm font-semibold ${accent}`}>{title}</h3>
-        <p className="mt-2 text-sm text-secondary-readable">
+      <Box component="section" className="surface-panel-soft" p="md">
+        <Text component="h3" size="sm" fw={600} className={accent}>
+          {title}
+        </Text>
+        <Text size="sm" mt="xs" className="text-secondary-readable">
           {messages.userList.empty}
-        </p>
-      </section>
+        </Text>
+      </Box>
     );
   }
 
   const collapsed = isSmallScreen && !expanded;
 
   return (
-    <section className="surface-panel-soft flex h-full flex-col p-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <button
+    <Box component="section" className="surface-panel-soft flex h-full flex-col" p="md">
+      <Group justify="space-between" wrap="nowrap">
+        <Group gap="xs" wrap="nowrap">
+          <UnstyledButton
             type="button"
             className="flex items-center gap-2 lg:pointer-events-none"
             onClick={() => isSmallScreen && setExpanded((v) => !v)}
           >
-            <h3 className={`text-sm font-semibold ${accent}`}>
+            <Text component="h3" size="sm" fw={600} className={accent}>
               {title}{" "}
-              <span className="font-normal text-tertiary-readable">({usernames.length})</span>
-            </h3>
+              <Text component="span" inherit fw={400} className="text-tertiary-readable">
+                ({usernames.length})
+              </Text>
+            </Text>
             <ChevronDown
               className={`size-4 text-blue-200/80 transition-transform duration-200 [transition-timing-function:var(--ease-out-expo)] lg:hidden ${expanded ? "rotate-180" : ""}`}
             />
-          </button>
-          <Tooltip.Provider delay={0}>
-            <Tooltip.Root>
-              <Tooltip.Trigger
-                className="inline-flex cursor-default text-blue-200/70 transition-colors duration-150 hover:text-blue-50"
-              >
-                <Info className="size-4" />
-              </Tooltip.Trigger>
-              <Tooltip.Portal>
-                <Tooltip.Positioner sideOffset={6}>
-                  <TooltipPopup>{copy.manageHint}</TooltipPopup>
-                </Tooltip.Positioner>
-              </Tooltip.Portal>
-            </Tooltip.Root>
-          </Tooltip.Provider>
-        </div>
+          </UnstyledButton>
+          <Tooltip label={copy.manageHint} position="top">
+            <ActionIcon
+              variant="transparent"
+              color="gray"
+              size="sm"
+              aria-label={copy.manageHint}
+              className="text-blue-200/70 hover:text-blue-50"
+            >
+              <Info className="size-4" />
+            </ActionIcon>
+          </Tooltip>
+        </Group>
 
-        <div className="relative" ref={menuRef}>
-          <button
-            type="button"
-            onClick={() => setMenuOpen((v) => !v)}
-            className="rounded-md p-1.5 text-blue-200/80 transition-colors duration-150 hover:bg-blue-800/45 hover:text-blue-50"
-            aria-label="Sort options"
-          >
-            <ArrowUpDown className="size-4" />
-          </button>
-
-          {menuOpen && (
-            <div className="absolute right-0 z-20 mt-1 w-40 overflow-hidden rounded-[10px] border border-[var(--line)] bg-[var(--bg-soft)] shadow-[var(--shadow-sm)] animate-in fade-in zoom-in-95 duration-150">
-              <button
-                type="button"
-                onClick={() => { setSort("a-z"); setMenuOpen(false); }}
-                className={`flex w-full items-center gap-2 px-3 py-2 text-left text-sm transition-colors duration-150 hover:bg-blue-800/50 ${sort === "a-z" ? "text-blue-50" : "text-blue-200/85"}`}
-              >
-                <ArrowDownAZ className="size-4" />
-                A–Z
-              </button>
-              <button
-                type="button"
-                onClick={() => { setSort("new-first"); setMenuOpen(false); }}
-                className={`flex w-full items-center gap-2 px-3 py-2 text-left text-sm transition-colors duration-150 hover:bg-blue-800/50 ${sort === "new-first" ? "text-blue-50" : "text-blue-200/85"}`}
-              >
-                <Sparkles className="size-4" />
-                New first
-              </button>
-              <button
-                type="button"
-                onClick={() => { setSort("pending-first"); setMenuOpen(false); }}
-                className={`flex w-full items-center gap-2 px-3 py-2 text-left text-sm transition-colors duration-150 hover:bg-blue-800/50 ${sort === "pending-first" ? "text-blue-50" : "text-blue-200/85"}`}
-              >
-                <CircleDashed className="size-4" />
-                Pending first
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
+        <Menu position="bottom-end" withinPortal>
+          <Menu.Target>
+            <ActionIcon variant="subtle" color="gray" aria-label="Sort options">
+              <ArrowUpDown className="size-4" />
+            </ActionIcon>
+          </Menu.Target>
+          <Menu.Dropdown>
+            <Menu.Item
+              leftSection={<ArrowDownAZ className="size-4" />}
+              onClick={() => setSort("a-z")}
+              c={sort === "a-z" ? "var(--text)" : "var(--text-soft)"}
+            >
+              A–Z
+            </Menu.Item>
+            <Menu.Item
+              leftSection={<Sparkles className="size-4" />}
+              onClick={() => setSort("new-first")}
+              c={sort === "new-first" ? "var(--text)" : "var(--text-soft)"}
+            >
+              New first
+            </Menu.Item>
+            <Menu.Item
+              leftSection={<CircleDashed className="size-4" />}
+              onClick={() => setSort("pending-first")}
+              c={sort === "pending-first" ? "var(--text)" : "var(--text-soft)"}
+            >
+              Pending first
+            </Menu.Item>
+          </Menu.Dropdown>
+        </Menu>
+      </Group>
 
       {!collapsed && (
-        <ul className="custom-scrollbar mt-3 max-h-[70vh] list-none space-y-2 overflow-y-auto pr-2 lg:max-h-none lg:min-h-0 lg:flex-1 lg:basis-0">
+        <Box
+          component="ul"
+          className="custom-scrollbar mt-3 max-h-[70vh] list-none space-y-2 overflow-y-auto pr-2 lg:max-h-none lg:min-h-0 lg:flex-1 lg:basis-0"
+        >
           {sorted.map((u) => {
             const isOk = okSet.has(u);
             return (
@@ -220,17 +201,16 @@ export function UnfollowerReviewList({
                 >
                   <Checkbox
                     checked={isOk}
-                    onCheckedChange={(checked) =>
-                      void toggleOk(u, checked === true)
-                    }
+                    onChange={(event) => void toggleOk(u, event.currentTarget.checked)}
                     aria-label={`${copy.okCheckbox}: ${u}`}
+                    size="xs"
                   />
                 </UserLinkCard>
               </li>
             );
           })}
-        </ul>
+        </Box>
       )}
-    </section>
+    </Box>
   );
 }

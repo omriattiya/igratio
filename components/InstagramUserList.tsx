@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useRef, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
+import { ActionIcon, Box, Group, Menu, Text, UnstyledButton } from "@mantine/core";
 import { ArrowDownAZ, Sparkles, ArrowUpDown, ChevronDown } from "lucide-react";
 import { messages } from "@/lib/i18n";
 import { useIsSmallScreen } from "@/lib/useIsSmallScreen";
@@ -25,21 +26,8 @@ export function InstagramUserList({
   markNew,
 }: InstagramUserListProps) {
   const [sort, setSort] = useState<SortMode>("new-first");
-  const [menuOpen, setMenuOpen] = useState(false);
   const [expanded, setExpanded] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
   const isSmallScreen = useIsSmallScreen();
-
-  useEffect(() => {
-    if (!menuOpen) return;
-    function onClickOutside(e: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setMenuOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", onClickOutside);
-    return () => document.removeEventListener("mousedown", onClickOutside);
-  }, [menuOpen]);
 
   const sorted = useMemo(() => {
     if (sort === "a-z") {
@@ -59,82 +47,75 @@ export function InstagramUserList({
 
   if (usernames.length === 0) {
     return (
-      <section className="surface-panel-soft flex h-full flex-col p-4">
-        <h3 className={`text-sm font-semibold ${accent}`}>{title}</h3>
-        <p className="mt-2 text-sm text-secondary-readable">
+      <Box component="section" className="surface-panel-soft flex h-full flex-col" p="md">
+        <Text component="h3" size="sm" fw={600} className={accent}>
+          {title}
+        </Text>
+        <Text size="sm" mt="xs" className="text-secondary-readable">
           {messages.userList.empty}
-        </p>
-      </section>
+        </Text>
+      </Box>
     );
   }
 
   const collapsed = isSmallScreen && !expanded;
 
   return (
-    <section className="surface-panel-soft flex h-full flex-col p-4">
-      <div className="flex items-center justify-between">
-        <button
+    <Box component="section" className="surface-panel-soft flex h-full flex-col" p="md">
+      <Group justify="space-between" wrap="nowrap">
+        <UnstyledButton
           type="button"
           className="flex items-center gap-2 lg:pointer-events-none"
           onClick={() => isSmallScreen && setExpanded((v) => !v)}
         >
-          <h3 className={`text-sm font-semibold ${accent}`}>
+          <Text component="h3" size="sm" fw={600} className={accent}>
             {title}{" "}
-            <span className="font-normal text-tertiary-readable">
+            <Text component="span" inherit fw={400} className="text-tertiary-readable">
               ({usernames.length})
-            </span>
-          </h3>
+            </Text>
+          </Text>
           <ChevronDown
             className={`size-4 text-blue-200/80 transition-transform duration-200 [transition-timing-function:var(--ease-out-expo)] lg:hidden ${expanded ? "rotate-180" : ""}`}
           />
-        </button>
+        </UnstyledButton>
 
-        <div className="relative" ref={menuRef}>
-          <button
-            type="button"
-            onClick={() => setMenuOpen((v) => !v)}
-            className="rounded-md p-1.5 text-blue-200/80 transition-colors duration-150 hover:bg-blue-800/45 hover:text-blue-50"
-            aria-label="Sort options"
-          >
-            <ArrowUpDown className="size-4" />
-          </button>
-
-          {menuOpen && (
-            <div className="absolute right-0 z-20 mt-1 w-36 overflow-hidden rounded-[10px] border border-[var(--line)] bg-[var(--bg-soft)] shadow-[var(--shadow-sm)] animate-in fade-in zoom-in-95 duration-150">
-              <button
-                type="button"
-                onClick={() => { setSort("a-z"); setMenuOpen(false); }}
-                className={`flex w-full items-center gap-2 px-3 py-2 text-left text-sm transition-colors duration-150 hover:bg-blue-800/50 ${sort === "a-z" ? "text-blue-50" : "text-blue-200/85"}`}
-              >
-                <ArrowDownAZ className="size-4" />
-                A–Z
-              </button>
-              <button
-                type="button"
-                onClick={() => { setSort("new-first"); setMenuOpen(false); }}
-                className={`flex w-full items-center gap-2 px-3 py-2 text-left text-sm transition-colors duration-150 hover:bg-blue-800/50 ${sort === "new-first" ? "text-blue-50" : "text-blue-200/85"}`}
-              >
-                <Sparkles className="size-4" />
-                New first
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
+        <Menu position="bottom-end" withinPortal>
+          <Menu.Target>
+            <ActionIcon variant="subtle" color="gray" aria-label="Sort options">
+              <ArrowUpDown className="size-4" />
+            </ActionIcon>
+          </Menu.Target>
+          <Menu.Dropdown>
+            <Menu.Item
+              leftSection={<ArrowDownAZ className="size-4" />}
+              onClick={() => setSort("a-z")}
+              c={sort === "a-z" ? "var(--text)" : "var(--text-soft)"}
+            >
+              A–Z
+            </Menu.Item>
+            <Menu.Item
+              leftSection={<Sparkles className="size-4" />}
+              onClick={() => setSort("new-first")}
+              c={sort === "new-first" ? "var(--text)" : "var(--text-soft)"}
+            >
+              New first
+            </Menu.Item>
+          </Menu.Dropdown>
+        </Menu>
+      </Group>
 
       {!collapsed && (
-        <ul className="custom-scrollbar mt-3 max-h-[70vh] list-none space-y-2 overflow-y-auto pr-2 lg:max-h-none lg:min-h-0 lg:flex-1 lg:basis-0">
+        <Box
+          component="ul"
+          className="custom-scrollbar mt-3 max-h-[70vh] list-none space-y-2 overflow-y-auto pr-2 lg:max-h-none lg:min-h-0 lg:flex-1 lg:basis-0"
+        >
           {sorted.map((u) => (
             <li key={u}>
-              <UserLinkCard
-                username={u}
-                status={userStatus}
-                isNew={markNew?.has(u)}
-              />
+              <UserLinkCard username={u} status={userStatus} isNew={markNew?.has(u)} />
             </li>
           ))}
-        </ul>
+        </Box>
       )}
-    </section>
+    </Box>
   );
 }

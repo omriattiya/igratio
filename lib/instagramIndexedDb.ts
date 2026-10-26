@@ -191,21 +191,3 @@ export async function setLatestSnapshot(snapshot: ListsSnapshot): Promise<void> 
     tx.onerror = () => reject(tx.error ?? new Error("Failed to save snapshot"));
   });
 }
-
-/** Clears all app data in IndexedDB (export snapshots, OK marks, tracking preference). */
-export async function clearAllSiteData(): Promise<void> {
-  if (!idbAvailable()) return;
-  const db = await openDb();
-  await new Promise<void>((resolve, reject) => {
-    const tx = db.transaction(
-      [STORE_META, STORE_UNFOLLOWER_OK, STORE_SNAPSHOT],
-      "readwrite",
-    );
-    tx.objectStore(STORE_META).clear();
-    tx.objectStore(STORE_UNFOLLOWER_OK).clear();
-    tx.objectStore(STORE_SNAPSHOT).clear();
-    tx.oncomplete = () => resolve();
-    tx.onerror = () => reject(tx.error ?? new Error("Failed to clear storage"));
-    tx.onabort = () => reject(tx.error ?? new Error("Transaction aborted"));
-  });
-}

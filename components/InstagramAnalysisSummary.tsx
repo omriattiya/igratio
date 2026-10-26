@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Box, Text, ThemeIcon } from "@mantine/core";
 import {
   ArrowLeftRight,
   TrendingDown,
@@ -19,23 +20,37 @@ function DiffBadge({ value }: { value: number }) {
   const isPositive = value > 0;
   const Icon = isPositive ? TrendingUp : TrendingDown;
   return (
-    <span
-      className={`mt-1 inline-flex items-center gap-1 text-xs font-medium tabular-nums ${
+    <Text
+      component="span"
+      size="xs"
+      fw={500}
+      mt={4}
+      className={`inline-flex items-center gap-1 tabular-nums ${
         isPositive ? "text-emerald-400" : "text-red-400"
       }`}
     >
       <Icon className="size-3.5" />
       {isPositive ? "+" : ""}
       {value}
-    </span>
+    </Text>
   );
 }
 
 function StatIcon({ children }: { children: ReactNode }) {
   return (
-    <span className="mb-2 inline-flex size-8 items-center justify-center rounded-full bg-[color-mix(in_srgb,var(--brand)_18%,transparent)] text-[var(--brand)] shadow-[0_0_16px_-4px_color-mix(in_srgb,var(--brand)_55%,transparent)]">
+    <ThemeIcon
+      variant="transparent"
+      radius="xl"
+      size={32}
+      mb={8}
+      style={{
+        background: "color-mix(in srgb, var(--brand) 18%, transparent)",
+        color: "var(--brand)",
+        boxShadow: "0 0 16px -4px color-mix(in srgb, var(--brand) 55%, transparent)",
+      }}
+    >
       {children}
-    </span>
+    </ThemeIcon>
   );
 }
 
@@ -44,82 +59,96 @@ type InstagramAnalysisSummaryProps = {
   summaryDiffs?: SummaryDiffs | null;
 };
 
-export function InstagramAnalysisSummary({ analysis: a, summaryDiffs }: InstagramAnalysisSummaryProps) {
+export function InstagramAnalysisSummary({
+  analysis: a,
+  summaryDiffs,
+}: InstagramAnalysisSummaryProps) {
   const copy = messages.summary;
   const ratioLabel =
     a.followersRatio === null
       ? copy.emDash
-      : a.followersRatio.toLocaleString(undefined, { maximumFractionDigits: 3, minimumFractionDigits: 0 });
+      : a.followersRatio.toLocaleString(undefined, {
+          maximumFractionDigits: 3,
+          minimumFractionDigits: 0,
+        });
 
   return (
-    <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-5">
-      <div className={summaryStatCardClass}>
+    <Box className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+      <Box className={summaryStatCardClass}>
         <StatIcon>
           <ArrowLeftRight className="size-4" aria-hidden />
         </StatIcon>
-        <p className="text-xs font-medium uppercase tracking-wide text-tertiary-readable">
+        <Text size="xs" fw={500} tt="uppercase" className="tracking-wide text-tertiary-readable">
           {copy.following}
-        </p>
-        <p className="mt-1.5 text-2xl font-semibold tabular-nums text-[var(--text)]">{a.followingUnique}</p>
+        </Text>
+        <Text mt={6} fw={600} className="text-2xl tabular-nums text-[var(--text)]">
+          {a.followingUnique}
+        </Text>
         {summaryDiffs && <DiffBadge value={summaryDiffs.followingDiff} />}
         {a.followingCount !== a.followingUnique && (
-          <p className="mt-1 text-xs text-amber-300">
-            {duplicateRowsNote(
-              a.followingCount,
-              a.followingCount - a.followingUnique,
-              copy
-            )}
-          </p>
+          <Text size="xs" mt={4} c="yellow.3">
+            {duplicateRowsNote(a.followingCount, a.followingCount - a.followingUnique, copy)}
+          </Text>
         )}
-      </div>
-      <div className={summaryStatCardClass}>
+      </Box>
+      <Box className={summaryStatCardClass}>
         <StatIcon>
           <Users className="size-4" aria-hidden />
         </StatIcon>
-        <p className="text-xs font-medium uppercase tracking-wide text-tertiary-readable">
+        <Text size="xs" fw={500} tt="uppercase" className="tracking-wide text-tertiary-readable">
           {copy.followers}
-        </p>
-        <p className="mt-1.5 text-2xl font-semibold tabular-nums text-[var(--text)]">{a.followersUnique}</p>
+        </Text>
+        <Text mt={6} fw={600} className="text-2xl tabular-nums text-[var(--text)]">
+          {a.followersUnique}
+        </Text>
         {summaryDiffs && <DiffBadge value={summaryDiffs.followersDiff} />}
         {a.followersCount !== a.followersUnique && (
-          <p className="mt-1 text-xs text-amber-300">
+          <Text size="xs" mt={4} c="yellow.3">
             {duplicateRowsNote(a.followersCount, a.followersCount - a.followersUnique, copy)}
-          </p>
+          </Text>
         )}
-      </div>
-      <div className={summaryStatCardClass}>
+      </Box>
+      <Box className={summaryStatCardClass}>
         <StatIcon>
           <UserCheck className="size-4" aria-hidden />
         </StatIcon>
-        <p className="text-xs font-medium uppercase tracking-wide text-tertiary-readable">
+        <Text size="xs" fw={500} tt="uppercase" className="tracking-wide text-tertiary-readable">
           {copy.mutual}
-        </p>
-        <p className="mt-1.5 text-2xl font-semibold tabular-nums text-[var(--text)]">{a.mutuals.length}</p>
+        </Text>
+        <Text mt={6} fw={600} className="text-2xl tabular-nums text-[var(--text)]">
+          {a.mutuals.length}
+        </Text>
         {summaryDiffs && <DiffBadge value={summaryDiffs.mutualDiff} />}
-      </div>
-      <div className={summaryStatCardClass}>
+      </Box>
+      <Box className={summaryStatCardClass}>
         <StatIcon>
           <TrendingUp className="size-4" aria-hidden />
         </StatIcon>
-        <p className="text-xs font-medium uppercase tracking-wide text-tertiary-readable">
+        <Text size="xs" fw={500} tt="uppercase" className="tracking-wide text-tertiary-readable">
           {copy.netDifference}
-        </p>
-        <p className="mt-1.5 text-2xl font-semibold tabular-nums text-[var(--text)]">
+        </Text>
+        <Text mt={6} fw={600} className="text-2xl tabular-nums text-[var(--text)]">
           {a.netDifference > 0 ? "+" : ""}
           {a.netDifference}
-        </p>
-        <p className="mt-1 text-xs text-tertiary-readable">{copy.netDifferenceHint}</p>
-      </div>
-      <div className={`${summaryStatCardClass} col-span-2 sm:col-span-1`}>
+        </Text>
+        <Text size="xs" mt={4} className="text-tertiary-readable">
+          {copy.netDifferenceHint}
+        </Text>
+      </Box>
+      <Box className={`${summaryStatCardClass} col-span-2 sm:col-span-1`}>
         <StatIcon>
           <Scale className="size-4" aria-hidden />
         </StatIcon>
-        <p className="text-xs font-medium uppercase tracking-wide text-tertiary-readable">
+        <Text size="xs" fw={500} tt="uppercase" className="tracking-wide text-tertiary-readable">
           {copy.followersRatio}
-        </p>
-        <p className="mt-1.5 text-2xl font-semibold tabular-nums text-[var(--text)]">{ratioLabel}</p>
-        <p className="mt-1 text-xs text-tertiary-readable">{copy.followersRatioHint}</p>
-      </div>
-    </div>
+        </Text>
+        <Text mt={6} fw={600} className="text-2xl tabular-nums text-[var(--text)]">
+          {ratioLabel}
+        </Text>
+        <Text size="xs" mt={4} className="text-tertiary-readable">
+          {copy.followersRatioHint}
+        </Text>
+      </Box>
+    </Box>
   );
 }

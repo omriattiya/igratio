@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   analyzeFollowingFollowers,
   extractUsernamesFromInstagramJson,
@@ -11,7 +11,6 @@ import {
 import { extractFollowGraphFromExportArchive } from "@/lib/exportArchive";
 import { computeExportDiff, type ExportDiff } from "@/lib/exportDiff";
 import {
-  clearAllSiteData,
   getLatestSnapshot,
   getTrackSnapshots,
   setLatestSnapshot,
@@ -51,8 +50,6 @@ export function useAnalyzerState() {
   const [lastExportDiff, setLastExportDiff] = useState<ExportDiff | null>(null);
   const [lastSnapshotSavedAt, setLastSnapshotSavedAt] = useState<string | null>(null);
   const [indexedDbError, setIndexedDbError] = useState<string | null>(null);
-  const [fileInputKey, setFileInputKey] = useState(0);
-  const archiveInputRef = useRef<HTMLInputElement>(null);
   const [followerTimestamps, setFollowerTimestamps] = useState<TimestampedUser[]>([]);
   const [followingTimestamps, setFollowingTimestamps] = useState<TimestampedUser[]>([]);
 
@@ -221,25 +218,6 @@ export function useAnalyzerState() {
     [runAnalysisFromArchive],
   );
 
-  const handleResetAnalysis = useCallback(async () => {
-    try {
-      await clearAllSiteData();
-      await setTrackSnapshots(true);
-      setIndexedDbError(null);
-    } catch {
-      setIndexedDbError(messages.analyzer.indexedDbFailed);
-    }
-    setArchiveName(null);
-    setSelectedBasenames([]);
-    setFollowerTimestamps([]);
-    setFollowingTimestamps([]);
-    setFileInputKey((k) => k + 1);
-    setState({ status: AnalyzerLoadStatus.Idle });
-    setTrackSnapshotsState(true);
-    setLastExportDiff(null);
-    setLastSnapshotSavedAt(null);
-  }, []);
-
   const hasArchive = Boolean(archiveName);
 
   return {
@@ -250,8 +228,6 @@ export function useAnalyzerState() {
     lastExportDiff,
     lastSnapshotSavedAt,
     indexedDbError,
-    fileInputKey,
-    archiveInputRef,
     followerTimestamps,
     followingTimestamps,
     markNewFromDiff,
@@ -259,6 +235,5 @@ export function useAnalyzerState() {
     setIndexedDbError,
     handleTrackToggle,
     handleArchiveChange,
-    handleResetAnalysis,
   };
 }

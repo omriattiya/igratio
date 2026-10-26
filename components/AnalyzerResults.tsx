@@ -1,3 +1,4 @@
+import { Alert, Box, List, SimpleGrid } from "@mantine/core";
 import type { InstagramAnalysis, TimestampedUser } from "@/lib/instagram";
 import type { ExportDiff } from "@/components/ExportChangePanel";
 import { InstagramAnalysisSummary } from "@/components/InstagramAnalysisSummary";
@@ -5,7 +6,6 @@ import { InstagramUserList } from "@/components/InstagramUserList";
 import { ExportChangeDiff } from "@/components/ExportChangePanel";
 import { UnfollowerReviewList } from "@/components/UnfollowerReviewList";
 import { FollowActivityChart } from "@/components/FollowActivityChart";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { messages } from "@/lib/i18n";
 
 type AnalyzerResultsProps = {
@@ -36,25 +36,16 @@ export function AnalyzerResults({
         followerTimestamps={followerTimestamps}
         followingTimestamps={followingTimestamps}
       />
-      <div className="surface-panel px-5 py-4">
-        <ul className="list-disc space-y-1 pl-5 text-sm text-secondary-readable">
+      <Box className="surface-panel" px="md" py="md">
+        <List size="sm" spacing={4} className="text-secondary-readable">
           {messages.analyzer.indexedDbPrivacy.map((line: string) => (
-            <li key={line}>{line}</li>
+            <List.Item key={line}>{line}</List.Item>
           ))}
-        </ul>
-      </div>
+        </List>
+      </Box>
       {trackSnapshots && <ExportChangeDiff diff={lastExportDiff} />}
-      {indexedDbError && (
-        <Alert
-          className="border-amber-900/40 bg-amber-950/30 text-amber-100"
-          variant="default"
-        >
-          <AlertDescription className="text-amber-200">
-            {indexedDbError}
-          </AlertDescription>
-        </Alert>
-      )}
-      <div className="grid gap-4 lg:grid-cols-3 lg:h-[32rem]">
+      {indexedDbError && <Alert color="yellow">{indexedDbError}</Alert>}
+      <SimpleGrid cols={{ base: 1, lg: 3 }} spacing="md" className="lg:h-[32rem]">
         <UnfollowerReviewList
           title={messages.analyzer.lists.dontFollowBack}
           usernames={analysis.youFollowTheyDont}
@@ -76,7 +67,7 @@ export function AnalyzerResults({
           userStatus="mutual"
           markNew={markNewFromDiff}
         />
-      </div>
+      </SimpleGrid>
     </>
   );
 }

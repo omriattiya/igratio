@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useEffectEvent, useRef } from "react";
 
 export type PlaybackMode = "manual" | "audio" | "auto";
 
@@ -47,9 +47,7 @@ export function useAudioPlayer({
   autoStarted,
 }: Options) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  // Latest callback ref so timers don't capture stale closures.
-  const onAdvanceRef = useRef(onAutoAdvance);
-  onAdvanceRef.current = onAutoAdvance;
+  const onAdvance = useEffectEvent(onAutoAdvance);
 
   useEffect(() => {
     const prev = audioRef.current;
@@ -71,7 +69,7 @@ export function useAudioPlayer({
       timer = window.setTimeout(() => {
         if (advanced) return;
         advanced = true;
-        onAdvanceRef.current();
+        onAdvance();
       }, Math.max(0, ms));
     };
 

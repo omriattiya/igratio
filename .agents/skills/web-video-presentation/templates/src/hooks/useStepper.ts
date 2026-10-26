@@ -51,17 +51,10 @@ export function useStepper(chapters: ChapterDef[]): StepperState {
     return fallback;
   });
 
-  // Re-sanitize if the chapter list shape changes after mount (e.g. HMR
-  // updates `chapters.ts`) — keeps a stale persisted cursor from leaking
-  // into a render where it's now out of range.
-  useEffect(() => {
-    setCursor((cur) => {
-      const next = sanitize(cur, chapters);
-      return next.chapter === cur.chapter && next.step === cur.step
-        ? cur
-        : next;
-    });
-  }, [chapters]);
+  const sanitized = sanitize(cursor, chapters);
+  if (sanitized.chapter !== cursor.chapter || sanitized.step !== cursor.step) {
+    setCursor(sanitized);
+  }
 
   useEffect(() => {
     try {
@@ -84,7 +77,7 @@ export function useStepper(chapters: ChapterDef[]): StepperState {
     () => chapters.reduce((s, c) => s + c.narrations.length, 0),
     [chapters],
   );
-  const globalIndex = (offsets[cursor.chapter] ?? 0) + cursor.step;
+  const globalIndex = (offsets[sanitized.chapter] ?? 0) + sanitized.step;
 
   const next = useCallback(() => {
     setCursor((cur) => {
@@ -159,9 +152,9 @@ export function useStepper(chapters: ChapterDef[]): StepperState {
     return () => window.removeEventListener("keydown", onKey);
   }, [next, prev, jumpToChapter, chapters]);
 
-  const ch = chapters[cursor.chapter]!;
+  const ch = chapters[sanitized.chapter]!;
   return {
-    cursor,
+    cursor: sanitized,
     totalChapters: chapters.length,
     chapterTotalSteps: ch.narrations.length,
     globalIndex,
